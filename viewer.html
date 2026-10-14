@@ -358,6 +358,7 @@ function createSkyEnvironment() {
 
 const envMap = createSkyEnvironment();
 scene.background = envMap;
+scene.environment = envMap;
 // Soft atmospheric depth fog that seamlessly blends the ground boundary into the horizon
 scene.fog = new THREE.FogExp2(0x232832, 0.0032);
 
@@ -377,9 +378,9 @@ const fillLight = new THREE.DirectionalLight(0x9cb5d0, 0.85);
 fillLight.position.set(-90, 70, 90);
 scene.add(fillLight);
 
-// 3. Texture Loading with Natural Scaling
+// 3. Texture Loading
 const texLoader = new THREE.TextureLoader();
-function createRepeatingTexture(url, repeatX = 8, repeatY = 8) {
+function createRepeatingTexture(url, repeatX = 12, repeatY = 12) {
   const t = texLoader.load(url);
   t.wrapS = THREE.RepeatWrapping;
   t.wrapT = THREE.RepeatWrapping;
@@ -392,7 +393,7 @@ const facadeTex = createRepeatingTexture('facade_texture.jpg', 6, 6);
 const woodTex   = createRepeatingTexture('wood_texture.jpg', 8, 8);
 const grassTex  = createRepeatingTexture('grass_texture.jpg?v=2', 1, 1);
 
-// 4. Photorealistic PBR Material Library (Optimized FrontSide for Locked 60 FPS)
+// 4. Photorealistic PBR Material Library (Architectural Grade matching reference render a5d249b0.jpg)
 
 // Upper Facade: Warm Classical Neoclassical Travertine / Limestone Blocks
 const matUpperFacade = new THREE.MeshStandardMaterial({
@@ -400,7 +401,7 @@ const matUpperFacade = new THREE.MeshStandardMaterial({
   color: 0xd6cebe,
   roughness: 0.70,
   metalness: 0.04,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Ground Floor Commercial Base (Floors 1-2): Darker warm rustic ashlar stone (NOT stark white!)
@@ -409,7 +410,7 @@ const matLowerFacade = new THREE.MeshStandardMaterial({
   color: 0x584f44,
   roughness: 0.78,
   metalness: 0.04,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Classical Columns, Pilasters & Balusters: Refined classical limestone
@@ -418,33 +419,33 @@ const matColumnsPilasters = new THREE.MeshStandardMaterial({
   color: 0xd2cabb,
   roughness: 0.65,
   metalness: 0.02,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Plinth Belt / Lower Cornice (The band above the commercial ground floor): Warm transitional stone
 const matPlinthBelt = new THREE.MeshStandardMaterial({
   map: stoneTex,
-  color: 0xa89e8d,
+  color: 0xa89e8d, // Natural warm architectural stone transition between base (#584f44) and upper facade (#d6cebe)
   roughness: 0.72,
   metalness: 0.03,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
-// Cornices, Mouldings, Architraves & Sills: Warm carved classical limestone
+// Cornices, Mouldings, Architraves & Sills: Warm carved classical limestone (NOT stark white!)
 const matTrimsCornice = new THREE.MeshStandardMaterial({
   map: stoneTex,
   color: 0xbeb6a4,
   roughness: 0.70,
   metalness: 0.02,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
-// Mansard Roof Trim & Corner Classical Dome: Dark French charcoal zinc / slate
+// Mansard Roof Trim & Corner Classical Dome: Dark French charcoal zinc / slate (NEVER GREEN)
 const matRoofMansardSlate = new THREE.MeshStandardMaterial({
   color: 0x24272c,
   roughness: 0.38,
   metalness: 0.45,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Flat Roof Terrace Slab: Clean architectural concrete terrace surface
@@ -452,18 +453,17 @@ const matRoofTerraceSlab = new THREE.MeshStandardMaterial({
   color: 0x8e9196,
   roughness: 0.85,
   metalness: 0.05,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
-// Windows: High-Performance Reflective Sky-Blue Solar Glazing (Selective EnvMap)
+// Windows: High-Performance Reflective Sky-Blue Solar Glazing (60 FPS)
 const matWindowGlass = new THREE.MeshStandardMaterial({
-  envMap: envMap,
   color: 0x3d748d,
   roughness: 0.04,
-  metalness: 0.30,
+  metalness: 0.18,
   transparent: true,
-  opacity: 0.82,
-  side: THREE.FrontSide
+  opacity: 0.55,
+  side: THREE.DoubleSide
 });
 
 // Window Frames & Mullions: Dark Architectural Bronze / Charcoal Metal
@@ -471,7 +471,7 @@ const matWindowFrame = new THREE.MeshStandardMaterial({
   color: 0x1c1e22,
   roughness: 0.32,
   metalness: 0.82,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Balcony Wrought Iron Railings
@@ -479,8 +479,10 @@ const matBalconyRailing = new THREE.MeshStandardMaterial({
   color: 0x191a1c,
   roughness: 0.28,
   metalness: 0.88,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
+
+
 
 // Roads & Streets: Deep Charcoal Matte Asphalt
 const matRoadAsphalt = new THREE.MeshStandardMaterial({
@@ -488,7 +490,7 @@ const matRoadAsphalt = new THREE.MeshStandardMaterial({
   color: 0x202226,
   roughness: 0.92,
   metalness: 0.02,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Painted Road Markings & Direction Arrows: Crisp Off-White Traffic Paint
@@ -496,54 +498,54 @@ const matRoadMarking = new THREE.MeshStandardMaterial({
   color: 0xf5f2ea,
   roughness: 0.50,
   metalness: 0.04,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
-// Sidewalks, Pedestrian Pavers & Curbs: Granite Paving Stones
+// Sidewalks, Pedestrian Pavers & Curbs: Granite Paving Stones (Textured warm grey, NOT stark white!)
 const matSidewalkPaver = new THREE.MeshStandardMaterial({
   map: stoneTex,
   color: 0x8a8479,
   roughness: 0.82,
   metalness: 0.03,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
-// Surrounding Ground Boundary (Plane003): Neutral site pavement
+// Surrounding Ground Boundary (Plane003): Neutral grey site pavement matching 3ds Max viewport
 const matPerimeterGround = new THREE.MeshStandardMaterial({
   color: 0x525862,
   roughness: 0.92,
   metalness: 0.02,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Courtyard Gardens: Realistic Textured Grass Lawn (OTLUQ)
 const matGardenGrass = new THREE.MeshStandardMaterial({
   map: grassTex,
-  color: 0xffffff,
+  color: 0xffffff, // Uses natural photographic lawn colors without dark tint
   roughness: 0.80,
   metalness: 0.0,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Outdoor Recreation: Chess & Tennis Table
 const matChessWhite = new THREE.MeshStandardMaterial({
   color: 0xe8e4d8,
   roughness: 0.35,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 const matChessBlack = new THREE.MeshStandardMaterial({
   color: 0x1f2125,
   roughness: 0.40,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 const matTennisTableBlue = new THREE.MeshStandardMaterial({
   color: 0x1a4b88,
   roughness: 0.25,
   metalness: 0.1,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
-// Trees: Organic Leaf Foliage (DoubleSide for realistic 2D leaf planes)
+// Trees: Organic Leaf Foliage
 const matTreeLeaves = new THREE.MeshStandardMaterial({
   color: 0x387326,
   roughness: 0.65,
@@ -551,7 +553,7 @@ const matTreeLeaves = new THREE.MeshStandardMaterial({
   side: THREE.DoubleSide
 });
 
-// Bushes & Hedges (DoubleSide)
+// Bushes & Hedges
 const matBushLeaves = new THREE.MeshStandardMaterial({
   color: 0x44832f,
   roughness: 0.70,
@@ -564,7 +566,7 @@ const matTreeBark = new THREE.MeshStandardMaterial({
   color: 0x3d3126,
   roughness: 0.88,
   metalness: 0.0,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Timber Pergolas & Benches: Warm Cedar
@@ -573,7 +575,7 @@ const matWoodTimber = new THREE.MeshStandardMaterial({
   color: 0xb07a46,
   roughness: 0.62,
   metalness: 0.0,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Streetlights & Poles: Satin Architectural Metal
@@ -581,77 +583,75 @@ const matStreetLight = new THREE.MeshStandardMaterial({
   color: 0x232528,
   roughness: 0.35,
   metalness: 0.85,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
-// Automotive Materials for Cars (FrontSide, reflective glass/chrome)
+// Automotive Materials for Cars
 const matCarBlue = new THREE.MeshStandardMaterial({
-  color: 0x0a3b70,
+  color: 0x0a3b70, // Sapphire Metallic Blue (Hero car in central street)
   roughness: 0.14,
   metalness: 0.88,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 const matCarWhite = new THREE.MeshStandardMaterial({
-  color: 0xf2f4f7,
+  color: 0xf2f4f7, // Pearl White (Hero car in parking bay)
   roughness: 0.18,
   metalness: 0.50,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 const matCarSilver = new THREE.MeshStandardMaterial({
-  color: 0x9ea4ab,
+  color: 0x9ea4ab, // Metallic Silver
   roughness: 0.15,
   metalness: 0.90,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 const matCarBlack = new THREE.MeshStandardMaterial({
-  color: 0x141517,
+  color: 0x141517, // Obsidian Black
   roughness: 0.12,
   metalness: 0.92,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 const matCarGrey = new THREE.MeshStandardMaterial({
-  color: 0x36393e,
+  color: 0x36393e, // Gunmetal Grey
   roughness: 0.16,
   metalness: 0.86,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 const matCarGlass = new THREE.MeshStandardMaterial({
-  envMap: envMap,
   color: 0x1b2834,
   roughness: 0.08,
   metalness: 0.2,
   transparent: true,
   opacity: 0.65,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 const matCarChrome = new THREE.MeshStandardMaterial({
-  envMap: envMap,
   color: 0xeeeeee,
   roughness: 0.08,
   metalness: 0.98,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 const matCarTire = new THREE.MeshStandardMaterial({
   color: 0x19191a,
   roughness: 0.92,
   metalness: 0.02,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
-// Ground Horizon Disc
-const groundGeo = new THREE.CircleGeometry(500, 48);
+// Ground Horizon Disc: seamlessly blends into the background fog (no hard cutoff edges)
+const groundGeo = new THREE.CircleGeometry(500, 64);
 const groundMat = new THREE.MeshStandardMaterial({
   color: 0x1c2028,
   roughness: 0.98,
   metalness: 0.02,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 const groundMesh = new THREE.Mesh(groundGeo, groundMat);
 groundMesh.rotation.x = -Math.PI / 2;
@@ -677,7 +677,7 @@ function extractMatNum(matName) {
   return m ? parseInt(m[1], 10) : null;
 }
 
-// Procedural Planar UV Generator for flat horizontal elements (ground, roads, sidewalks, lawn, terraces)
+// Procedural Planar UV Generator: gives real-world photographic texture scale to unmapped splines/polygons
 function applyPlanarUVs(child, scaleX = 2.5, scaleZ = 2.5) {
   if (!child.geometry) return;
   const pos = child.geometry.attributes.position;
@@ -685,33 +685,8 @@ function applyPlanarUVs(child, scaleX = 2.5, scaleZ = 2.5) {
   const count = pos.count;
   const uvs = new Float32Array(count * 2);
   for (let i = 0; i < count; i++) {
-    uvs[i * 2]     = pos.getX(i) / scaleX;
+    uvs[i * 2] = pos.getX(i) / scaleX;
     uvs[i * 2 + 1] = pos.getZ(i) / scaleZ;
-  }
-  child.geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-  child.geometry.uvsNeedUpdate = true;
-}
-
-// Procedural Wall UV Generator for vertical facades, pillars, trims, and rear walls
-function applyWallUVs(child, scaleH = 3.5, scaleV = 3.5) {
-  if (!child.geometry) return;
-  const pos = child.geometry.attributes.position;
-  if (!pos) return;
-  const count = pos.count;
-  const uvs = new Float32Array(count * 2);
-
-  const bbox = new THREE.Box3().setFromObject(child);
-  const size = bbox.getSize(new THREE.Vector3());
-  const runsAlongX = size.x >= size.z;
-
-  for (let i = 0; i < count; i++) {
-    const x = pos.getX(i);
-    const y = pos.getY(i);
-    const z = pos.getZ(i);
-
-    const horizontalPos = runsAlongX ? x : z;
-    uvs[i * 2]     = horizontalPos / scaleH;
-    uvs[i * 2 + 1] = y / scaleV;
   }
   child.geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
   child.geometry.uvsNeedUpdate = true;
@@ -793,7 +768,6 @@ function assignHighFidelityMaterial(child) {
 
   // 7. Classical Columns & Pilasters (pilaster006, pilaster011..022)
   if (fullName.includes('pilaster') || fullName.includes('column') || fullName.includes('col_')) {
-    applyWallUVs(child, 3.0, 3.0);
     child.material = matColumnsPilasters;
     return;
   }
@@ -830,21 +804,18 @@ function assignHighFidelityMaterial(child) {
     return;
   }
 
-  // 12. Main Building Structural Elements (Walls, Slabs, Commercial Base, Rear & Courtyard Walls)
-  const isBuildingMesh = fullName.includes('art_') || 
-                         fullName.includes('generic') || 
-                         fullName.includes('box15789') || 
-                         fullName.includes('sdi') || 
-                         fullName.includes('family2');
-
+  // 12. Main Building Structural Elements (Walls, Slabs, Commercial Base)
+  const isBuildingMesh = fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('sdi') || fullName.includes('family2');
   if (isBuildingMesh || size.y > 3.0) {
-    applyWallUVs(child, 4.0, 4.0);
     // Ground floor commercial base (Floors 1-2, Y < 5.0m or base wall primitives with matNum 69)
     if (center.y < 5.0 || (matNum === 69 && size.y > 2.0)) {
+      applyPlanarUVs(child, 3.0, 3.0);
       child.material = matLowerFacade; // Rustic ashlar stone base (NOT stark white!)
     } else if (matNum === 69) {
+      applyPlanarUVs(child, 3.0, 3.0);
       child.material = center.y < 12.0 ? matPlinthBelt : matTrimsCornice; // Classical stone band
     } else {
+      applyPlanarUVs(child, 4.0, 4.0);
       child.material = matUpperFacade; // Upper travertine limestone
     }
     return;
@@ -852,7 +823,7 @@ function assignHighFidelityMaterial(child) {
 
   // 13. Classical Trims, Mouldings, Cornice Bands (PhysicalMaterial_69, Object1746174061, Object31013084)
   if (matNum === 69 || fullName.includes('1746174061') || fullName.includes('31013084') || fullName.includes('mould') || fullName.includes('cornice')) {
-    applyWallUVs(child, 3.0, 3.0);
+    applyPlanarUVs(child, 3.0, 3.0);
     child.material = center.y < 12.0 ? matPlinthBelt : matTrimsCornice;
     return;
   }
@@ -873,7 +844,6 @@ function assignHighFidelityMaterial(child) {
 
   // 16. Timber Pergola & Benches (wooden_beam_*, Richter_*, PhysicalMaterial_26..29, 92, 93)
   if ((matNum !== null && (matNum >= 26 && matNum <= 29)) || matNum === 92 || matNum === 93 || fullName.includes('wooden') || fullName.includes('beam') || fullName.includes('richter') || fullName.includes('bench')) {
-    applyPlanarUVs(child, 2.5, 2.5);
     child.material = matWoodTimber;
     return;
   }
@@ -892,27 +862,10 @@ function assignHighFidelityMaterial(child) {
 
   // 19. Default fallback: keep clean architectural limestone or ground
   if (center.y < 0.2) {
-    applyPlanarUVs(child, 2.5, 2.5);
     child.material = matSidewalkPaver;
   } else {
-    applyWallUVs(child, 4.0, 4.0);
     child.material = matUpperFacade;
   }
-}
-
-function isInteriorNode(name, parentName) {
-  const low = ((name || '') + ' ' + (parentName || '')).toLowerCase();
-  if (low.includes('art_glazed')) return false; // keep exterior glazed curtain walls!
-  if (low.includes('art_slab')) return true;    // interior floor slabs
-  if (low.includes('art_part_')) return true;   // interior partition walls
-  if (low.includes('art_str_')) return true;    // interior structural columns
-  if (low.includes('art_square_500') || low.includes('art_rectangular_500')) return true;
-  const propKeywords = [
-    'candle', 'pillow', 'countertop', 'wine', 'bottle', 'croissant',
-    'coffeeplate', 'plate01', 'rivet_019', 'cap_010', 'handle_ring',
-    'handle_loop', 'handle_010', 'table_frame_010', 'leg_candlestic'
-  ];
-  return propKeywords.some(kw => low.includes(kw));
 }
 
 function loadScene(url) {
@@ -922,35 +875,16 @@ function loadScene(url) {
       if (loadedModel) scene.remove(loadedModel);
       loadedModel = gltf.scene;
 
-      const toRemove = [];
       loadedModel.traverse(child => {
-        const name = child.name || '';
-        const parentName = child.parent ? child.parent.name || '' : '';
-        if (isInteriorNode(name, parentName)) {
-          toRemove.push(child);
-          return;
-        }
-
         if (child.isMesh) {
           meshCount++;
           child.frustumCulled = true;
           assignHighFidelityMaterial(child);
-          const fullName = (name + ' ' + parentName).toLowerCase();
-          if (fullName.includes('generic') || fullName.includes('box15789') || fullName.includes('1746174') || fullName.includes('art_glazed')) {
+          const name = (child.name || '').toLowerCase();
+          const parentName = child.parent ? (child.parent.name || '').toLowerCase() : '';
+          const fullName = name + ' ' + parentName;
+          if (fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('1746174')) {
             buildingRaycastMeshes.push(child);
-          }
-        }
-      });
-
-      // Dispose and remove hollowed interior elements to free GPU memory and maximize FPS
-      toRemove.forEach(child => {
-        if (child.parent) child.parent.remove(child);
-        if (child.geometry) child.geometry.dispose();
-        if (child.material) {
-          if (Array.isArray(child.material)) {
-            child.material.forEach(m => m.dispose());
-          } else {
-            child.material.dispose();
           }
         }
       });
@@ -1077,10 +1011,6 @@ const floorTooltip = document.getElementById('floor-tooltip');
 let lastRaycastTime = 0;
 
 window.addEventListener('pointermove', (e) => {
-  if (e.buttons > 0) {
-    floorTooltip.classList.remove('visible');
-    return;
-  }
   if (e.target.closest('#floor-panel, #btn-panel, #views-bar, #ui, #floor-card, #controls-help')) {
     floorTooltip.classList.remove('visible');
     return;
