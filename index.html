@@ -829,7 +829,7 @@ const matCarTire = new THREE.MeshStandardMaterial({
   side: THREE.FrontSide
 });
 
-const matCarBlack = new THREE.MeshStandardMaterial({
+const matCarChassis = new THREE.MeshStandardMaterial({
   color: 0x141517,
   roughness: 0.75,
   metalness: 0.1,
@@ -958,8 +958,8 @@ function assignHighFidelityMaterial(child) {
       matCarGlass,    // 1: Windshield & tinted windows
       matCarChrome,   // 2: Chrome wheels, rims & trims
       matCarTire,     // 3: Rubber tires
-      matCarBlack,    // 4: Undercarriage / black trim
-      matCarBlack,    // 5: Cabin interior
+      matCarChassis,  // 4: Undercarriage / black trim
+      matCarChassis,  // 5: Cabin interior
       matCarTailLight // 6: Tail lights / red reflectors
     ];
 
