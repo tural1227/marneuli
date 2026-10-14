@@ -378,19 +378,20 @@ const fillLight = new THREE.DirectionalLight(0x9cb5d0, 0.85);
 fillLight.position.set(-90, 70, 90);
 scene.add(fillLight);
 
-// 3. Texture Loading
+// 3. Texture Loading with Anisotropic Filtering
 const texLoader = new THREE.TextureLoader();
-function createRepeatingTexture(url, repeatX = 12, repeatY = 12) {
+function createRepeatingTexture(url, repeatX = 1, repeatY = 1) {
   const t = texLoader.load(url);
   t.wrapS = THREE.RepeatWrapping;
   t.wrapT = THREE.RepeatWrapping;
   t.repeat.set(repeatX, repeatY);
+  t.anisotropy = 8;
   return t;
 }
 
-const stoneTex  = createRepeatingTexture('stone_texture.jpg', 8, 8);
-const facadeTex = createRepeatingTexture('facade_texture.jpg', 6, 6);
-const woodTex   = createRepeatingTexture('wood_texture.jpg', 8, 8);
+const stoneTex  = createRepeatingTexture('stone_texture.jpg', 1, 1);
+const facadeTex = createRepeatingTexture('facade_texture.jpg', 1, 1);
+const woodTex   = createRepeatingTexture('wood_texture.jpg', 1, 1);
 const grassTex  = createRepeatingTexture('grass_texture.jpg?v=2', 1, 1);
 
 // 4. Photorealistic PBR Material Library (Architectural Grade matching reference render a5d249b0.jpg)
@@ -460,9 +461,9 @@ const matRoofTerraceSlab = new THREE.MeshStandardMaterial({
 const matWindowGlass = new THREE.MeshStandardMaterial({
   color: 0x3d748d,
   roughness: 0.04,
-  metalness: 0.18,
+  metalness: 0.30,
   transparent: true,
-  opacity: 0.55,
+  opacity: 0.82,
   side: THREE.DoubleSide
 });
 
@@ -677,19 +678,73 @@ function extractMatNum(matName) {
   return m ? parseInt(m[1], 10) : null;
 }
 
-// Procedural Planar UV Generator: gives real-world photographic texture scale to unmapped splines/polygons
-function applyPlanarUVs(child, scaleX = 2.5, scaleZ = 2.5) {
+const _vWorld = new THREE.Vector3();
+const _nWorld = new THREE.Vector3();
+
+// High-Precision World-Space Triplanar Box UV Generator:
+// Eliminates texture stretching, slipping, or tearing on rear, side, and front facade walls
+function applyBoxUVs(child, scale = 3.0) {
   if (!child.geometry) return;
-  const pos = child.geometry.attributes.position;
+  const geo = child.geometry;
+  const pos = geo.attributes.position;
+  if (!pos) return;
+
+  if (!geo.attributes.normal) {
+    geo.computeVertexNormals();
+  }
+  const norm = geo.attributes.normal;
+  const count = pos.count;
+  const uvs = new Float32Array(count * 2);
+
+  child.updateWorldMatrix(true, false);
+  const m = child.matrixWorld;
+
+  for (let i = 0; i < count; i++) {
+    _vWorld.set(pos.getX(i), pos.getY(i), pos.getZ(i)).applyMatrix4(m);
+    _nWorld.set(norm.getX(i), norm.getY(i), norm.getZ(i)).transformDirection(m);
+
+    const nx = Math.abs(_nWorld.x);
+    const ny = Math.abs(_nWorld.y);
+    const nz = Math.abs(_nWorld.z);
+
+    if (ny >= nx && ny >= nz) {
+      // Horizontal surfaces (Roofs, flat tops, terraces, floor ground): X-Z mapping
+      uvs[i * 2]     = _vWorld.x / scale;
+      uvs[i * 2 + 1] = _vWorld.z / scale;
+    } else if (nx >= nz) {
+      // East / West facing vertical side walls: Z-Y mapping (Y is elevation, Z is depth)
+      uvs[i * 2]     = _vWorld.z / scale;
+      uvs[i * 2 + 1] = _vWorld.y / scale;
+    } else {
+      // North / South facing vertical front & rear/back walls: X-Y mapping (X is width, Y is elevation)
+      uvs[i * 2]     = _vWorld.x / scale;
+      uvs[i * 2 + 1] = _vWorld.y / scale;
+    }
+  }
+
+  geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+  geo.uvsNeedUpdate = true;
+}
+
+// World-Space Planar UV Generator for ground, roads, sidewalks and lawns
+function applyPlanarUVs(child, scaleX = 4.0, scaleZ = 4.0) {
+  if (!child.geometry) return;
+  const geo = child.geometry;
+  const pos = geo.attributes.position;
   if (!pos) return;
   const count = pos.count;
   const uvs = new Float32Array(count * 2);
+
+  child.updateWorldMatrix(true, false);
+  const m = child.matrixWorld;
+
   for (let i = 0; i < count; i++) {
-    uvs[i * 2] = pos.getX(i) / scaleX;
-    uvs[i * 2 + 1] = pos.getZ(i) / scaleZ;
+    _vWorld.set(pos.getX(i), pos.getY(i), pos.getZ(i)).applyMatrix4(m);
+    uvs[i * 2]     = _vWorld.x / scaleX;
+    uvs[i * 2 + 1] = _vWorld.z / scaleZ;
   }
-  child.geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-  child.geometry.uvsNeedUpdate = true;
+  geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+  geo.uvsNeedUpdate = true;
 }
 
 function assignHighFidelityMaterial(child) {
@@ -768,6 +823,7 @@ function assignHighFidelityMaterial(child) {
 
   // 7. Classical Columns & Pilasters (pilaster006, pilaster011..022)
   if (fullName.includes('pilaster') || fullName.includes('column') || fullName.includes('col_')) {
+    applyBoxUVs(child, 2.5);
     child.material = matColumnsPilasters;
     return;
   }
@@ -786,7 +842,7 @@ function assignHighFidelityMaterial(child) {
 
   // 9. Roads & Central Avenue (Line2000007824, Line2000007836, Line2000007837, Line2000007838, Object1746173879, Object1746173881, PhysicalMaterial_59, 47, 46, 32)
   if (matNum === 59 || matNum === 47 || matNum === 46 || matNum === 32 || matNum === 60 || fullName.includes('1746173879') || fullName.includes('1746173881') || fullName.includes('line20000078') || fullName.includes('road') || fullName.includes('asphalt')) {
-    applyPlanarUVs(child, 6.0, 6.0);
+    applyPlanarUVs(child, 5.0, 5.0);
     child.material = matRoadAsphalt;
     return;
   }
@@ -799,23 +855,26 @@ function assignHighFidelityMaterial(child) {
 
   // 11. Courtyard Gardens: Realistic Textured Grass Lawn (OTLUQ)
   if (matNum === 30 || matNum === 45 || fullName.includes('rectangle3193') || fullName.includes('1746173868') || fullName.includes('shape1042')) {
-    applyPlanarUVs(child, 2.5, 2.5);
+    applyPlanarUVs(child, 3.5, 3.5);
     child.material = matGardenGrass;
     return;
   }
 
-  // 12. Main Building Structural Elements (Walls, Slabs, Commercial Base)
-  const isBuildingMesh = fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('sdi') || fullName.includes('family2');
+  // 12. Main Building Structural Elements (Walls, Slabs, Commercial Base, Rear & Courtyard Walls)
+  const isBuildingMesh = fullName.includes('art_') || 
+                         fullName.includes('generic') || 
+                         fullName.includes('box15789') || 
+                         fullName.includes('sdi') || 
+                         fullName.includes('family2');
+
   if (isBuildingMesh || size.y > 3.0) {
+    applyBoxUVs(child, 3.0);
     // Ground floor commercial base (Floors 1-2, Y < 5.0m or base wall primitives with matNum 69)
     if (center.y < 5.0 || (matNum === 69 && size.y > 2.0)) {
-      applyPlanarUVs(child, 3.0, 3.0);
       child.material = matLowerFacade; // Rustic ashlar stone base (NOT stark white!)
     } else if (matNum === 69) {
-      applyPlanarUVs(child, 3.0, 3.0);
       child.material = center.y < 12.0 ? matPlinthBelt : matTrimsCornice; // Classical stone band
     } else {
-      applyPlanarUVs(child, 4.0, 4.0);
       child.material = matUpperFacade; // Upper travertine limestone
     }
     return;
@@ -823,7 +882,7 @@ function assignHighFidelityMaterial(child) {
 
   // 13. Classical Trims, Mouldings, Cornice Bands (PhysicalMaterial_69, Object1746174061, Object31013084)
   if (matNum === 69 || fullName.includes('1746174061') || fullName.includes('31013084') || fullName.includes('mould') || fullName.includes('cornice')) {
-    applyPlanarUVs(child, 3.0, 3.0);
+    applyBoxUVs(child, 2.5);
     child.material = center.y < 12.0 ? matPlinthBelt : matTrimsCornice;
     return;
   }
@@ -844,6 +903,7 @@ function assignHighFidelityMaterial(child) {
 
   // 16. Timber Pergola & Benches (wooden_beam_*, Richter_*, PhysicalMaterial_26..29, 92, 93)
   if ((matNum !== null && (matNum >= 26 && matNum <= 29)) || matNum === 92 || matNum === 93 || fullName.includes('wooden') || fullName.includes('beam') || fullName.includes('richter') || fullName.includes('bench')) {
+    applyBoxUVs(child, 1.8);
     child.material = matWoodTimber;
     return;
   }
@@ -862,10 +922,27 @@ function assignHighFidelityMaterial(child) {
 
   // 19. Default fallback: keep clean architectural limestone or ground
   if (center.y < 0.2) {
+    applyPlanarUVs(child, 2.5, 2.5);
     child.material = matSidewalkPaver;
   } else {
+    applyBoxUVs(child, 3.0);
     child.material = matUpperFacade;
   }
+}
+
+function isInteriorNode(name, parentName) {
+  const low = ((name || '') + ' ' + (parentName || '')).toLowerCase();
+  if (low.includes('art_glazed')) return false; // keep exterior glazed curtain walls!
+  if (low.includes('art_slab')) return true;    // interior floor slabs
+  if (low.includes('art_part_')) return true;   // interior partition walls
+  if (low.includes('art_str_')) return true;    // interior structural columns
+  if (low.includes('art_square_500') || low.includes('art_rectangular_500')) return true;
+  const propKeywords = [
+    'candle', 'pillow', 'countertop', 'wine', 'bottle', 'croissant',
+    'coffeeplate', 'plate01', 'rivet_019', 'cap_010', 'handle_ring',
+    'handle_loop', 'handle_010', 'table_frame_010', 'leg_candlestic'
+  ];
+  return propKeywords.some(kw => low.includes(kw));
 }
 
 function loadScene(url) {
@@ -875,16 +952,35 @@ function loadScene(url) {
       if (loadedModel) scene.remove(loadedModel);
       loadedModel = gltf.scene;
 
+      const toRemove = [];
       loadedModel.traverse(child => {
+        const name = child.name || '';
+        const parentName = child.parent ? child.parent.name || '' : '';
+        if (isInteriorNode(name, parentName)) {
+          toRemove.push(child);
+          return;
+        }
+
         if (child.isMesh) {
           meshCount++;
           child.frustumCulled = true;
           assignHighFidelityMaterial(child);
-          const name = (child.name || '').toLowerCase();
-          const parentName = child.parent ? (child.parent.name || '').toLowerCase() : '';
-          const fullName = name + ' ' + parentName;
-          if (fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('1746174')) {
+          const fullName = (name + ' ' + parentName).toLowerCase();
+          if (fullName.includes('generic') || fullName.includes('box15789') || fullName.includes('1746174') || fullName.includes('art_glazed')) {
             buildingRaycastMeshes.push(child);
+          }
+        }
+      });
+
+      // Dispose and remove hollowed interior elements to free GPU memory and maximize FPS
+      toRemove.forEach(child => {
+        if (child.parent) child.parent.remove(child);
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach(m => m.dispose());
+          } else {
+            child.material.dispose();
           }
         }
       });
