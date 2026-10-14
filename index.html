@@ -567,13 +567,14 @@ function createRepeatingTexture(url, repeatX = 12, repeatY = 12) {
   t.wrapS = THREE.RepeatWrapping;
   t.wrapT = THREE.RepeatWrapping;
   t.repeat.set(repeatX, repeatY);
+  t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
 
 const stoneTex  = createRepeatingTexture('stone_texture.jpg', 8, 8);
 const facadeTex = createRepeatingTexture('facade_texture.jpg', 6, 6);
 const woodTex   = createRepeatingTexture('wood_texture.jpg', 8, 8);
-const grassTex  = createRepeatingTexture('grass_texture.jpg?v=2', 1, 1);
+const grassTex  = createRepeatingTexture('grass_texture.jpg', 1, 1);
 
 // 4. Photorealistic PBR Material Library (Architectural Grade matching reference render a5d249b0.jpg)
 
@@ -703,9 +704,9 @@ const matPerimeterGround = new THREE.MeshStandardMaterial({
 const matGardenGrass = new THREE.MeshStandardMaterial({
   map: grassTex,
   color: 0xffffff, // Uses natural photographic lawn colors without dark tint
-  roughness: 0.80,
+  roughness: 0.82,
   metalness: 0.0,
-  side: THREE.FrontSide
+  side: THREE.DoubleSide
 });
 
 // Outdoor Recreation: Chess & Tennis Table
@@ -828,6 +829,21 @@ const matCarTire = new THREE.MeshStandardMaterial({
   side: THREE.FrontSide
 });
 
+const matCarBlack = new THREE.MeshStandardMaterial({
+  color: 0x141517,
+  roughness: 0.75,
+  metalness: 0.1,
+  side: THREE.FrontSide
+});
+
+const matCarTailLight = new THREE.MeshStandardMaterial({
+  envMap: envMap,
+  color: 0xc41212,
+  roughness: 0.20,
+  metalness: 0.3,
+  side: THREE.FrontSide
+});
+
 // Ground Horizon Disc: seamlessly blends into the background fog (no hard cutoff edges)
 const groundGeo = new THREE.CircleGeometry(500, 64);
 const groundMat = new THREE.MeshStandardMaterial({
@@ -860,6 +876,31 @@ function extractMatNum(matName) {
   return m ? parseInt(m[1], 10) : null;
 }
 
+// Procedural World-Space Planar UV Generator for Ground & Lawns:
+// Transforms vertex positions into real-world meters on the horizontal XZ plane,
+// ensuring the grass texture scales naturally (3.5m per tile) and seamlessly across all site meshes.
+function applyWorldPlanarUVs(child, scaleMeters = 3.5) {
+  if (!child.geometry) return;
+  child.updateMatrixWorld(true);
+  const pos = child.geometry.attributes.position;
+  if (!pos) return;
+  const count = pos.count;
+  const uvs = new Float32Array(count * 2);
+  const v = new THREE.Vector3();
+  for (let i = 0; i < count; i++) {
+    v.fromBufferAttribute(pos, i);
+    v.applyMatrix4(child.matrixWorld);
+    uvs[i * 2] = v.x / scaleMeters;
+    uvs[i * 2 + 1] = v.z / scaleMeters;
+  }
+  if (!child.geometry.userData.hasWorldUVs) {
+    child.geometry = child.geometry.clone();
+    child.geometry.userData.hasWorldUVs = true;
+  }
+  child.geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+  child.geometry.attributes.uv.needsUpdate = true;
+}
+
 // Procedural Planar UV Generator: gives real-world photographic texture scale to unmapped splines/polygons
 function applyPlanarUVs(child, scaleX = 2.5, scaleZ = 2.5) {
   if (!child.geometry) return;
@@ -888,24 +929,51 @@ function assignHighFidelityMaterial(child) {
 
   // 1. Cars (Am176_* vehicles)
   if (fullName.includes('am176') || (matNum !== null && [12, 13, 14, 15, 54, 55, 56, 57].includes(matNum))) {
-    if (matNum === 13 || matNum === 55 || fullName.includes('glass') || name.includes('_glass')) {
-      child.material = matCarGlass;
-    } else if (matNum === 14 || matNum === 56 || fullName.includes('wheel') || fullName.includes('rim') || fullName.includes('chrome')) {
-      child.material = matCarChrome;
-    } else if (matNum === 15 || matNum === 57 || fullName.includes('tire') || fullName.includes('rubber') || center.y < 4.2) {
-      child.material = matCarTire;
+    child.frustumCulled = false;
+
+    // Palette of realistic automotive metallic paints
+    let bodyColor;
+    if (center.x > 2 && center.x < 18 && center.z > -10 && center.z < 25) {
+      bodyColor = 0x0a3b70; // Sapphire Metallic Blue (Hero car in central street)
+    } else if (center.x > 20 && center.z > 5) {
+      bodyColor = 0xf2f4f7; // Pearl White (Hero car in parking bay)
+    } else if (center.z < -10) {
+      bodyColor = 0x9ea4ab; // Metallic Silver
     } else {
-      // Hero Car Colors: Sapphire blue on main street, white in parking stall, silver/black for others
-      if (center.x > 2 && center.x < 18 && center.z > -10 && center.z < 25) {
-        child.material = matCarBlue;
-      } else if (center.x > 20 && center.z > 5) {
-        child.material = matCarWhite;
-      } else if (center.z < -10) {
-        child.material = matCarSilver;
+      const pool = [0x36393e, 0x141517, 0x0a3b70, 0x9ea4ab, 0xf2f4f7, 0x8b1e2a, 0x1f3c2c];
+      bodyColor = pool[carCounter % pool.length];
+      carCounter++;
+    }
+
+    const matBody = new THREE.MeshStandardMaterial({
+      envMap: envMap,
+      color: bodyColor,
+      roughness: 0.14,
+      metalness: 0.88,
+      side: THREE.FrontSide
+    });
+
+    const carMaterials = [
+      matBody,        // 0: Metallic car paint body
+      matCarGlass,    // 1: Windshield & tinted windows
+      matCarChrome,   // 2: Chrome wheels, rims & trims
+      matCarTire,     // 3: Rubber tires
+      matCarBlack,    // 4: Undercarriage / black trim
+      matCarBlack,    // 5: Cabin interior
+      matCarTailLight // 6: Tail lights / red reflectors
+    ];
+
+    if (Array.isArray(child.material) || (child.geometry && child.geometry.groups && child.geometry.groups.length > 1)) {
+      child.material = carMaterials;
+    } else {
+      if (matNum === 13 || matNum === 55 || fullName.includes('glass') || name.includes('_glass')) {
+        child.material = matCarGlass;
+      } else if (matNum === 14 || matNum === 56 || fullName.includes('wheel') || fullName.includes('rim') || fullName.includes('chrome')) {
+        child.material = matCarChrome;
+      } else if (matNum === 15 || matNum === 57 || fullName.includes('tire') || fullName.includes('rubber')) {
+        child.material = matCarTire;
       } else {
-        const pool = [matCarGrey, matCarBlack, matCarBlue, matCarSilver, matCarWhite];
-        child.material = pool[carCounter % pool.length];
-        carCounter++;
+        child.material = matBody;
       }
     }
     return;
@@ -981,9 +1049,25 @@ function assignHighFidelityMaterial(child) {
   }
 
   // 11. Courtyard Gardens: Realistic Textured Grass Lawn (OTLUQ)
-  if (matNum === 30 || matNum === 45 || fullName.includes('rectangle3193') || fullName.includes('1746173868') || fullName.includes('shape1042')) {
-    applyPlanarUVs(child, 2.5, 2.5);
-    child.material = matGardenGrass;
+  const isGrassObject = matNum === 30 || matNum === 45 ||
+                        fullName.includes('rectangle3193') ||
+                        fullName.includes('1746173868') ||
+                        fullName.includes('shape1042') ||
+                        (fullName.includes('1746173872') && center.y < 2.0) ||
+                        (fullName.includes('box1578970156') && center.y < 2.0);
+
+  if (isGrassObject) {
+    applyWorldPlanarUVs(child, 3.5);
+    if (Array.isArray(child.material)) {
+      child.material = child.material.map(m => {
+        const num = extractMatNum(m && m.name ? m.name.toLowerCase() : '');
+        if (num === 30 || num === 45) return matGardenGrass;
+        if (num === 17) return matRoadMarking;
+        return matLowerFacade;
+      });
+    } else {
+      child.material = matGardenGrass;
+    }
     return;
   }
 
