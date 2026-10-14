@@ -205,9 +205,10 @@
       padding: 9px; border-radius: 8px; cursor: pointer;
       font-size: 0.78rem; letter-spacing: 0.5px;
       transition: all 0.2s ease;
-    }
-    .card-action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(223,200,130,0.4); }
   </style>
+  <link rel="stylesheet" href="floorplan-viewer.css" />
+  <script src="floorplans/floors_data.js"></script>
+  <script src="floorplan-viewer.js"></script>
 </head>
 <body>
 
@@ -235,6 +236,7 @@
 <div id="btn-panel">
   <button class="btn active" id="btn-orbit" onclick="setMode('orbit')">🔄 Orbit Kamera</button>
   <button class="btn" id="btn-walk"  onclick="setMode('walk')">🚶 Gəzinti (WASD)</button>
+  <button class="btn" id="btn-floorplan" onclick="openFloorPlanModal(currentSelectedFloorId || 2)">🗺️ 2D Mərtəbə Planı</button>
   <button class="btn" onclick="resetCamera()">🏠 Sıfırla</button>
   <button class="btn" onclick="toggleWireframe()">〰️ Wireframe</button>
   <button class="btn" onclick="takeScreenshot()">📸 Şəkil Çək</button>
@@ -269,7 +271,7 @@
   <div class="card-row"><span>Sahələr:</span><span id="card-area">65 - 125 m²</span></div>
   <div class="card-row"><span>Tavan hündürlüyü:</span><span>3.30 metr</span></div>
   <div class="card-row"><span>Eyvan:</span><span>Fransız eyvanları &amp; Teras</span></div>
-  <button class="card-action-btn" onclick="alert('Mənzil planları tezliklə interaktiv əlavə ediləcək!')">📐 Mənzil Planlarına Bax</button>
+  <button class="card-action-btn" onclick="openFloorPlanModal(currentSelectedFloorId || 2)">📐 Bu Mərtəbənin Eskiz Planını Aç</button>
 </div>
 
 <div id="controls-help">
@@ -277,12 +279,62 @@
   <span>Sağ klik + Sürüşdür</span> — Səhnəni sürüşdür (Pan)<br>
   <span>Mərtəbənin üzərinə gəl</span> — Mərtəbəni seç &amp; işıqlandır<br>
   <span>Təkər (Scroll)</span> — Zoom yaxınlaş / uzaqlaş<br>
-  <span>F</span> — Tam ekran &nbsp;|&nbsp; <span>W A S D</span> — Gəzinti
+  <span>M / P</span> — 2D Eskiz Planı &nbsp;|&nbsp; <span>F</span> — Tam ekran
 </div>
 
 <div id="stats">
   <div>Obyektlər: <span id="stat-meshes">-</span></div>
   <div>FPS: <span id="stat-fps">60</span></div>
+</div>
+
+<!-- Interactive 2D Floor Plan & Apartment Map Modal -->
+<div id="floorplan-modal">
+  <div id="fp-container">
+    <div id="fp-header">
+      <div id="fp-title-group">
+        <h2 id="fp-title">MARNEULI RESIDENCE — MƏRTƏBƏ PLANI</h2>
+        <span id="fp-subtitle">Mənzilin üzərinə gələrək sahə və otaq məlumatlarına baxın</span>
+      </div>
+      <div id="fp-tabs"></div>
+      <div id="fp-header-actions">
+        <div class="fp-zoom-controls">
+          <button class="fp-btn-icon" onclick="fpZoom(0.2)" title="Yaxınlaşdır">➕</button>
+          <button class="fp-btn-icon" onclick="fpZoom(-0.2)" title="Uzaqlaşdır">➖</button>
+          <button class="fp-btn-icon" onclick="fpResetZoom()" title="Ölçünü Sıfırla">⟲ 100%</button>
+        </div>
+        <button id="fp-close" onclick="closeFloorPlanModal()" title="Bağla (ESC)">&times;</button>
+      </div>
+    </div>
+
+    <!-- Main Blueprint Canvas with Pan & Zoom -->
+    <div id="fp-viewport">
+      <div id="fp-canvas">
+        <img id="fp-img" src="floorplans/floor_2.webp" alt="Mərtəbə Eskizi" draggable="false" />
+        <div id="fp-markers-container"></div>
+      </div>
+    </div>
+
+    <!-- Floating Interactive Apartment Tooltip -->
+    <div id="fp-tooltip"></div>
+
+    <!-- Side Apartment Details Drawer -->
+    <div id="fp-drawer">
+      <div id="fp-drawer-header">
+        <div id="fp-drawer-num">MƏNZİL № 1</div>
+        <button id="fp-drawer-close" onclick="closeAptDrawer()">&times;</button>
+      </div>
+      <div id="fp-drawer-body"></div>
+    </div>
+
+    <!-- Bottom Metrics Bar -->
+    <div id="fp-footer">
+      <div class="fp-stat-item"><span class="fp-stat-label">Mərtəbə:</span> <strong id="fp-stat-floor">2-ci Mərtəbə</strong></div>
+      <div class="fp-stat-item"><span class="fp-stat-label">Mənzil Sayı:</span> <strong id="fp-stat-apts">17 Mənzil</strong></div>
+      <div class="fp-stat-item"><span class="fp-stat-label">Yaşayış Sahəsi:</span> <strong id="fp-stat-res">1151.4 m²</strong></div>
+      <div class="fp-stat-item"><span class="fp-stat-label">Pilləkən &amp; Dəhliz:</span> <strong id="fp-stat-corr">153.4 m²</strong></div>
+      <div class="fp-stat-item"><span class="fp-stat-label">K-2 Əmsalı:</span> <strong id="fp-stat-k2">1438.4 m²</strong></div>
+    </div>
+  </div>
 </div>
 
 <script type="importmap">
@@ -923,17 +975,18 @@ function loadScene(url) {
 // ==========================================
 
 const FLOORS = [
-  { id: 11, num: "11", name: "11-ci Mərtəbə (Mansard)", badge: "Penthaus", type: "Eksklüziv Penthaus & Teras", apts: "4 Eksklüziv Penthaus", area: "145 – 280 m²", yMin: 34.0, yMax: 41.5, targetY: 37.0 },
-  { id: 10, num: "10", name: "10-cu Mərtəbə", badge: "Yaşayış", type: "Panoramik Yaşayış Mənzilləri", apts: "8 Mənzil (2, 3 və 4 otaqlı)", area: "65 – 135 m²", yMin: 30.7, yMax: 34.0, targetY: 32.3 },
-  { id: 9,  num: "9",  name: "9-cu Mərtəbə",  badge: "Yaşayış", type: "Panoramik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 27.4, yMax: 30.7, targetY: 29.0 },
-  { id: 8,  num: "8",  name: "8-ci Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 24.1, yMax: 27.4, targetY: 25.7 },
-  { id: 7,  num: "7",  name: "7-ci Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 20.8, yMax: 24.1, targetY: 22.4 },
-  { id: 6,  num: "6",  name: "6-cı Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 17.5, yMax: 20.8, targetY: 19.1 },
-  { id: 5,  num: "5",  name: "5-ci Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 14.2, yMax: 17.5, targetY: 15.8 },
-  { id: 4,  num: "4",  name: "4-cü Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 10.9, yMax: 14.2, targetY: 12.5 },
-  { id: 3,  num: "3",  name: "3-cü Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 7.6,  yMax: 10.9, targetY: 9.2 },
-  { id: 2,  num: "2",  name: "2-ci Mərtəbə",  badge: "Biznes",  type: "Biznes & Ofis Mərkəzi", apts: "6 Ofis & Xidmət Sahəsi", area: "85 – 350 m²", yMin: 4.2,  yMax: 7.6,  targetY: 5.9 },
-  { id: 1,  num: "1",  name: "1-ci Mərtəbə",  badge: "Kommersiya", type: "Kommersiya & Ticarət Bazası", apts: "Restoran, Kafe, Brend Mağazalar", area: "120 – 600 m²", yMin: 0.0,  yMax: 4.2,  targetY: 2.1 }
+  { id: 12, num: "12", name: "12-ci Mərtəbə (Penthaus)", badge: "Penthaus", type: "Eksklüziv Penthaus & Geniş Teraslar", apts: "11 Mənzil (№ 170–180)", area: "52 – 141 m²", yMin: 38.0, yMax: 42.0, targetY: 40.0 },
+  { id: 11, num: "11", name: "11-ci Mərtəbə (Teraslı)", badge: "Teraslı", type: "Teraslı Premium Mənzillər", apts: "16 Mənzil (№ 154–169)", area: "61 – 125 m²", yMin: 34.6, yMax: 38.0, targetY: 36.3 },
+  { id: 10, num: "10", name: "10-cu Mərtəbə", badge: "Yaşayış", type: "Panoramik Yaşayış Mənzilləri", apts: "17 Mənzil (№ 137–153)", area: "58 – 101 m²", yMin: 31.2, yMax: 34.6, targetY: 32.9 },
+  { id: 9,  num: "9",  name: "9-cu Mərtəbə",  badge: "Yaşayış", type: "Panoramik Yaşayış Mənzilləri", apts: "17 Mənzil (№ 120–136)", area: "58 – 101 m²", yMin: 27.8, yMax: 31.2, targetY: 29.5 },
+  { id: 8,  num: "8",  name: "8-ci Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "17 Mənzil (№ 103–119)", area: "58 – 101 m²", yMin: 24.4, yMax: 27.8, targetY: 26.1 },
+  { id: 7,  num: "7",  name: "7-ci Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "17 Mənzil (№ 86–102)", area: "58 – 101 m²", yMin: 21.0, yMax: 24.4, targetY: 22.7 },
+  { id: 6,  num: "6",  name: "6-cı Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "17 Mənzil (№ 69–85)", area: "58 – 101 m²", yMin: 17.6, yMax: 21.0, targetY: 19.3 },
+  { id: 5,  num: "5",  name: "5-ci Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "17 Mənzil (№ 52–68)", area: "58 – 101 m²", yMin: 14.2, yMax: 17.6, targetY: 15.9 },
+  { id: 4,  num: "4",  name: "4-cü Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "17 Mənzil (№ 35–51)", area: "58 – 101 m²", yMin: 10.8, yMax: 14.2, targetY: 12.5 },
+  { id: 3,  num: "3",  name: "3-cü Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "17 Mənzil (№ 18–34)", area: "58 – 101 m²", yMin: 7.4,  yMax: 10.8, targetY: 9.1 },
+  { id: 2,  num: "2",  name: "2-ci Mərtəbə",  badge: "Yaşayış", type: "Giriş Yaşayış Mənzilləri", apts: "17 Mənzil (№ 1–17)", area: "57 – 95 m²", yMin: 4.0,  yMax: 7.4,  targetY: 5.7 },
+  { id: 1,  num: "1",  name: "1-ci Mərtəbə",  badge: "Ticarət", type: "Kommersiya & Qəbul Sahəsi", apts: "Mağazalar, Kafe və Xidmətlər", area: "120 – 600 m²", yMin: 0.0,  yMax: 4.0,  targetY: 2.0 }
 ];
 
 const buildingRaycastMeshes = [];

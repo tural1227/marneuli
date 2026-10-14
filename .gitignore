@@ -1,6 +1,7 @@
 # 3ds Max raw files & exports
 *.max
 *.fbx
+*.pdf
 textures/
 3dsmax-mcp/
 
