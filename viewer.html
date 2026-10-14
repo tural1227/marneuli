@@ -459,10 +459,10 @@ const matRoofTerraceSlab = new THREE.MeshStandardMaterial({
 // Windows: High-Performance Reflective Sky-Blue Solar Glazing (60 FPS)
 const matWindowGlass = new THREE.MeshStandardMaterial({
   color: 0x3d748d,
-  roughness: 0.05,
-  metalness: 0.25,
+  roughness: 0.04,
+  metalness: 0.18,
   transparent: true,
-  opacity: 0.75,
+  opacity: 0.55,
   side: THREE.DoubleSide
 });
 
@@ -868,21 +868,6 @@ function assignHighFidelityMaterial(child) {
   }
 }
 
-function isInteriorNode(name, parentName) {
-  const low = ((name || '') + ' ' + (parentName || '')).toLowerCase();
-  if (low.includes('art_glazed')) return false; // keep exterior glazed curtain walls!
-  if (low.includes('art_slab')) return true;    // interior floor slabs
-  if (low.includes('art_part_')) return true;   // interior partition walls
-  if (low.includes('art_str_')) return true;    // interior structural columns
-  if (low.includes('art_square_500') || low.includes('art_rectangular_500')) return true;
-  const propKeywords = [
-    'candle', 'pillow', 'countertop', 'wine', 'bottle', 'croissant',
-    'coffeeplate', 'plate01', 'rivet_019', 'cap_010', 'handle_ring',
-    'handle_loop', 'handle_010', 'table_frame_010', 'leg_candlestic'
-  ];
-  return propKeywords.some(kw => low.includes(kw));
-}
-
 function loadScene(url) {
   gltfLoader.load(
     url,
@@ -890,35 +875,16 @@ function loadScene(url) {
       if (loadedModel) scene.remove(loadedModel);
       loadedModel = gltf.scene;
 
-      const toRemove = [];
       loadedModel.traverse(child => {
-        const name = child.name || '';
-        const parentName = child.parent ? child.parent.name || '' : '';
-        if (isInteriorNode(name, parentName)) {
-          toRemove.push(child);
-          return;
-        }
-
         if (child.isMesh) {
           meshCount++;
           child.frustumCulled = true;
           assignHighFidelityMaterial(child);
-          const fullName = (name + ' ' + parentName).toLowerCase();
-          if (fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('1746174') || fullName.includes('art_glazed')) {
+          const name = (child.name || '').toLowerCase();
+          const parentName = child.parent ? (child.parent.name || '').toLowerCase() : '';
+          const fullName = name + ' ' + parentName;
+          if (fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('1746174')) {
             buildingRaycastMeshes.push(child);
-          }
-        }
-      });
-
-      // Dispose and remove hollowed interior elements to free GPU memory and maximize FPS
-      toRemove.forEach(child => {
-        if (child.parent) child.parent.remove(child);
-        if (child.geometry) child.geometry.dispose();
-        if (child.material) {
-          if (Array.isArray(child.material)) {
-            child.material.forEach(m => m.dispose());
-          } else {
-            child.material.dispose();
           }
         }
       });
