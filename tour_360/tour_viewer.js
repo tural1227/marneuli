@@ -243,7 +243,7 @@
     geometry.scale(-1, 1, 1);
 
     const material = new THREE.MeshBasicMaterial({
-      color: 0x222222,
+      color: 0xffffff,
       side: THREE.DoubleSide
     });
 
@@ -253,8 +253,7 @@
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
+    renderer.toneMapping = THREE.NoToneMapping;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
@@ -367,15 +366,16 @@
       return;
     }
 
-    const imgUrl = room.image + (room.image.includes("?") ? "" : "?v=20261015e");
+    const imgUrl = room.image + (room.image.includes("?") ? "" : "?v=20261015f");
     textureLoader.load(
       imgUrl,
       (texture) => {
-        texture.mapping = T.EquirectangularReflectionMapping;
+        texture.mapping = T.UVMapping;
         texture.colorSpace = T.SRGBColorSpace;
         texture.minFilter = T.LinearFilter;
         texture.magFilter = T.LinearFilter;
         if (sphereMesh && sphereMesh.material) {
+          sphereMesh.material.color.setHex(0xffffff);
           sphereMesh.material.map = texture;
           sphereMesh.material.needsUpdate = true;
         }
