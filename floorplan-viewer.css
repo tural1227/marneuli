@@ -8,11 +8,11 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 1000;
+  z-index: 999999;
   background: rgba(10, 13, 18, 0.96);
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
-  display: flex;
+  display: none;
   flex-direction: column;
   opacity: 0;
   pointer-events: none;
@@ -22,8 +22,9 @@
 }
 
 #floorplan-modal.active {
-  opacity: 1;
-  pointer-events: auto;
+  display: flex !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 #fp-container {

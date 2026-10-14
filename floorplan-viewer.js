@@ -69,24 +69,44 @@
   }
 
   window.openFloorPlanModal = function (floorId) {
-    if (!window.FLOORS_DATA) return;
-    const modal = document.getElementById('floorplan-modal');
-    if (!modal) return;
-
-    // Determine target floor (valid floor between 2 and 12)
+    if (typeof floorId === 'undefined' || floorId === null) {
+      floorId = window.currentSelectedFloorId || 2;
+    }
     let fNum = parseInt(floorId, 10);
     if (isNaN(fNum) || fNum < 2 || fNum > 12) {
       fNum = 2;
     }
 
+    const modal = document.getElementById('floorplan-modal');
+    if (!modal) {
+      console.error('floorplan-modal element not found');
+      return;
+    }
+
+    if (!window.FLOORS_DATA) {
+      fetch('floorplans/floors_data.json')
+        .then(r => r.json())
+        .then(data => {
+          window.FLOORS_DATA = data;
+          openFloorPlanModal(fNum);
+        })
+        .catch(err => console.error('Error loading floors data:', err));
+      return;
+    }
+
+    initFloorPlanUI();
     modal.classList.add('active');
+    modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     selectFloorPlan(fNum);
   };
 
   window.closeFloorPlanModal = function () {
     const modal = document.getElementById('floorplan-modal');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.display = 'none';
+    }
     document.body.style.overflow = '';
     closeAptDrawer();
     const tooltip = document.getElementById('fp-tooltip');
