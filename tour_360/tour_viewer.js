@@ -39,10 +39,10 @@
         name: "Əsas Yataq Otağı",
         icon: "🛏️",
         image: "tour_360/apt_52/bedroom.jpg",
-        yawOffset: 0,
+        initialYaw: 175,
         hotspots: [
-          { target: "hall", pitch: -4, yaw: 182, label: "Dəhlizə Qayıt 🚪" },
-          { target: "balcony", pitch: -2, yaw: 42, label: "Eyvana Çıxış 🌿" }
+          { target: "hall", pitch: -4, yaw: 0, label: "Dəhlizə Qayıt 🚪" },
+          { target: "balcony", pitch: -2, yaw: -140, label: "Eyvana Çıxış 🌿" }
         ]
       },
       bathroom: {
@@ -253,6 +253,9 @@
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.35;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
@@ -344,6 +347,9 @@
     if (targetYaw !== null) {
       lon = targetYaw;
       lat = 0;
+    } else if (room.initialYaw !== undefined) {
+      lon = room.initialYaw;
+      lat = 0;
     }
 
     // Show loading indicator
@@ -365,6 +371,7 @@
       room.image,
       (texture) => {
         texture.mapping = T.EquirectangularReflectionMapping;
+        texture.colorSpace = T.SRGBColorSpace;
         texture.minFilter = T.LinearFilter;
         texture.magFilter = T.LinearFilter;
         if (sphereMesh && sphereMesh.material) {
