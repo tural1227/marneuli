@@ -3,7 +3,7 @@
 #tour-360-modal {
   position: fixed;
   inset: 0;
-  z-index: 100000;
+  z-index: 9999999;
   background: #030712;
   display: none;
   flex-direction: column;
@@ -16,8 +16,8 @@
 }
 
 #tour-360-modal.active {
-  display: flex;
-  opacity: 1;
+  display: flex !important;
+  opacity: 1 !important;
 }
 
 #tour-360-canvas-container {
@@ -325,11 +325,10 @@
   to { transform: rotate(360deg); }
 }
 
-/* Blockade Labs AI Modal */
 #blockade-ai-modal {
   position: fixed;
   inset: 0;
-  z-index: 100005;
+  z-index: 10000000;
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -340,7 +339,7 @@
 }
 
 #blockade-ai-modal.active {
-  display: flex;
+  display: flex !important;
 }
 
 .blockade-box {

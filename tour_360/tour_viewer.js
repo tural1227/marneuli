@@ -224,11 +224,30 @@
     }
   }
 
+  async function ensureThree() {
+    if (window.THREE && window.THREE.Scene) return window.THREE;
+    try {
+      const mod = await import('three');
+      window.THREE = mod;
+      return mod;
+    } catch (e) {
+      console.warn("Dynamic import of 'three' failed, falling back to CDN script:", e);
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js';
+        s.onload = () => resolve(window.THREE);
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+  }
+
   // Init Three.js Panorama Scene
-  function initThreeScene() {
+  async function initThreeScene() {
     if (isTourInitialized) return;
+    const THREE = await ensureThree();
     const container = document.getElementById("tour-360-canvas-container");
-    if (!container || !window.THREE) return;
+    if (!container || !THREE) return;
 
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 1, 1100);
@@ -346,14 +365,22 @@
     if (loader) loader.style.display = "flex";
 
     // Load Panorama Texture
+    const T = window.THREE;
+    if (!textureLoader && T) {
+      textureLoader = new T.TextureLoader();
+    }
+    if (!textureLoader || !T) return;
+
     textureLoader.load(
       room.image,
       (texture) => {
-        texture.mapping = THREE.EquirectangularReflectionMapping;
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        sphereMesh.material.map = texture;
-        sphereMesh.material.needsUpdate = true;
+        texture.mapping = T.EquirectangularReflectionMapping;
+        texture.minFilter = T.LinearFilter;
+        texture.magFilter = T.LinearFilter;
+        if (sphereMesh && sphereMesh.material) {
+          sphereMesh.material.map = texture;
+          sphereMesh.material.needsUpdate = true;
+        }
         if (loader) loader.style.display = "none";
         renderHotspots(room.hotspots);
       },
@@ -430,22 +457,30 @@
   }
 
   // Public Tour APIs
-  window.open360Tour = function (aptNumber) {
+  window.open360Tour = async function (aptNumber) {
     createTourDOMElements();
     const modal = document.getElementById("tour-360-modal");
     if (!modal) return;
 
     modal.classList.add("active");
+    modal.style.display = "flex";
+    modal.style.opacity = "1";
     document.body.style.overflow = "hidden";
 
-    initThreeScene();
+    await initThreeScene();
     switchRoom(currentRoomId || "hall");
   };
 
   window.close360Tour = function () {
     const modal = document.getElementById("tour-360-modal");
-    if (modal) modal.classList.remove("active");
-    document.body.style.overflow = "";
+    if (modal) {
+      modal.classList.remove("active");
+      modal.style.display = "none";
+    }
+    const fpModal = document.getElementById("floorplan-modal");
+    if (!fpModal || !fpModal.classList.contains("active")) {
+      document.body.style.overflow = "";
+    }
   };
 
   window.tourZoom = function (delta) {
