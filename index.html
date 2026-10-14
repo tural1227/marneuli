@@ -482,48 +482,7 @@ const matBalconyRailing = new THREE.MeshStandardMaterial({
   side: THREE.DoubleSide
 });
 
-// 🌟 Precise Architectural Floor Illumination (Uniform-driven, fits building geometry 100% without sticking out)
-const floorHighlightUniforms = {
-  uHighlightYMin:   { value: -100.0 },
-  uHighlightYMax:   { value: -100.0 },
-  uHighlightActive: { value: 0.0 },
-  uHighlightColor:  { value: new THREE.Color(0xf6d77e) } // Luxurious warm architectural amber glow
-};
 
-function enableFloorHighlight(mat) {
-  mat.onBeforeCompile = (shader) => {
-    shader.uniforms.uHighlightYMin   = floorHighlightUniforms.uHighlightYMin;
-    shader.uniforms.uHighlightYMax   = floorHighlightUniforms.uHighlightYMax;
-    shader.uniforms.uHighlightActive = floorHighlightUniforms.uHighlightActive;
-    shader.uniforms.uHighlightColor  = floorHighlightUniforms.uHighlightColor;
-
-    shader.vertexShader = `
-      varying vec3 vHighlightWorldPos;
-      ${shader.vertexShader}
-    `.replace(
-      '#include <worldpos_vertex>',
-      `#include <worldpos_vertex>
-       vHighlightWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;`
-    );
-
-    shader.fragmentShader = `
-      varying vec3 vHighlightWorldPos;
-      uniform float uHighlightYMin;
-      uniform float uHighlightYMax;
-      uniform float uHighlightActive;
-      uniform vec3 uHighlightColor;
-      ${shader.fragmentShader}
-    `.replace(
-      '#include <dithering_fragment>',
-      `#include <dithering_fragment>
-       if (uHighlightActive > 0.01 && vHighlightWorldPos.y >= uHighlightYMin && vHighlightWorldPos.y < uHighlightYMax) {
-         gl_FragColor.rgb += uHighlightColor * (0.35 * uHighlightActive);
-       }`
-    );
-  };
-}
-
-[matUpperFacade, matLowerFacade, matColumnsPilasters, matPlinthBelt, matTrimsCornice, matRoofMansardSlate, matWindowGlass, matWindowFrame, matBalconyRailing].forEach(enableFloorHighlight);
 
 // Roads & Streets: Deep Charcoal Matte Asphalt
 const matRoadAsphalt = new THREE.MeshStandardMaterial({
@@ -1001,28 +960,13 @@ window.hoverFloor = (id) => {
     else el.classList.remove('hovered');
   });
 
-  // Seamless pixel-accurate floor highlight (Never sticks out of the building perimeter!)
-  floorHighlightUniforms.uHighlightYMin.value = floor.yMin;
-  floorHighlightUniforms.uHighlightYMax.value = floor.yMax;
-  floorHighlightUniforms.uHighlightActive.value = 0.85;
 };
 
 window.unhoverFloor = (id) => {
   if (currentHoveredFloorId === id) {
     currentHoveredFloorId = null;
     document.querySelectorAll('.floor-item').forEach(el => el.classList.remove('hovered'));
-
-    if (currentSelectedFloorId) {
-      const selected = FLOORS.find(f => f.id === currentSelectedFloorId);
-      if (selected) {
-        floorHighlightUniforms.uHighlightYMin.value = selected.yMin;
-        floorHighlightUniforms.uHighlightYMax.value = selected.yMax;
-        floorHighlightUniforms.uHighlightActive.value = 1.0;
-      }
-    } else {
-      floorHighlightUniforms.uHighlightActive.value = 0.0;
-      document.getElementById('floor-tooltip').classList.remove('visible');
-    }
+    document.getElementById('floor-tooltip').classList.remove('visible');
   }
 };
 
@@ -1040,7 +984,6 @@ window.selectFloor = (id) => {
   const tooltip = document.getElementById('floor-tooltip');
 
   if (id === null) {
-    floorHighlightUniforms.uHighlightActive.value = 0.0;
     card.classList.remove('visible');
     tooltip.classList.remove('visible');
     setView('facade');
@@ -1050,18 +993,13 @@ window.selectFloor = (id) => {
   const floor = FLOORS.find(f => f.id === id);
   if (!floor) return;
 
-  // Active floor highlight directly on building surfaces
-  floorHighlightUniforms.uHighlightYMin.value = floor.yMin;
-  floorHighlightUniforms.uHighlightYMax.value = floor.yMax;
-  floorHighlightUniforms.uHighlightActive.value = 1.0;
-
   document.getElementById('card-title').textContent = floor.name;
   document.getElementById('card-type').textContent = floor.type;
   document.getElementById('card-apts').textContent = floor.apts;
   document.getElementById('card-area').textContent = floor.area;
   card.classList.add('visible');
 
-  // Smooth camera focus
+  // Smooth camera focus on the selected floor level
   targetCamPos = new THREE.Vector3(26, floor.targetY + 9, -52);
   targetLookAt = new THREE.Vector3(22, floor.targetY, -5);
 };
