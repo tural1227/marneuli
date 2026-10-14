@@ -268,19 +268,29 @@ const matLowerFacade = new THREE.MeshStandardMaterial({
   side: THREE.DoubleSide
 });
 
-// Classical Columns, Pilasters & Balusters: Refined lighter classical limestone / marble
+// Classical Columns, Pilasters & Balusters: Refined classical limestone
 const matColumnsPilasters = new THREE.MeshStandardMaterial({
   map: stoneTex,
-  color: 0xe6e0d2,
-  roughness: 0.58,
+  color: 0xd2cabb,
+  roughness: 0.65,
   metalness: 0.02,
   side: THREE.DoubleSide
 });
 
-// Cornices, Mouldings, Architraves & Sills: Off-white crisp decorative architectural moldings
+// Plinth Belt / Lower Cornice (The band above the commercial ground floor): Warm transitional stone
+const matPlinthBelt = new THREE.MeshStandardMaterial({
+  map: stoneTex,
+  color: 0xa89e8d, // Natural warm architectural stone transition between base (#584f44) and upper facade (#d6cebe)
+  roughness: 0.72,
+  metalness: 0.03,
+  side: THREE.DoubleSide
+});
+
+// Cornices, Mouldings, Architraves & Sills: Warm carved classical limestone (NOT stark white!)
 const matTrimsCornice = new THREE.MeshStandardMaterial({
-  color: 0xe4ded2,
-  roughness: 0.52,
+  map: stoneTex,
+  color: 0xbeb6a4,
+  roughness: 0.70,
   metalness: 0.02,
   side: THREE.DoubleSide
 });
@@ -655,7 +665,8 @@ function assignHighFidelityMaterial(child) {
       applyPlanarUVs(child, 3.0, 3.0);
       child.material = matLowerFacade; // Rustic ashlar stone base (NOT stark white!)
     } else if (matNum === 69) {
-      child.material = matTrimsCornice; // Thin decorative classical moulding band
+      applyPlanarUVs(child, 3.0, 3.0);
+      child.material = center.y < 12.0 ? matPlinthBelt : matTrimsCornice; // Classical stone band
     } else {
       applyPlanarUVs(child, 4.0, 4.0);
       child.material = matUpperFacade; // Upper travertine limestone
@@ -663,9 +674,10 @@ function assignHighFidelityMaterial(child) {
     return;
   }
 
-  // 13. Classical Trims, Mouldings, Cornice Bands (PhysicalMaterial_69 on non-building objects)
-  if (matNum === 69 || fullName.includes('mould') || fullName.includes('cornice')) {
-    child.material = matTrimsCornice;
+  // 13. Classical Trims, Mouldings, Cornice Bands (PhysicalMaterial_69, Object1746174061, Object31013084)
+  if (matNum === 69 || fullName.includes('1746174061') || fullName.includes('31013084') || fullName.includes('mould') || fullName.includes('cornice')) {
+    applyPlanarUVs(child, 3.0, 3.0);
+    child.material = center.y < 12.0 ? matPlinthBelt : matTrimsCornice;
     return;
   }
 
