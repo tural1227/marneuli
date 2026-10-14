@@ -29,7 +29,17 @@
       background: linear-gradient(90deg, #dfc882, #f5b041);
       border-radius: 8px; transition: width 0.15s;
     }
-    #progress-text { color: #dfc882; margin-top: 14px; font-size: 0.9rem; font-family: monospace; }
+    #progress-bar.processing {
+      width: 100% !important;
+      background: repeating-linear-gradient(45deg, #dfc882, #dfc882 12px, #f5b041 12px, #f5b041 24px);
+      background-size: 200% 200%;
+      animation: progress-stripe 1.2s linear infinite;
+    }
+    @keyframes progress-stripe {
+      0% { background-position: 100% 0; }
+      100% { background-position: 0 0; }
+    }
+    #progress-text { color: #dfc882; margin-top: 14px; font-size: 0.9rem; font-family: monospace; text-align: center; }
     #loading.hidden { opacity: 0; pointer-events: none; }
 
     #ui {
@@ -860,6 +870,7 @@ scene.add(groundMesh);
 // 5. GLTF Loader Setup
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/libs/draco/');
+dracoLoader.setWorkerLimit(Math.max(4, navigator.hardwareConcurrency || 4));
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
@@ -1166,12 +1177,21 @@ function loadScene(url) {
       }, 400);
     },
     (xhr) => {
+      const pb = document.getElementById('progress-bar');
+      const pt = document.getElementById('progress-text');
+      const ls = document.getElementById('loading-sub');
       if (xhr.total > 0) {
         const pct = Math.round((xhr.loaded / xhr.total) * 100);
-        document.getElementById('progress-bar').style.width = pct + '%';
-        document.getElementById('progress-text').textContent = pct + '% (' + (xhr.loaded / 1024 / 1024).toFixed(1) + ' MB)';
+        pb.style.width = pct + '%';
+        if (pct >= 100) {
+          pb.classList.add('processing');
+          pt.innerHTML = '⚡ 48.9 MB endirildi &bull; <span style="color:#dfc882; font-weight:600;">3D Model səhnəyə qurulur...</span>';
+          if (ls) ls.innerHTML = '🏢 2,730 memarlıq detalı, avtomobillər və yaşıllıqlar açılır. Zəhmət olmasa bir neçə saniyə gözləyin...';
+        } else {
+          pt.textContent = pct + '% (' + (xhr.loaded / 1024 / 1024).toFixed(1) + ' MB / ' + (xhr.total / 1024 / 1024).toFixed(1) + ' MB)';
+        }
       } else {
-        document.getElementById('progress-text').textContent = (xhr.loaded / 1024 / 1024).toFixed(1) + ' MB yükləndi...';
+        pt.textContent = (xhr.loaded / 1024 / 1024).toFixed(1) + ' MB yükləndi...';
       }
     },
     (err) => {
