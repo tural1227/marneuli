@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marneuli Residence 3D — Real Architectural Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #12141a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; color: #fff; }
+
+    #canvas-container { width: 100vw; height: 100vh; display: block; }
+
+    #loading {
+      position: fixed; inset: 0;
+      background: radial-gradient(circle at center, #1e2230 0%, #0d0f14 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 100; transition: opacity 0.6s ease;
+    }
+    #loading h2 { color: #dfc882; font-size: 2.2rem; margin-bottom: 6px; font-weight: 300; letter-spacing: 5px; }
+    #loading p  { color: #9da3af; font-size: 0.95rem; margin-bottom: 24px; text-align: center; max-width: 480px; }
+    #progress-bar-outer {
+      width: 380px; height: 8px;
+      background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;
+      border: 1px solid rgba(223,200,130,0.2);
+    }
+    #progress-bar {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #dfc882, #f5b041);
+      border-radius: 8px; transition: width 0.15s;
+    }
+    #progress-text { color: #dfc882; margin-top: 14px; font-size: 0.9rem; font-family: monospace; }
+    #loading.hidden { opacity: 0; pointer-events: none; }
+
+    #ui {
+      position: fixed; top: 20px; left: 24px;
+      z-index: 10; display: flex; flex-direction: column; gap: 4px;
+      pointer-events: none;
+    }
+    #ui h1 {
+      color: #dfc882; font-size: 1.35rem; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.9);
+    }
+    #ui small { color: #d0d4dc; font-size: 0.82rem; text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
+
+    #views-bar {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 6px; z-index: 10;
+      background: rgba(18, 20, 26, 0.85); backdrop-filter: blur(12px);
+      padding: 6px 10px; border-radius: 30px;
+      border: 1px solid rgba(223,200,130,0.3);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+    .view-btn {
+      background: transparent; border: none;
+      color: #ccc; padding: 7px 14px; border-radius: 20px;
+      cursor: pointer; font-size: 0.78rem; font-weight: 500;
+      transition: all 0.2s ease; display: flex; align-items: center; gap: 6px;
+    }
+    .view-btn:hover { color: #dfc882; background: rgba(223,200,130,0.15); }
+    .view-btn.active { color: #12141a; background: #dfc882; font-weight: 600; }
+
+    #btn-panel {
+      position: fixed; top: 20px; right: 24px;
+      display: flex; flex-direction: column; gap: 8px; z-index: 10;
+    }
+    .btn {
+      background: rgba(18, 20, 26, 0.85); backdrop-filter: blur(12px);
+      border: 1px solid rgba(223,200,130,0.3);
+      color: #dfc882; padding: 9px 16px; border-radius: 8px;
+      cursor: pointer; font-size: 0.78rem; letter-spacing: 1px;
+      transition: all 0.2s ease; text-transform: uppercase; font-weight: 500;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+    .btn:hover { background: rgba(223,200,130,0.25); border-color: #dfc882; transform: translateY(-1px); color: #fff; }
+    .btn.active { background: #dfc882; color: #12141a; font-weight: 600; border-color: #dfc882; }
+
+    #controls-help {
+      position: fixed; bottom: 20px; left: 24px;
+      background: rgba(18, 20, 26, 0.85); backdrop-filter: blur(12px);
+      border: 1px solid rgba(223,200,130,0.25);
+      border-radius: 10px; padding: 12px 18px;
+      color: #d0d4dc; font-size: 0.78rem; line-height: 1.8;
+      z-index: 10; box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+    #controls-help span { color: #dfc882; font-weight: 600; }
+
+    #stats {
+      position: fixed; bottom: 20px; right: 24px;
+      background: rgba(18, 20, 26, 0.85); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 12px 16px;
+      color: #9da3af; font-size: 0.75rem; line-height: 1.7;
+      z-index: 10; font-family: monospace;
+    }
+    #stats span { color: #dfc882; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<div id="loading">
+  <h2>MARNEULI RESIDENCE</h2>
+  <p id="loading-sub">Bütün memarlıq elementləri, şəffaf pəncərələr, fasad daşları, avtomobillər və yaşıllıqlar tənzimlənir...</p>
+  <div id="progress-bar-outer"><div id="progress-bar"></div></div>
+  <div id="progress-text">Yüklənir...</div>
+</div>
+
+<div id="canvas-container"></div>
+
+<div id="ui">
+  <h1>🏢 Marneuli Residence 3D</h1>
+  <small id="model-info">Klassik Daş Fasad &bull; Şüşə Pəncərələr &bull; Avtomobillər &bull; Yaşıllıq &amp; Park</small>
+</div>
+
+<div id="views-bar">
+  <button class="view-btn active" data-view="facade" onclick="setView('facade')">🏢 Fasad (Əsas Görünüş)</button>
+  <button class="view-btn" data-view="courtyard" onclick="setView('courtyard')">🌳 Həyət &amp; Park</button>
+  <button class="view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı (Top View)</button>
+  <button class="view-btn" data-view="street" onclick="setView('street')">🚗 Giriş &amp; Küçə</button>
+</div>
+
+<div id="btn-panel">
+  <button class="btn active" id="btn-orbit" onclick="setMode('orbit')">🔄 Orbit Kamera</button>
+  <button class="btn" id="btn-walk"  onclick="setMode('walk')">🚶 Gəzinti (WASD)</button>
+  <button class="btn" onclick="resetCamera()">🏠 Sıfırla</button>
+  <button class="btn" onclick="toggleWireframe()">〰️ Wireframe</button>
+  <button class="btn" onclick="takeScreenshot()">📸 Şəkil Çək</button>
+</div>
+
+<div id="controls-help">
+  <span>Sol klik + Sürüşdür</span> — Kameranı fırlat<br>
+  <span>Sağ klik + Sürüşdür</span> — Səhnəni sürüşdür (Pan)<br>
+  <span>Təkər (Scroll)</span> — Zoom yaxınlaş / uzaqlaş<br>
+  <span>F</span> — Tam ekran &nbsp;|&nbsp; <span>W A S D</span> — Birinci şəxs gəzinti
+</div>
+
+<div id="stats">
+  <div>Obyektlər (Meshes): <span id="stat-meshes">-</span></div>
+  <div>FPS: <span id="stat-fps">60</span></div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader }   from 'three/addons/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const container = document.getElementById('canvas-container');
+const renderer  = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+// Balanced pixel ratio for high FPS
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping       = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+renderer.outputColorSpace  = THREE.SRGBColorSpace;
+container.appendChild(renderer.domElement);
+
+const scene  = new THREE.Scene();
+
+// Camera setup: calibrated for real 60-meter building scale matching reference render c7672f9e.jpg
+// Camera setup: calibrated for real 60-meter building scale matching reference render a5d249b0.jpg
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 3000);
+camera.position.set(32, 65, -90);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping      = true;
+controls.dampingFactor      = 0.06;
+controls.screenSpacePanning = true;
+controls.minDistance        = 2;
+controls.maxDistance        = 500;
+controls.target.set(22, 10, -5);
+controls.maxPolarAngle      = Math.PI / 2 + 0.04;
+
+// 1. Procedural Architectural Studio Environment (Differentiates beautifully from the building)
+function createSkyEnvironment() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  // Sophisticated architectural dark studio gradient: deep charcoal to atmospheric soft horizon
+  const grad = ctx.createLinearGradient(0, 0, 0, 512);
+  grad.addColorStop(0.0, '#1c202a'); // Zenith deep charcoal slate
+  grad.addColorStop(0.38, '#2a313e'); // Mid atmosphere
+  grad.addColorStop(0.54, '#3e4858'); // Soft illuminated horizon
+  grad.addColorStop(0.60, '#2d3340'); // Soft ground contact
+  grad.addColorStop(1.0, '#1c2028'); // Floor tone below
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1024, 512);
+
+  // Soft subtle architectural studio glow / rim light
+  const glow = ctx.createRadialGradient(512, 270, 30, 512, 270, 440);
+  glow.addColorStop(0, 'rgba(230, 238, 255, 0.14)');
+  glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, 1024, 512);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+const envMap = createSkyEnvironment();
+scene.background = envMap;
+scene.environment = envMap;
+// Soft atmospheric depth fog that seamlessly blends the ground boundary into the horizon
+scene.fog = new THREE.FogExp2(0x232832, 0.0032);
+
+// 2. Architectural Sun & Studio Lighting (matching 3ds Max shadows and highlights)
+const sunLight = new THREE.DirectionalLight(0xfff7ea, 2.7);
+sunLight.position.set(120, 200, -120);
+scene.add(sunLight);
+
+const skyLight = new THREE.HemisphereLight(0xced8e6, 0x2d323c, 1.2);
+skyLight.position.set(20, 100, 0);
+scene.add(skyLight);
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+scene.add(ambientLight);
+
+const fillLight = new THREE.DirectionalLight(0x9cb5d0, 0.85);
+fillLight.position.set(-90, 70, 90);
+scene.add(fillLight);
+
+// 3. Texture Loading
+const texLoader = new THREE.TextureLoader();
+function createRepeatingTexture(url, repeatX = 12, repeatY = 12) {
+  const t = texLoader.load(url);
+  t.wrapS = THREE.RepeatWrapping;
+  t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(repeatX, repeatY);
+  return t;
+}
+
+const stoneTex  = createRepeatingTexture('stone_texture.jpg', 8, 8);
+const facadeTex = createRepeatingTexture('facade_texture.jpg', 6, 6);
+const woodTex   = createRepeatingTexture('wood_texture.jpg', 8, 8);
+const grassTex  = createRepeatingTexture('grass_texture.jpg?v=2', 1, 1);
+
+// 4. Photorealistic PBR Material Library (Architectural Grade matching reference render a5d249b0.jpg)
+
+// Upper Facade: Warm Classical Neoclassical Travertine / Limestone Blocks
+const matUpperFacade = new THREE.MeshStandardMaterial({
+  map: stoneTex,
+  color: 0xd6cebe,
+  roughness: 0.70,
+  metalness: 0.04,
+  side: THREE.DoubleSide
+});
+
+// Ground Floor Commercial Base (Floors 1-2): Darker warm rustic ashlar stone (NOT stark white!)
+const matLowerFacade = new THREE.MeshStandardMaterial({
+  map: stoneTex,
+  color: 0x584f44,
+  roughness: 0.78,
+  metalness: 0.04,
+  side: THREE.DoubleSide
+});
+
+// Classical Columns, Pilasters & Balusters: Refined lighter classical limestone / marble
+const matColumnsPilasters = new THREE.MeshStandardMaterial({
+  map: stoneTex,
+  color: 0xe6e0d2,
+  roughness: 0.58,
+  metalness: 0.02,
+  side: THREE.DoubleSide
+});
+
+// Cornices, Mouldings, Architraves & Sills: Off-white crisp decorative architectural moldings
+const matTrimsCornice = new THREE.MeshStandardMaterial({
+  color: 0xe4ded2,
+  roughness: 0.52,
+  metalness: 0.02,
+  side: THREE.DoubleSide
+});
+
+// Mansard Roof Trim & Corner Classical Dome: Dark French charcoal zinc / slate (NEVER GREEN)
+const matRoofMansardSlate = new THREE.MeshStandardMaterial({
+  color: 0x24272c,
+  roughness: 0.38,
+  metalness: 0.45,
+  side: THREE.DoubleSide
+});
+
+// Flat Roof Terrace Slab: Clean architectural concrete terrace surface
+const matRoofTerraceSlab = new THREE.MeshStandardMaterial({
+  color: 0x8e9196,
+  roughness: 0.85,
+  metalness: 0.05,
+  side: THREE.DoubleSide
+});
+
+// Windows: High-Performance Reflective Sky-Blue Solar Glazing (60 FPS)
+const matWindowGlass = new THREE.MeshStandardMaterial({
+  color: 0x3d748d,
+  roughness: 0.04,
+  metalness: 0.18,
+  transparent: true,
+  opacity: 0.55,
+  side: THREE.DoubleSide
+});
+
+// Window Frames & Mullions: Dark Architectural Bronze / Charcoal Metal
+const matWindowFrame = new THREE.MeshStandardMaterial({
+  color: 0x1c1e22,
+  roughness: 0.32,
+  metalness: 0.82,
+  side: THREE.DoubleSide
+});
+
+// Balcony Wrought Iron Railings
+const matBalconyRailing = new THREE.MeshStandardMaterial({
+  color: 0x191a1c,
+  roughness: 0.28,
+  metalness: 0.88,
+  side: THREE.DoubleSide
+});
+
+// Roads & Streets: Deep Charcoal Matte Asphalt
+const matRoadAsphalt = new THREE.MeshStandardMaterial({
+  map: facadeTex,
+  color: 0x202226,
+  roughness: 0.92,
+  metalness: 0.02,
+  side: THREE.DoubleSide
+});
+
+// Painted Road Markings & Direction Arrows: Crisp Off-White Traffic Paint
+const matRoadMarking = new THREE.MeshStandardMaterial({
+  color: 0xf5f2ea,
+  roughness: 0.50,
+  metalness: 0.04,
+  side: THREE.DoubleSide
+});
+
+// Sidewalks, Pedestrian Pavers & Curbs: Granite Paving Stones (Textured warm grey, NOT stark white!)
+const matSidewalkPaver = new THREE.MeshStandardMaterial({
+  map: stoneTex,
+  color: 0x8a8479,
+  roughness: 0.82,
+  metalness: 0.03,
+  side: THREE.DoubleSide
+});
+
+// Surrounding Ground Boundary (Plane003): Neutral grey site pavement matching 3ds Max viewport
+const matPerimeterGround = new THREE.MeshStandardMaterial({
+  color: 0x525862,
+  roughness: 0.92,
+  metalness: 0.02,
+  side: THREE.DoubleSide
+});
+
+// Courtyard Gardens: Realistic Textured Grass Lawn (OTLUQ)
+const matGardenGrass = new THREE.MeshStandardMaterial({
+  map: grassTex,
+  color: 0xffffff, // Uses natural photographic lawn colors without dark tint
+  roughness: 0.80,
+  metalness: 0.0,
+  side: THREE.DoubleSide
+});
+
+// Outdoor Recreation: Chess & Tennis Table
+const matChessWhite = new THREE.MeshStandardMaterial({
+  color: 0xe8e4d8,
+  roughness: 0.35,
+  side: THREE.DoubleSide
+});
+const matChessBlack = new THREE.MeshStandardMaterial({
+  color: 0x1f2125,
+  roughness: 0.40,
+  side: THREE.DoubleSide
+});
+const matTennisTableBlue = new THREE.MeshStandardMaterial({
+  color: 0x1a4b88,
+  roughness: 0.25,
+  metalness: 0.1,
+  side: THREE.DoubleSide
+});
+
+// Trees: Organic Leaf Foliage
+const matTreeLeaves = new THREE.MeshStandardMaterial({
+  color: 0x387326,
+  roughness: 0.65,
+  metalness: 0.0,
+  side: THREE.DoubleSide
+});
+
+// Bushes & Hedges
+const matBushLeaves = new THREE.MeshStandardMaterial({
+  color: 0x44832f,
+  roughness: 0.70,
+  metalness: 0.0,
+  side: THREE.DoubleSide
+});
+
+// Tree Bark / Wood Trunks
+const matTreeBark = new THREE.MeshStandardMaterial({
+  color: 0x3d3126,
+  roughness: 0.88,
+  metalness: 0.0,
+  side: THREE.DoubleSide
+});
+
+// Timber Pergolas & Benches: Warm Cedar
+const matWoodTimber = new THREE.MeshStandardMaterial({
+  map: woodTex,
+  color: 0xb07a46,
+  roughness: 0.62,
+  metalness: 0.0,
+  side: THREE.DoubleSide
+});
+
+// Streetlights & Poles: Satin Architectural Metal
+const matStreetLight = new THREE.MeshStandardMaterial({
+  color: 0x232528,
+  roughness: 0.35,
+  metalness: 0.85,
+  side: THREE.DoubleSide
+});
+
+// Automotive Materials for Cars
+const matCarBlue = new THREE.MeshStandardMaterial({
+  color: 0x0a3b70, // Sapphire Metallic Blue (Hero car in central street)
+  roughness: 0.14,
+  metalness: 0.88,
+  side: THREE.DoubleSide
+});
+
+const matCarWhite = new THREE.MeshStandardMaterial({
+  color: 0xf2f4f7, // Pearl White (Hero car in parking bay)
+  roughness: 0.18,
+  metalness: 0.50,
+  side: THREE.DoubleSide
+});
+
+const matCarSilver = new THREE.MeshStandardMaterial({
+  color: 0x9ea4ab, // Metallic Silver
+  roughness: 0.15,
+  metalness: 0.90,
+  side: THREE.DoubleSide
+});
+
+const matCarBlack = new THREE.MeshStandardMaterial({
+  color: 0x141517, // Obsidian Black
+  roughness: 0.12,
+  metalness: 0.92,
+  side: THREE.DoubleSide
+});
+
+const matCarGrey = new THREE.MeshStandardMaterial({
+  color: 0x36393e, // Gunmetal Grey
+  roughness: 0.16,
+  metalness: 0.86,
+  side: THREE.DoubleSide
+});
+
+const matCarGlass = new THREE.MeshStandardMaterial({
+  color: 0x1b2834,
+  roughness: 0.08,
+  metalness: 0.2,
+  transparent: true,
+  opacity: 0.65,
+  side: THREE.DoubleSide
+});
+
+const matCarChrome = new THREE.MeshStandardMaterial({
+  color: 0xeeeeee,
+  roughness: 0.08,
+  metalness: 0.98,
+  side: THREE.DoubleSide
+});
+
+const matCarTire = new THREE.MeshStandardMaterial({
+  color: 0x19191a,
+  roughness: 0.92,
+  metalness: 0.02,
+  side: THREE.DoubleSide
+});
+
+// Ground Horizon Disc: seamlessly blends into the background fog (no hard cutoff edges)
+const groundGeo = new THREE.CircleGeometry(500, 64);
+const groundMat = new THREE.MeshStandardMaterial({
+  color: 0x1c2028,
+  roughness: 0.98,
+  metalness: 0.02,
+  side: THREE.DoubleSide
+});
+const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+groundMesh.rotation.x = -Math.PI / 2;
+groundMesh.position.set(22, -0.06, -5);
+scene.add(groundMesh);
+
+// 5. GLTF Loader Setup
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/libs/draco/');
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+
+let loadedModel = null;
+let wireframeOn = false;
+let currentMode = 'orbit';
+let meshCount   = 0;
+let carCounter  = 0;
+
+function extractMatNum(matName) {
+  if (!matName) return null;
+  const low = matName.toLowerCase();
+  const m = low.match(/physicalmaterial_(\d+)/) || low.match(/(\d+)/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+// Procedural Planar UV Generator: gives real-world photographic texture scale to unmapped splines/polygons
+function applyPlanarUVs(child, scaleX = 2.5, scaleZ = 2.5) {
+  if (!child.geometry) return;
+  const pos = child.geometry.attributes.position;
+  if (!pos) return;
+  const count = pos.count;
+  const uvs = new Float32Array(count * 2);
+  for (let i = 0; i < count; i++) {
+    uvs[i * 2] = pos.getX(i) / scaleX;
+    uvs[i * 2 + 1] = pos.getZ(i) / scaleZ;
+  }
+  child.geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+  child.geometry.uvsNeedUpdate = true;
+}
+
+function assignHighFidelityMaterial(child) {
+  const name = (child.name || '').toLowerCase();
+  const parentName = child.parent ? (child.parent.name || '').toLowerCase() : '';
+  const fullName = name + ' ' + parentName;
+  const origMatName = (child.material && child.material.name) ? child.material.name.toLowerCase() : '';
+  const matNum = extractMatNum(origMatName);
+
+  const bbox = new THREE.Box3().setFromObject(child);
+  const size = bbox.getSize(new THREE.Vector3());
+  const center = bbox.getCenter(new THREE.Vector3());
+
+  // 1. Cars (Am176_* vehicles)
+  if (fullName.includes('am176') || (matNum !== null && [12, 13, 14, 15, 54, 55, 56, 57].includes(matNum))) {
+    if (matNum === 13 || matNum === 55 || fullName.includes('glass') || name.includes('_glass')) {
+      child.material = matCarGlass;
+    } else if (matNum === 14 || matNum === 56 || fullName.includes('wheel') || fullName.includes('rim') || fullName.includes('chrome')) {
+      child.material = matCarChrome;
+    } else if (matNum === 15 || matNum === 57 || fullName.includes('tire') || fullName.includes('rubber') || center.y < 4.2) {
+      child.material = matCarTire;
+    } else {
+      // Hero Car Colors: Sapphire blue on main street, white in parking stall, silver/black for others
+      if (center.x > 2 && center.x < 18 && center.z > -10 && center.z < 25) {
+        child.material = matCarBlue;
+      } else if (center.x > 20 && center.z > 5) {
+        child.material = matCarWhite;
+      } else if (center.z < -10) {
+        child.material = matCarSilver;
+      } else {
+        const pool = [matCarGrey, matCarBlack, matCarBlue, matCarSilver, matCarWhite];
+        child.material = pool[carCounter % pool.length];
+        carCounter++;
+      }
+    }
+    return;
+  }
+
+  // 2. Outdoor Recreation: Chess & Tennis Table
+  if (fullName.includes('tennis table') || (matNum !== null && matNum >= 103 && matNum <= 110)) {
+    child.material = matTennisTableBlue;
+    return;
+  }
+  if (fullName.includes('board') || fullName.includes('king') || fullName.includes('queen') || fullName.includes('bishop') || fullName.includes('knight') || fullName.includes('rook') || fullName.includes('pawn')) {
+    if (matNum === 49 || fullName.includes('_b')) {
+      child.material = matChessBlack;
+    } else {
+      child.material = matChessWhite;
+    }
+    return;
+  }
+
+  // 3. Windows Glazing: Reflective Sky Blue (Object1746174* and PhysicalMaterial_70 / 80)
+  if (matNum === 70 || matNum === 80 || ((fullName.includes('window') || fullName.includes('glaz') || fullName.includes('1746174')) && (fullName.includes('glass') || size.z < 0.12 || size.x < 0.12))) {
+    child.material = matWindowGlass;
+    return;
+  }
+
+  // 4. Window & Door Frames: Dark Architectural Bronze (PhysicalMaterial_50, 52, 97, aluminum)
+  if (matNum === 50 || matNum === 52 || matNum === 97 || origMatName.includes('aluminum') || origMatName.includes('galvanized') || origMatName.includes('stainless') || fullName.includes('frame')) {
+    child.material = matWindowFrame;
+    return;
+  }
+
+  // 5. Roof Mansard Slate & Corner Classical Dome (PhysicalMaterial_78, Sphere030, dome) - NEVER GREEN!
+  if (matNum === 78 || fullName.includes('sphere030') || fullName.includes('dome') || fullName.includes('cupola') || (fullName.includes('shape1052') || fullName.includes('shape1085') || fullName.includes('shape1087'))) {
+    child.material = matRoofMansardSlate;
+    return;
+  }
+
+  // 6. Roof Terrace Flat Slab (PhysicalMaterial_44, top concrete terrace)
+  if (matNum === 44 || (fullName.includes('box1578971958') && center.y > 38.0)) {
+    child.material = matRoofTerraceSlab;
+    return;
+  }
+
+  // 7. Classical Columns & Pilasters (pilaster006, pilaster011..022)
+  if (fullName.includes('pilaster') || fullName.includes('column') || fullName.includes('col_')) {
+    child.material = matColumnsPilasters;
+    return;
+  }
+
+  // 8. Foliage: Trees, Street Canopy & Bushes (Green_44, archmodels85_*, Refer-Bush*, PhysicalMaterial_7, 8, 9, 10, 11, 33..41)
+  if (fullName.includes('archmodels85') || (matNum !== null && (matNum >= 7 && matNum <= 11)) || (matNum !== null && (matNum >= 33 && matNum <= 41)) || fullName.includes('green_44') || fullName.includes('bush') || fullName.includes('plant') || fullName.includes('tree')) {
+    if (matNum === 10 || fullName.includes('bark') || fullName.includes('trunk')) {
+      child.material = matTreeBark;
+    } else if (fullName.includes('bush')) {
+      child.material = matBushLeaves;
+    } else {
+      child.material = matTreeLeaves;
+    }
+    return;
+  }
+
+  // 9. Roads & Central Avenue (Line2000007824, Line2000007836, Line2000007837, Line2000007838, Object1746173879, Object1746173881, PhysicalMaterial_59, 47, 46, 32)
+  if (matNum === 59 || matNum === 47 || matNum === 46 || matNum === 32 || matNum === 60 || fullName.includes('1746173879') || fullName.includes('1746173881') || fullName.includes('line20000078') || fullName.includes('road') || fullName.includes('asphalt')) {
+    applyPlanarUVs(child, 6.0, 6.0);
+    child.material = matRoadAsphalt;
+    return;
+  }
+
+  // 10. Road Markings & Direction Arrows (Direction Arrows*, speed bump*, Object1746173875, PhysicalMaterial_17, 3, 4, 172)
+  if (matNum === 17 || matNum === 3 || matNum === 4 || matNum === 172 || fullName.includes('1746173875') || fullName.includes('arrow') || fullName.includes('marking') || fullName.includes('speed bump') || fullName.includes('stripe')) {
+    child.material = matRoadMarking;
+    return;
+  }
+
+  // 11. Courtyard Gardens: Realistic Textured Grass Lawn (OTLUQ)
+  if (matNum === 30 || matNum === 45 || fullName.includes('rectangle3193') || fullName.includes('1746173868') || fullName.includes('shape1042')) {
+    applyPlanarUVs(child, 2.5, 2.5);
+    child.material = matGardenGrass;
+    return;
+  }
+
+  // 12. Main Building Structural Elements (Walls, Slabs, Commercial Base)
+  const isBuildingMesh = fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('sdi') || fullName.includes('family2');
+  if (isBuildingMesh || size.y > 3.0) {
+    // Ground floor commercial base (Floors 1-2, Y < 5.0m or base wall primitives with matNum 69)
+    if (center.y < 5.0 || (matNum === 69 && size.y > 2.0)) {
+      applyPlanarUVs(child, 3.0, 3.0);
+      child.material = matLowerFacade; // Rustic ashlar stone base (NOT stark white!)
+    } else if (matNum === 69) {
+      child.material = matTrimsCornice; // Thin decorative classical moulding band
+    } else {
+      applyPlanarUVs(child, 4.0, 4.0);
+      child.material = matUpperFacade; // Upper travertine limestone
+    }
+    return;
+  }
+
+  // 13. Classical Trims, Mouldings, Cornice Bands (PhysicalMaterial_69 on non-building objects)
+  if (matNum === 69 || fullName.includes('mould') || fullName.includes('cornice')) {
+    child.material = matTrimsCornice;
+    return;
+  }
+
+  // 14. Sidewalks, Pedestrian Pavers & Curbs (Rectangle558..671, Rectangle3197, 3198, Object1746173871, 1746173873, PhysicalMaterial_169, 61, 43)
+  if (matNum === 169 || matNum === 61 || matNum === 43 || fullName.includes('rectangle5') || fullName.includes('rectangle6') || fullName.includes('3197') || fullName.includes('3198') || fullName.includes('1746173871') || fullName.includes('1746173873') || fullName.includes('curb') || fullName.includes('pave') || fullName.includes('walk')) {
+    applyPlanarUVs(child, 2.5, 2.5);
+    child.material = matSidewalkPaver;
+    return;
+  }
+
+  // 15. Surrounding Ground Base (Plane003, PhysicalMaterial_42) -> Dark asphalt / concrete perimeter ground
+  if (matNum === 42 || fullName.includes('plane003')) {
+    applyPlanarUVs(child, 8.0, 8.0);
+    child.material = matPerimeterGround;
+    return;
+  }
+
+  // 16. Timber Pergola & Benches (wooden_beam_*, Richter_*, PhysicalMaterial_26..29, 92, 93)
+  if ((matNum !== null && (matNum >= 26 && matNum <= 29)) || matNum === 92 || matNum === 93 || fullName.includes('wooden') || fullName.includes('beam') || fullName.includes('richter') || fullName.includes('bench')) {
+    child.material = matWoodTimber;
+    return;
+  }
+
+  // 17. Balcony Railings & Balustrades (Railings 34, Barrier Posts, PhysicalMaterial_111..114)
+  if ((matNum !== null && matNum >= 111 && matNum <= 114) || fullName.includes('railing') || fullName.includes('rail') || fullName.includes('barrier')) {
+    child.material = matBalconyRailing;
+    return;
+  }
+
+  // 18. Streetlights (Torres Area Light*, stolb, PhysicalMaterial_98..101, 171)
+  if ((matNum !== null && matNum >= 98 && matNum <= 101) || matNum === 171 || fullName.includes('light') || fullName.includes('stolb') || fullName.includes('lantern')) {
+    child.material = matStreetLight;
+    return;
+  }
+
+  // 19. Default fallback: keep clean architectural limestone or ground
+  if (center.y < 0.2) {
+    child.material = matSidewalkPaver;
+  } else {
+    child.material = matUpperFacade;
+  }
+}
+
+function loadScene(url) {
+  gltfLoader.load(
+    url,
+    (gltf) => {
+      if (loadedModel) scene.remove(loadedModel);
+      loadedModel = gltf.scene;
+
+      loadedModel.traverse(child => {
+        if (child.isMesh) {
+          meshCount++;
+          child.frustumCulled = true;
+          assignHighFidelityMaterial(child);
+        }
+      });
+
+      scene.add(loadedModel);
+      setView('facade');
+
+      document.getElementById('stat-meshes').textContent = meshCount.toLocaleString();
+
+      setTimeout(() => {
+        document.getElementById('loading').classList.add('hidden');
+      }, 400);
+    },
+    (xhr) => {
+      if (xhr.total > 0) {
+        const pct = Math.round((xhr.loaded / xhr.total) * 100);
+        document.getElementById('progress-bar').style.width = pct + '%';
+        document.getElementById('progress-text').textContent = pct + '% (' + (xhr.loaded / 1024 / 1024).toFixed(1) + ' MB)';
+      } else {
+        document.getElementById('progress-text').textContent = (xhr.loaded / 1024 / 1024).toFixed(1) + ' MB yükləndi...';
+      }
+    },
+    (err) => {
+      console.error(err);
+      document.getElementById('loading-sub').textContent = 'Xəta baş verdi: ' + err.message;
+    }
+  );
+}
+
+// Preset Architectural Views (Hero Perspectives calibrated to reference a5d249b0.jpg)
+window.setView = (view) => {
+  document.querySelectorAll('.view-btn').forEach(b => {
+    if (b.getAttribute('data-view') === view) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+
+  if (view === 'facade') {
+    // Exact elevated diagonal perspective matching reference render a5d249b0.jpg
+    camera.position.set(32, 65, -90);
+    controls.target.set(22, 10, -5);
+  } else if (view === 'courtyard') {
+    // Inside the landscaped courtyard garden with trees, chess & table tennis
+    camera.position.set(55, 14, -25);
+    controls.target.set(72, 2, -12);
+  } else if (view === 'birds') {
+    // High bird's eye aerial master plan
+    camera.position.set(35, 115, -115);
+    controls.target.set(20, 10, 0);
+  } else if (view === 'street') {
+    // Street perspective looking along the central avenue with cars
+    camera.position.set(16, 5.0, -32);
+    controls.target.set(10, 3.5, 12);
+  }
+  controls.update();
+};
+
+window.fitCameraToModel = (model) => {
+  const bld = (model && model.getObjectByName('Generic Models 13')) ? model.getObjectByName('Generic Models 13') : model;
+  const box = new THREE.Box3().setFromObject(bld);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const fov = camera.fov * (Math.PI / 180);
+  let dist = Math.abs(maxDim / (2 * Math.tan(fov / 2))) * 1.25;
+
+  camera.position.set(center.x + dist * 0.65, center.y + dist * 0.35, center.z + dist * 0.75);
+  camera.lookAt(center);
+  controls.target.copy(center);
+  controls.maxDistance = dist * 4;
+  controls.update();
+};
+
+window.setMode = (mode) => {
+  currentMode = mode;
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`btn-${mode}`).classList.add('active');
+  if (mode === 'walk') {
+    controls.enabled = false;
+    document.getElementById('controls-help').innerHTML =
+      '<span>W / S</span> — İrəli / Geri &nbsp;|&nbsp; <span>A / D</span> — Sol / Sağ<br>' +
+      '<span>ESC</span> — Orbitə qayıt';
+  } else {
+    controls.enabled = true;
+    document.getElementById('controls-help').innerHTML =
+      '<span>Sol klik + Sürüşdür</span> — Kameranı fırlat<br>' +
+      '<span>Sağ klik + Sürüşdür</span> — Səhnəni sürüşdür (Pan)<br>' +
+      '<span>Təkər (Scroll)</span> — Zoom yaxınlaş / uzaqlaş<br>' +
+      '<span>F</span> — Tam ekran &nbsp;|&nbsp; <span>W A S D</span> — Birinci şəxs gəzinti';
+  }
+};
+
+window.resetCamera = () => {
+  setView('facade');
+};
+
+window.toggleWireframe = () => {
+  wireframeOn = !wireframeOn;
+  if (!loadedModel) return;
+  loadedModel.traverse(c => {
+    if (c.isMesh && c.material) {
+      if (Array.isArray(c.material)) c.material.forEach(m => m.wireframe = wireframeOn);
+      else c.material.wireframe = wireframeOn;
+    }
+  });
+};
+
+window.takeScreenshot = () => {
+  renderer.render(scene, camera);
+  const link = document.createElement('a');
+  link.download = 'marneuli_residence_view.png';
+  link.href = renderer.domElement.toDataURL('image/png');
+  link.click();
+};
+
+const keys = {};
+window.addEventListener('keydown', e => { keys[e.code] = true; });
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+window.addEventListener('keydown', e => {
+  if (e.code === 'KeyF') {
+    document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  }
+  if (e.code === 'Escape' && currentMode === 'walk') setMode('orbit');
+});
+
+let fpsFrames = 0, lastTime = performance.now();
+const walkDir = new THREE.Vector3(), walkRight = new THREE.Vector3();
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  fpsFrames++;
+  const time = performance.now();
+  if (time >= lastTime + 1000) {
+    document.getElementById('stat-fps').textContent = fpsFrames;
+    fpsFrames = 0;
+    lastTime = time;
+  }
+
+  if (currentMode === 'walk') {
+    const speed = keys['ShiftLeft'] ? 0.7 : 0.25;
+    camera.getWorldDirection(walkDir);
+    walkDir.y = 0; walkDir.normalize();
+    walkRight.crossVectors(walkDir, camera.up).normalize();
+
+    if (keys['KeyW'] || keys['ArrowUp'])    camera.position.addScaledVector(walkDir, speed);
+    if (keys['KeyS'] || keys['ArrowDown'])  camera.position.addScaledVector(walkDir, -speed);
+    if (keys['KeyA'] || keys['ArrowLeft'])  camera.position.addScaledVector(walkRight, -speed);
+    if (keys['KeyD'] || keys['ArrowRight']) camera.position.addScaledVector(walkRight, speed);
+  } else {
+    controls.update();
+  }
+
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+const modelSource = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+  ? 'marneuli_main.glb'
+  : 'https://github.com/tural1227/marneuli/releases/download/v1.0.0/marneuli_main.glb';
+
+loadScene(modelSource);
+</script>
+</body>
+</html>

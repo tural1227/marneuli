@@ -1,0 +1,21 @@
+# 3ds Max raw files & exports
+*.max
+*.fbx
+textures/
+3dsmax-mcp/
+
+# Large binary 3D models (hosted on GitHub Releases v1.0.0)
+marneuli_main.glb
+marneuli_viewer.glb
+
+# Logs, test scripts & temporary outputs
+*.log
+*.txt
+live_*.png
+current_render.png
+test_viewer.py
+
+# Python & Max scripts
+*.py
+*.ms
+__pycache__/
