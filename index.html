@@ -482,6 +482,49 @@ const matBalconyRailing = new THREE.MeshStandardMaterial({
   side: THREE.DoubleSide
 });
 
+// 🌟 Precise Architectural Floor Illumination (Uniform-driven, fits building geometry 100% without sticking out)
+const floorHighlightUniforms = {
+  uHighlightYMin:   { value: -100.0 },
+  uHighlightYMax:   { value: -100.0 },
+  uHighlightActive: { value: 0.0 },
+  uHighlightColor:  { value: new THREE.Color(0xf6d77e) } // Luxurious warm architectural amber glow
+};
+
+function enableFloorHighlight(mat) {
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.uHighlightYMin   = floorHighlightUniforms.uHighlightYMin;
+    shader.uniforms.uHighlightYMax   = floorHighlightUniforms.uHighlightYMax;
+    shader.uniforms.uHighlightActive = floorHighlightUniforms.uHighlightActive;
+    shader.uniforms.uHighlightColor  = floorHighlightUniforms.uHighlightColor;
+
+    shader.vertexShader = `
+      varying vec3 vHighlightWorldPos;
+      ${shader.vertexShader}
+    `.replace(
+      '#include <worldpos_vertex>',
+      `#include <worldpos_vertex>
+       vHighlightWorldPos = (modelMatrix * vec4(transformed, 1.0)).xyz;`
+    );
+
+    shader.fragmentShader = `
+      varying vec3 vHighlightWorldPos;
+      uniform float uHighlightYMin;
+      uniform float uHighlightYMax;
+      uniform float uHighlightActive;
+      uniform vec3 uHighlightColor;
+      ${shader.fragmentShader}
+    `.replace(
+      '#include <dithering_fragment>',
+      `#include <dithering_fragment>
+       if (uHighlightActive > 0.01 && vHighlightWorldPos.y >= uHighlightYMin && vHighlightWorldPos.y < uHighlightYMax) {
+         gl_FragColor.rgb += uHighlightColor * (0.35 * uHighlightActive);
+       }`
+    );
+  };
+}
+
+[matUpperFacade, matLowerFacade, matColumnsPilasters, matPlinthBelt, matTrimsCornice, matRoofMansardSlate, matWindowGlass, matWindowFrame, matBalconyRailing].forEach(enableFloorHighlight);
+
 // Roads & Streets: Deep Charcoal Matte Asphalt
 const matRoadAsphalt = new THREE.MeshStandardMaterial({
   map: facadeTex,
@@ -934,36 +977,6 @@ const buildingRaycastMeshes = [];
 let currentHoveredFloorId = null;
 let currentSelectedFloorId = null;
 
-// Glowing 3D Floor Indicator Volumes (Luxury Golden Amber)
-const highlightMat = new THREE.MeshBasicMaterial({
-  color: 0xdfc882,
-  transparent: true,
-  opacity: 0.0,
-  side: THREE.DoubleSide,
-  depthWrite: false
-});
-
-const highlightLineMat = new THREE.LineBasicMaterial({
-  color: 0xfff0b8,
-  transparent: true,
-  opacity: 0.0,
-  linewidth: 2
-});
-
-const highlightGeomA = new THREE.BoxGeometry(40, 3.2, 40);
-const highlightMeshA = new THREE.Mesh(highlightGeomA, highlightMat);
-highlightMeshA.position.set(48, 10, -5);
-const highlightWireA = new THREE.LineSegments(new THREE.EdgesGeometry(highlightGeomA), highlightLineMat);
-highlightMeshA.add(highlightWireA);
-scene.add(highlightMeshA);
-
-const highlightGeomB = new THREE.BoxGeometry(36, 3.2, 38);
-const highlightMeshB = new THREE.Mesh(highlightGeomB, highlightMat);
-highlightMeshB.position.set(6, 10, -5);
-const highlightWireB = new THREE.LineSegments(new THREE.EdgesGeometry(highlightGeomB), highlightLineMat);
-highlightMeshB.add(highlightWireB);
-scene.add(highlightMeshB);
-
 // Build UI List
 const floorListContainer = document.getElementById('floor-list');
 FLOORS.forEach(f => {
@@ -977,19 +990,6 @@ FLOORS.forEach(f => {
   floorListContainer.appendChild(item);
 });
 
-function updateHighlightGeometry(floor, opacityFill, opacityWire) {
-  const floorHeight = floor.yMax - floor.yMin;
-  const floorCenterY = (floor.yMin + floor.yMax) / 2;
-
-  highlightMeshA.position.y = floorCenterY;
-  highlightMeshA.scale.y = floorHeight / 3.2;
-  highlightMeshB.position.y = floorCenterY;
-  highlightMeshB.scale.y = floorHeight / 3.2;
-
-  highlightMat.opacity = opacityFill;
-  highlightLineMat.opacity = opacityWire;
-}
-
 window.hoverFloor = (id) => {
   if (currentSelectedFloorId === id) return;
   currentHoveredFloorId = id;
@@ -1001,7 +1001,10 @@ window.hoverFloor = (id) => {
     else el.classList.remove('hovered');
   });
 
-  updateHighlightGeometry(floor, 0.22, 0.75);
+  // Seamless pixel-accurate floor highlight (Never sticks out of the building perimeter!)
+  floorHighlightUniforms.uHighlightYMin.value = floor.yMin;
+  floorHighlightUniforms.uHighlightYMax.value = floor.yMax;
+  floorHighlightUniforms.uHighlightActive.value = 0.85;
 };
 
 window.unhoverFloor = (id) => {
@@ -1011,10 +1014,13 @@ window.unhoverFloor = (id) => {
 
     if (currentSelectedFloorId) {
       const selected = FLOORS.find(f => f.id === currentSelectedFloorId);
-      if (selected) updateHighlightGeometry(selected, 0.38, 0.95);
+      if (selected) {
+        floorHighlightUniforms.uHighlightYMin.value = selected.yMin;
+        floorHighlightUniforms.uHighlightYMax.value = selected.yMax;
+        floorHighlightUniforms.uHighlightActive.value = 1.0;
+      }
     } else {
-      highlightMat.opacity = 0.0;
-      highlightLineMat.opacity = 0.0;
+      floorHighlightUniforms.uHighlightActive.value = 0.0;
       document.getElementById('floor-tooltip').classList.remove('visible');
     }
   }
@@ -1034,8 +1040,7 @@ window.selectFloor = (id) => {
   const tooltip = document.getElementById('floor-tooltip');
 
   if (id === null) {
-    highlightMat.opacity = 0.0;
-    highlightLineMat.opacity = 0.0;
+    floorHighlightUniforms.uHighlightActive.value = 0.0;
     card.classList.remove('visible');
     tooltip.classList.remove('visible');
     setView('facade');
@@ -1045,7 +1050,10 @@ window.selectFloor = (id) => {
   const floor = FLOORS.find(f => f.id === id);
   if (!floor) return;
 
-  updateHighlightGeometry(floor, 0.36, 0.95);
+  // Active floor highlight directly on building surfaces
+  floorHighlightUniforms.uHighlightYMin.value = floor.yMin;
+  floorHighlightUniforms.uHighlightYMax.value = floor.yMax;
+  floorHighlightUniforms.uHighlightActive.value = 1.0;
 
   document.getElementById('card-title').textContent = floor.name;
   document.getElementById('card-type').textContent = floor.type;
