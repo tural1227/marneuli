@@ -319,7 +319,10 @@ camera.position.set(32, 65, -90);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping      = true;
-controls.dampingFactor      = 0.06;
+controls.dampingFactor      = 0.10;
+controls.rotateSpeed        = 0.85;
+controls.zoomSpeed          = 1.15;
+controls.panSpeed           = 0.85;
 controls.screenSpacePanning = true;
 controls.minDistance        = 2;
 controls.maxDistance        = 500;
@@ -358,7 +361,6 @@ function createSkyEnvironment() {
 
 const envMap = createSkyEnvironment();
 scene.background = envMap;
-scene.environment = envMap;
 // Soft atmospheric depth fog that seamlessly blends the ground boundary into the horizon
 scene.fog = new THREE.FogExp2(0x232832, 0.0032);
 
@@ -401,7 +403,7 @@ const matUpperFacade = new THREE.MeshStandardMaterial({
   color: 0xd6cebe,
   roughness: 0.70,
   metalness: 0.04,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Ground Floor Commercial Base (Floors 1-2): Darker warm rustic ashlar stone (NOT stark white!)
@@ -410,7 +412,7 @@ const matLowerFacade = new THREE.MeshStandardMaterial({
   color: 0x584f44,
   roughness: 0.78,
   metalness: 0.04,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Classical Columns, Pilasters & Balusters: Refined classical limestone
@@ -419,7 +421,7 @@ const matColumnsPilasters = new THREE.MeshStandardMaterial({
   color: 0xd2cabb,
   roughness: 0.65,
   metalness: 0.02,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Plinth Belt / Lower Cornice (The band above the commercial ground floor): Warm transitional stone
@@ -428,7 +430,7 @@ const matPlinthBelt = new THREE.MeshStandardMaterial({
   color: 0xa89e8d, // Natural warm architectural stone transition between base (#584f44) and upper facade (#d6cebe)
   roughness: 0.72,
   metalness: 0.03,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Cornices, Mouldings, Architraves & Sills: Warm carved classical limestone (NOT stark white!)
@@ -437,7 +439,7 @@ const matTrimsCornice = new THREE.MeshStandardMaterial({
   color: 0xbeb6a4,
   roughness: 0.70,
   metalness: 0.02,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Mansard Roof Trim & Corner Classical Dome: Dark French charcoal zinc / slate (NEVER GREEN)
@@ -445,7 +447,7 @@ const matRoofMansardSlate = new THREE.MeshStandardMaterial({
   color: 0x24272c,
   roughness: 0.38,
   metalness: 0.45,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Flat Roof Terrace Slab: Clean architectural concrete terrace surface
@@ -453,16 +455,17 @@ const matRoofTerraceSlab = new THREE.MeshStandardMaterial({
   color: 0x8e9196,
   roughness: 0.85,
   metalness: 0.05,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Windows: High-Performance Reflective Sky-Blue Solar Glazing (60 FPS)
 const matWindowGlass = new THREE.MeshStandardMaterial({
+  envMap: envMap,
   color: 0x3d748d,
   roughness: 0.04,
-  metalness: 0.18,
+  metalness: 0.22,
   transparent: true,
-  opacity: 0.55,
+  opacity: 0.60,
   side: THREE.DoubleSide
 });
 
@@ -471,7 +474,7 @@ const matWindowFrame = new THREE.MeshStandardMaterial({
   color: 0x1c1e22,
   roughness: 0.32,
   metalness: 0.82,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Balcony Wrought Iron Railings
@@ -479,10 +482,8 @@ const matBalconyRailing = new THREE.MeshStandardMaterial({
   color: 0x191a1c,
   roughness: 0.28,
   metalness: 0.88,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
-
-
 
 // Roads & Streets: Deep Charcoal Matte Asphalt
 const matRoadAsphalt = new THREE.MeshStandardMaterial({
@@ -490,7 +491,7 @@ const matRoadAsphalt = new THREE.MeshStandardMaterial({
   color: 0x202226,
   roughness: 0.92,
   metalness: 0.02,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Painted Road Markings & Direction Arrows: Crisp Off-White Traffic Paint
@@ -498,7 +499,7 @@ const matRoadMarking = new THREE.MeshStandardMaterial({
   color: 0xf5f2ea,
   roughness: 0.50,
   metalness: 0.04,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Sidewalks, Pedestrian Pavers & Curbs: Granite Paving Stones (Textured warm grey, NOT stark white!)
@@ -507,7 +508,7 @@ const matSidewalkPaver = new THREE.MeshStandardMaterial({
   color: 0x8a8479,
   roughness: 0.82,
   metalness: 0.03,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Surrounding Ground Boundary (Plane003): Neutral grey site pavement matching 3ds Max viewport
@@ -515,7 +516,7 @@ const matPerimeterGround = new THREE.MeshStandardMaterial({
   color: 0x525862,
   roughness: 0.92,
   metalness: 0.02,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Courtyard Gardens: Realistic Textured Grass Lawn (OTLUQ)
@@ -524,25 +525,25 @@ const matGardenGrass = new THREE.MeshStandardMaterial({
   color: 0xffffff, // Uses natural photographic lawn colors without dark tint
   roughness: 0.80,
   metalness: 0.0,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Outdoor Recreation: Chess & Tennis Table
 const matChessWhite = new THREE.MeshStandardMaterial({
   color: 0xe8e4d8,
   roughness: 0.35,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 const matChessBlack = new THREE.MeshStandardMaterial({
   color: 0x1f2125,
   roughness: 0.40,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 const matTennisTableBlue = new THREE.MeshStandardMaterial({
   color: 0x1a4b88,
   roughness: 0.25,
   metalness: 0.1,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Trees: Organic Leaf Foliage
@@ -566,7 +567,7 @@ const matTreeBark = new THREE.MeshStandardMaterial({
   color: 0x3d3126,
   roughness: 0.88,
   metalness: 0.0,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Timber Pergolas & Benches: Warm Cedar
@@ -575,7 +576,7 @@ const matWoodTimber = new THREE.MeshStandardMaterial({
   color: 0xb07a46,
   roughness: 0.62,
   metalness: 0.0,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Streetlights & Poles: Satin Architectural Metal
@@ -583,7 +584,7 @@ const matStreetLight = new THREE.MeshStandardMaterial({
   color: 0x232528,
   roughness: 0.35,
   metalness: 0.85,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Automotive Materials for Cars
@@ -591,58 +592,60 @@ const matCarBlue = new THREE.MeshStandardMaterial({
   color: 0x0a3b70, // Sapphire Metallic Blue (Hero car in central street)
   roughness: 0.14,
   metalness: 0.88,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 const matCarWhite = new THREE.MeshStandardMaterial({
   color: 0xf2f4f7, // Pearl White (Hero car in parking bay)
   roughness: 0.18,
   metalness: 0.50,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 const matCarSilver = new THREE.MeshStandardMaterial({
   color: 0x9ea4ab, // Metallic Silver
   roughness: 0.15,
   metalness: 0.90,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 const matCarBlack = new THREE.MeshStandardMaterial({
   color: 0x141517, // Obsidian Black
   roughness: 0.12,
   metalness: 0.92,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 const matCarGrey = new THREE.MeshStandardMaterial({
   color: 0x36393e, // Gunmetal Grey
   roughness: 0.16,
   metalness: 0.86,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 const matCarGlass = new THREE.MeshStandardMaterial({
+  envMap: envMap,
   color: 0x1b2834,
   roughness: 0.08,
   metalness: 0.2,
   transparent: true,
   opacity: 0.65,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 const matCarChrome = new THREE.MeshStandardMaterial({
+  envMap: envMap,
   color: 0xeeeeee,
   roughness: 0.08,
   metalness: 0.98,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 const matCarTire = new THREE.MeshStandardMaterial({
   color: 0x19191a,
   roughness: 0.92,
   metalness: 0.02,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 
 // Ground Horizon Disc: seamlessly blends into the background fog (no hard cutoff edges)
@@ -651,7 +654,7 @@ const groundMat = new THREE.MeshStandardMaterial({
   color: 0x1c2028,
   roughness: 0.98,
   metalness: 0.02,
-  side: THREE.DoubleSide
+  side: THREE.FrontSide
 });
 const groundMesh = new THREE.Mesh(groundGeo, groundMat);
 groundMesh.rotation.x = -Math.PI / 2;
@@ -1011,6 +1014,10 @@ const floorTooltip = document.getElementById('floor-tooltip');
 let lastRaycastTime = 0;
 
 window.addEventListener('pointermove', (e) => {
+  if (e.buttons > 0) {
+    floorTooltip.classList.remove('visible');
+    return;
+  }
   if (e.target.closest('#floor-panel, #btn-panel, #views-bar, #ui, #floor-card, #controls-help')) {
     floorTooltip.classList.remove('visible');
     return;
