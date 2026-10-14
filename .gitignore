@@ -19,6 +19,7 @@ test_viewer.py
 # Python & Max scripts
 *.py
 !generate_360_blockade.py
+!generate_360_pollinations.py
 *.ms
 __pycache__/
 

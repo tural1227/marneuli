@@ -302,6 +302,7 @@
   <button class="view-btn" data-view="courtyard" onclick="setView('courtyard')">🌳 Həyət &amp; Park</button>
   <button class="view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı (Top View)</button>
   <button class="view-btn" data-view="street" onclick="setView('street')">🚗 Giriş &amp; Küçə</button>
+  <button class="view-btn" style="background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; font-weight: 700; border: none; box-shadow: 0 0 16px rgba(219, 39, 119, 0.6); animation: pulse-btn-glow 2s infinite alternate;" onclick="open360Tour(52)">🔮 Mənzilin İçi (360° Tur)</button>
 </div>
 
 <div id="btn-panel">
@@ -344,6 +345,7 @@
   <div class="card-row"><span>Tavan hündürlüyü:</span><span>3.30 metr</span></div>
   <div class="card-row"><span>Eyvan:</span><span>Fransız eyvanları &amp; Teras</span></div>
   <button class="card-action-btn" onclick="openFloorPlanModal()">📐 Bu Mərtəbənin Eskiz Planını Aç</button>
+  <button class="card-action-btn" style="background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; margin-top: 6px;" onclick="open360Tour(52)">🔮 Mənzil 52-yə Daxil Ol (360° Mənzilin İçi)</button>
 </div>
 
 <div id="controls-help">
@@ -392,10 +394,10 @@
 
   <div class="dock-divider"></div>
 
-  <!-- 3. Auto 360 Rotation -->
+  <!-- 3. Auto Rotation -->
   <div class="dock-group">
-    <button class="dock-btn" id="btn-autorotate" onclick="toggleAutoRotate()" title="Avtomatik 360° Kinematik Fırlanma">
-      🔄 360° Tur
+    <button class="dock-btn" id="btn-autorotate" onclick="toggleAutoRotate()" title="Binanı Avtomatik Fırlat">
+      🔄 Binanı Fırlat
     </button>
   </div>
 
@@ -411,13 +413,13 @@
 
   <div class="dock-divider"></div>
 
-  <!-- 5. Floor Plan & Reset -->
+  <!-- 5. Floor Plan & 360 Apartment Tour -->
   <div class="dock-group">
     <button class="dock-btn" style="color: #dfc882; font-weight: 700;" onclick="openFloorPlanModal()" title="2D Mərtəbə Planı və Mənzil Eskizləri">
       🗺️ 2D Plan
     </button>
-    <button class="dock-btn" style="color: #c084fc; font-weight: 700; border-color: rgba(192, 132, 252, 0.4);" onclick="open360Tour(52)" title="5-ci Mərtəbə, 52-ci Mənzil 360° Virtual Tur">
-      🔮 360° Tur
+    <button class="dock-btn" style="color: #fff; background: linear-gradient(135deg, #7c3aed, #db2777); font-weight: 700; border: none; box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);" onclick="open360Tour(52)" title="5-ci Mərtəbə, 52-ci Mənzil 360° Virtual Tur">
+      🔮 Mənzilin İçi (360°)
     </button>
     <button class="dock-btn" onclick="resetCamera()" title="Kameranı Əsas Görünüşə Qaytar">
       🏠 Sıfırla

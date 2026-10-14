@@ -127,29 +127,35 @@
         <div style="font-size: 13px; font-weight: 600;">Otaq 360° Yüklənir...</div>
       </div>
 
-      <!-- Blockade Labs AI Modal -->
+      <!-- AI 360 Generator Modal (Pollinations.ai 100% Free & Blockade Labs) -->
       <div id="blockade-ai-modal">
         <div class="blockade-box">
           <div class="blockade-header">
             <div class="blockade-title">
-              <span>🔮 Blockade Labs Skybox AI</span>
+              <span>🔮 AI 360° Otaq Generatoru</span>
             </div>
             <button class="tour-btn tour-btn-close" onclick="window.closeBlockadeModal()">✕</button>
           </div>
-          <div class="blockade-desc">
-            Blockade Labs API (<a href="https://skybox.blockadelabs.com/api" target="_blank" style="color:#60a5fa;">skybox.blockadelabs.com/api</a>) vasitəsilə mənzilin otaqları üçün fotorealistik 360° panoramalar generasiya edin.
+          
+          <div class="blockade-input-group">
+            <label>AI Mühərriki:</label>
+            <select id="ai-engine-select" class="blockade-select" onchange="window.onAiEngineChange()">
+              <option value="pollinations" selected>🟢 Pollinations.ai (100% PULSUZ — API Açar Tələb Olunmur)</option>
+              <option value="blockade">🟣 Blockade Labs Skybox API (Ödənişli / API Açarı ilə)</option>
+            </select>
           </div>
 
-          <div class="blockade-input-group">
+          <div class="blockade-input-group" id="blockade-key-group" style="display: none;">
             <label>Blockade Labs API Açarı (x-api-key):</label>
             <input type="password" id="blockade-api-key-input" class="blockade-input" placeholder="Məs: bla_xxxxxxxxxxxxxxxx" />
+            <small style="color:#94a3b8; font-size:11px;">Açar əldə etmək üçün: <a href="https://skybox.blockadelabs.com/api" target="_blank" style="color:#60a5fa;">skybox.blockadelabs.com/api</a></small>
           </div>
 
           <div class="blockade-input-group">
             <label>Generasiya Ediləcək Otaq:</label>
             <select id="blockade-room-select" class="blockade-select">
               <option value="hall">🚪 Dəhliz / Giriş</option>
-              <option value="living">🛋️ Qonaq Otağı & Açıq Mətbəx</option>
+              <option value="living" selected>🛋️ Qonaq Otağı & Açıq Mətbəx</option>
               <option value="bedroom">🛏️ Əsas Yataq Otağı</option>
               <option value="bathroom">🚿 Hamam & Sanitar Qovşağı</option>
               <option value="balcony">🌿 Eyvan (Balkon)</option>
@@ -157,13 +163,13 @@
           </div>
 
           <div class="blockade-input-group">
-            <label>Prompt (Memarlıq Təsviri):</label>
+            <label>Prompt (Memarlıq Cizgisinə Uyğun Təsvir):</label>
             <textarea id="blockade-prompt-input" class="blockade-input" rows="3" style="resize:vertical;"></textarea>
           </div>
 
           <!-- Progress -->
           <div class="blockade-progress-box" id="blockade-progress-box">
-            <div id="blockade-status-text">Generasiya sorğusu göndərilir...</div>
+            <div id="blockade-status-text">Generasiya başlayır...</div>
             <div class="blockade-progress-bar-bg">
               <div class="blockade-progress-bar-fill" id="blockade-progress-bar"></div>
             </div>
@@ -171,8 +177,8 @@
 
           <div class="blockade-btn-row">
             <button class="tour-btn" onclick="window.closeBlockadeModal()">İmtina</button>
-            <button class="tour-btn tour-btn-ai" id="blockade-submit-btn" onclick="window.startBlockadeGeneration()">
-              🚀 360° Şəkli Generasiya Et
+            <button class="tour-btn tour-btn-ai" id="blockade-submit-btn" onclick="window.startAIGeneration()">
+              🚀 360° Şəkli Pulsuz Generasiya Et
             </button>
           </div>
         </div>
@@ -468,7 +474,91 @@
     if (m) m.classList.remove("active");
   };
 
-  window.startBlockadeGeneration = async function () {
+  window.onAiEngineChange = function () {
+    const engine = document.getElementById("ai-engine-select").value;
+    const keyGroup = document.getElementById("blockade-key-group");
+    const submitBtn = document.getElementById("blockade-submit-btn");
+
+    if (engine === "pollinations") {
+      if (keyGroup) keyGroup.style.display = "none";
+      if (submitBtn) submitBtn.textContent = "🚀 360° Şəkli Pulsuz Generasiya Et";
+    } else {
+      if (keyGroup) keyGroup.style.display = "flex";
+      if (submitBtn) submitBtn.textContent = "🚀 Blockade Labs ilə Generasiya Et";
+    }
+  };
+
+  window.startAIGeneration = async function () {
+    const engineSelect = document.getElementById("ai-engine-select");
+    const engine = engineSelect ? engineSelect.value : "pollinations";
+
+    if (engine === "blockade") {
+      return startBlockadeGeneration();
+    } else {
+      return startPollinationsGeneration();
+    }
+  };
+
+  async function startPollinationsGeneration() {
+    const roomSelect = document.getElementById("blockade-room-select");
+    const promptInput = document.getElementById("blockade-prompt-input");
+    const progressBox = document.getElementById("blockade-progress-box");
+    const statusText = document.getElementById("blockade-status-text");
+    const progressBar = document.getElementById("blockade-progress-bar");
+    const submitBtn = document.getElementById("blockade-submit-btn");
+
+    const roomId = roomSelect.value;
+    const userPrompt = promptInput.value.trim();
+    const finalPrompt = `360 degree equirectangular panorama 2:1 ratio, ${userPrompt}, 8k, photorealistic architectural photography`;
+
+    progressBox.style.display = "flex";
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = "0.5";
+    progressBar.style.width = "30%";
+    statusText.textContent = "Pollinations AI (Flux) 360° şəkli render edir (tamamilə pulsuz)...";
+
+    const seed = Math.floor(Math.random() * 999999);
+    const encodedPrompt = encodeURIComponent(finalPrompt);
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=2048&height=1024&nologo=true&seed=${seed}`;
+
+    let progress = 30;
+    const progressInterval = setInterval(() => {
+      if (progress < 90) {
+        progress += 10;
+        progressBar.style.width = `${progress}%`;
+      }
+    }, 800);
+
+    // Preload image
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      clearInterval(progressInterval);
+      progressBar.style.width = "100%";
+      statusText.textContent = "✅ Şəkil hazırdır! Otaq panoraması yenilənir...";
+
+      APT_TOUR_CONFIG.rooms[roomId].image = imageUrl;
+
+      setTimeout(() => {
+        window.closeBlockadeModal();
+        switchRoom(roomId);
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+        progressBox.style.display = "none";
+      }, 800);
+    };
+
+    img.onerror = () => {
+      clearInterval(progressInterval);
+      statusText.textContent = "❌ Xəta baş verdi. Şəbəkə bağlantısını yoxlayın.";
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = "1";
+    };
+
+    img.src = imageUrl;
+  }
+
+  async function startBlockadeGeneration() {
     const keyInput = document.getElementById("blockade-api-key-input");
     const roomSelect = document.getElementById("blockade-room-select");
     const promptInput = document.getElementById("blockade-prompt-input");
@@ -492,10 +582,9 @@
     submitBtn.disabled = true;
     submitBtn.style.opacity = "0.5";
     progressBar.style.width = "20%";
-    statusText.textContent = "AI Skybox sorğusu göndərilir (POST /skybox)...";
+    statusText.textContent = "Blockade Labs Skybox sorğusu göndərilir (POST /skybox)...";
 
     try {
-      // Step 1: Send Generation Request
       const res = await fetch("https://backend.blockadelabs.com/api/v1/skybox", {
         method: "POST",
         headers: {
@@ -504,7 +593,7 @@
         },
         body: JSON.stringify({
           prompt: prompt,
-          skybox_style_id: 155, // Open World / Realistic
+          skybox_style_id: 155,
           enhance_prompt: true
         })
       });
@@ -518,7 +607,6 @@
       progressBar.style.width = "40%";
       statusText.textContent = `Generasiya növbəyə alındı (ID: ${reqId}). Gözlənilir...`;
 
-      // Step 2: Poll Progress
       let pollCount = 0;
       const pollTimer = setInterval(async () => {
         pollCount++;
@@ -541,7 +629,6 @@
             progressBar.style.width = "100%";
             statusText.textContent = "✅ Tamamlandı! Otaq panoraması yenilənir...";
 
-            // Apply newly generated texture directly to the room
             const fileUrl = req.file_url;
             APT_TOUR_CONFIG.rooms[roomId].image = fileUrl;
 
@@ -550,13 +637,14 @@
               switchRoom(roomId);
               submitBtn.disabled = false;
               submitBtn.style.opacity = "1";
+              progressBox.style.display = "none";
             }, 1200);
           } else if (status === "error" || status === "abort") {
             clearInterval(pollTimer);
             throw new Error(req.error_message || "Generasiya xətası");
           }
 
-          if (pollCount > 60) { // 5 minutes timeout
+          if (pollCount > 60) {
             clearInterval(pollTimer);
             throw new Error("Vaxt bitdi. Zəhmət olmasa bir az sonra yoxlayın.");
           }
