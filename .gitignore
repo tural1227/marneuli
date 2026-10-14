@@ -18,5 +18,8 @@ test_viewer.py
 
 # Python & Max scripts
 *.py
+!generate_360_blockade.py
 *.ms
 __pycache__/
+
+.env

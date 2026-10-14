@@ -296,6 +296,9 @@
       </div>
 
       <div class="fp-dw-actions">
+        <button class="fp-dw-btn fp-dw-btn-tour" onclick="if(window.open360Tour) window.open360Tour('${apt.number}');">
+          🔮 360° Virtual Otaq Turu
+        </button>
         <a href="${waUrl}" target="_blank" class="fp-dw-btn fp-dw-btn-wa">
           💬 WhatsApp ilə Maraqlan
         </a>

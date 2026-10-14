@@ -454,6 +454,24 @@
   transition: all 0.2s ease;
 }
 
+.fp-dw-btn-tour {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 18px rgba(139, 92, 246, 0.45);
+  animation: tour-btn-glow 2.5s infinite alternate;
+}
+
+.fp-dw-btn-tour:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.7);
+}
+
+@keyframes tour-btn-glow {
+  0% { box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4); }
+  100% { box-shadow: 0 4px 22px rgba(236, 72, 153, 0.65); }
+}
+
 .fp-dw-btn-wa {
   background: linear-gradient(135deg, #25D366, #128C7E);
   color: #fff;

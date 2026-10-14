@@ -278,6 +278,8 @@
   <link rel="stylesheet" href="floorplan-viewer.css" />
   <script src="floorplans/floors_data.js"></script>
   <script src="floorplan-viewer.js"></script>
+  <link rel="stylesheet" href="tour_360/tour_viewer.css" />
+  <script src="tour_360/tour_viewer.js"></script>
 </head>
 <body>
 
@@ -306,6 +308,7 @@
   <button class="btn active" id="btn-orbit" onclick="setMode('orbit')">🔄 Orbit Kamera</button>
   <button class="btn" id="btn-walk"  onclick="setMode('walk')">🚶 Gəzinti (WASD)</button>
   <button class="btn" id="btn-floorplan" onclick="openFloorPlanModal()">🗺️ 2D Mərtəbə Planı</button>
+  <button class="btn" id="btn-tour" style="color: #c084fc; border-color: rgba(192, 132, 252, 0.4);" onclick="open360Tour(52)">🔮 360° Mənzil Turu</button>
   <button class="btn" onclick="resetCamera()">🏠 Sıfırla</button>
   <button class="btn" onclick="toggleWireframe()">〰️ Wireframe</button>
   <button class="btn" onclick="takeScreenshot()">📸 Şəkil Çək</button>
@@ -412,6 +415,9 @@
   <div class="dock-group">
     <button class="dock-btn" style="color: #dfc882; font-weight: 700;" onclick="openFloorPlanModal()" title="2D Mərtəbə Planı və Mənzil Eskizləri">
       🗺️ 2D Plan
+    </button>
+    <button class="dock-btn" style="color: #c084fc; font-weight: 700; border-color: rgba(192, 132, 252, 0.4);" onclick="open360Tour(52)" title="5-ci Mərtəbə, 52-ci Mənzil 360° Virtual Tur">
+      🔮 360° Tur
     </button>
     <button class="dock-btn" onclick="resetCamera()" title="Kameranı Əsas Görünüşə Qaytar">
       🏠 Sıfırla
