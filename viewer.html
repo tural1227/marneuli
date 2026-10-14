@@ -77,14 +77,71 @@
     .btn.active { background: #dfc882; color: #12141a; font-weight: 600; border-color: #dfc882; }
 
     #controls-help {
-      position: fixed; bottom: 20px; left: 24px;
+      position: fixed; bottom: 85px; left: 24px;
       background: rgba(18, 20, 26, 0.85); backdrop-filter: blur(12px);
       border: 1px solid rgba(223,200,130,0.25);
-      border-radius: 10px; padding: 12px 18px;
-      color: #d0d4dc; font-size: 0.78rem; line-height: 1.8;
+      border-radius: 10px; padding: 10px 16px;
+      color: #d0d4dc; font-size: 0.74rem; line-height: 1.7;
       z-index: 10; box-shadow: 0 8px 32px rgba(0,0,0,0.6);
     }
     #controls-help span { color: #dfc882; font-weight: 600; }
+
+    /* Bottom Navigation & Camera Control Toolbar */
+    #bottom-controls-dock {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 8px; z-index: 25;
+      background: rgba(18, 22, 30, 0.92); backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 6px 14px; border-radius: 40px;
+      border: 1px solid rgba(223, 200, 130, 0.35);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.75);
+      user-select: none;
+      max-width: 95vw; overflow-x: auto; scrollbar-width: none;
+    }
+    #bottom-controls-dock::-webkit-scrollbar { display: none; }
+    .dock-group {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .dock-divider {
+      width: 1px; height: 22px;
+      background: rgba(255, 255, 255, 0.12);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+    .dock-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e0e4ec; padding: 7px 11px; border-radius: 20px;
+      cursor: pointer; font-size: 0.75rem; font-weight: 600;
+      display: flex; align-items: center; gap: 5px;
+      transition: all 0.18s ease;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .dock-btn:hover {
+      background: rgba(223, 200, 130, 0.22);
+      border-color: #dfc882; color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(223, 200, 130, 0.3);
+    }
+    .dock-btn:active {
+      transform: translateY(0);
+      background: #dfc882; color: #12141a;
+    }
+    .dock-btn.active {
+      background: linear-gradient(135deg, #dfc882, #e5b356);
+      color: #12141a; font-weight: 700;
+      border-color: #dfc882;
+      box-shadow: 0 2px 10px rgba(223, 200, 130, 0.4);
+    }
+    .dock-btn-icon {
+      padding: 7px 10px; font-size: 0.85rem;
+    }
+    @media (max-width: 768px) {
+      #controls-help { display: none; }
+      #stats { display: none; }
+      #bottom-controls-dock { bottom: 10px; padding: 4px 8px; }
+      .dock-btn { padding: 5px 8px; font-size: 0.70rem; }
+    }
 
     #stats {
       position: fixed; bottom: 20px; right: 24px;
@@ -282,6 +339,74 @@
   <span>Mərtəbənin üzərinə gəl</span> — Mərtəbəni seç &amp; işıqlandır<br>
   <span>Təkər (Scroll)</span> — Zoom yaxınlaş / uzaqlaş<br>
   <span>M / P</span> — 2D Eskiz Planı &nbsp;|&nbsp; <span>F</span> — Tam ekran
+</div>
+
+<!-- Bottom Navigation & Camera Controls Toolbar -->
+<div id="bottom-controls-dock">
+  <!-- 1. Zoom In / Out -->
+  <div class="dock-group">
+    <button class="dock-btn dock-btn-icon" 
+      title="Yaxınlaşdır (Zoom In - basıb saxlaya bilərsiniz)" 
+      onmousedown="startNavAction('in')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
+      ontouchstart="startNavAction('in')" ontouchend="stopNavAction()">➕</button>
+    <button class="dock-btn dock-btn-icon" 
+      title="Uzaqlaşdır (Zoom Out - basıb saxlaya bilərsiniz)" 
+      onmousedown="startNavAction('out')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
+      ontouchstart="startNavAction('out')" ontouchend="stopNavAction()">➖</button>
+  </div>
+
+  <div class="dock-divider"></div>
+
+  <!-- 2. Rotate Left / Right / Tilt Up / Down -->
+  <div class="dock-group">
+    <button class="dock-btn" 
+      title="Sola Fırla (Basıb saxlayın)" 
+      onmousedown="startNavAction('left')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
+      ontouchstart="startNavAction('left')" ontouchend="stopNavAction()">↺ Sola</button>
+    <button class="dock-btn dock-btn-icon" 
+      title="Yuxarı Bax (Tilt Up)" 
+      onmousedown="startNavAction('up')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
+      ontouchstart="startNavAction('up')" ontouchend="stopNavAction()">▲</button>
+    <button class="dock-btn dock-btn-icon" 
+      title="Aşağı Bax (Tilt Down)" 
+      onmousedown="startNavAction('down')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
+      ontouchstart="startNavAction('down')" ontouchend="stopNavAction()">▼</button>
+    <button class="dock-btn" 
+      title="Sağa Fırla (Basıb saxlayın)" 
+      onmousedown="startNavAction('right')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
+      ontouchstart="startNavAction('right')" ontouchend="stopNavAction()">Sağa ↻</button>
+  </div>
+
+  <div class="dock-divider"></div>
+
+  <!-- 3. Auto 360 Rotation -->
+  <div class="dock-group">
+    <button class="dock-btn" id="btn-autorotate" onclick="toggleAutoRotate()" title="Avtomatik 360° Kinematik Fırlanma">
+      🔄 360° Tur
+    </button>
+  </div>
+
+  <div class="dock-divider"></div>
+
+  <!-- 4. Quick Views / Perspectives (Baxışlar) -->
+  <div class="dock-group">
+    <button class="dock-btn view-btn active" data-view="facade" onclick="setView('facade')">🏢 Fasad</button>
+    <button class="dock-btn view-btn" data-view="courtyard" onclick="setView('courtyard')">🌳 Həyət</button>
+    <button class="dock-btn view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı</button>
+    <button class="dock-btn view-btn" data-view="street" onclick="setView('street')">🚗 Küçə</button>
+  </div>
+
+  <div class="dock-divider"></div>
+
+  <!-- 5. Floor Plan & Reset -->
+  <div class="dock-group">
+    <button class="dock-btn" style="color: #dfc882; font-weight: 700;" onclick="openFloorPlanModal()" title="2D Mərtəbə Planı və Mənzil Eskizləri">
+      🗺️ 2D Plan
+    </button>
+    <button class="dock-btn" onclick="resetCamera()" title="Kameranı Əsas Görünüşə Qaytar">
+      🏠 Sıfırla
+    </button>
+  </div>
 </div>
 
 <div id="stats">
@@ -1170,6 +1295,85 @@ window.setView = (view) => {
   }
   controls.update();
 };
+
+// ==========================================
+// 🎮 BOTTOM NAVIGATION & CAMERA DOCK SYSTEM
+// ==========================================
+
+let autoRotateActive = false;
+window.toggleAutoRotate = () => {
+  autoRotateActive = !autoRotateActive;
+  controls.autoRotate = autoRotateActive;
+  controls.autoRotateSpeed = 0.8;
+  const btn = document.getElementById('btn-autorotate');
+  if (btn) {
+    if (autoRotateActive) btn.classList.add('active');
+    else btn.classList.remove('active');
+  }
+};
+
+window.rotateCamera = (angleDelta) => {
+  if (autoRotateActive) toggleAutoRotate();
+  const offset = new THREE.Vector3().subVectors(camera.position, controls.target);
+  offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), angleDelta);
+  camera.position.copy(controls.target).add(offset);
+  camera.lookAt(controls.target);
+  controls.update();
+};
+
+window.tiltCamera = (angleDelta) => {
+  if (autoRotateActive) toggleAutoRotate();
+  const offset = new THREE.Vector3().subVectors(camera.position, controls.target);
+  const radius = offset.length();
+  let phi = Math.acos(Math.min(Math.max(offset.y / radius, -1), 1));
+  phi = Math.min(Math.max(phi + angleDelta, 0.15), Math.PI / 2 - 0.04);
+
+  const xzLen = Math.sqrt(offset.x * offset.x + offset.z * offset.z);
+  if (xzLen > 0.001) {
+    const newXzLen = radius * Math.sin(phi);
+    offset.x = (offset.x / xzLen) * newXzLen;
+    offset.z = (offset.z / xzLen) * newXzLen;
+    offset.y = radius * Math.cos(phi);
+    camera.position.copy(controls.target).add(offset);
+    camera.lookAt(controls.target);
+    controls.update();
+  }
+};
+
+window.zoomCamera = (factor) => {
+  const offset = new THREE.Vector3().subVectors(camera.position, controls.target);
+  const dist = offset.length();
+  const newDist = Math.min(Math.max(dist * factor, controls.minDistance || 8), controls.maxDistance || 280);
+  offset.setLength(newDist);
+  camera.position.copy(controls.target).add(offset);
+  controls.update();
+};
+
+let navActionInterval = null;
+
+window.startNavAction = (action) => {
+  stopNavAction();
+  executeNavAction(action);
+  navActionInterval = setInterval(() => {
+    executeNavAction(action);
+  }, 40);
+};
+
+window.stopNavAction = () => {
+  if (navActionInterval) {
+    clearInterval(navActionInterval);
+    navActionInterval = null;
+  }
+};
+
+function executeNavAction(action) {
+  if (action === 'left')  rotateCamera(0.035);
+  if (action === 'right') rotateCamera(-0.035);
+  if (action === 'up')    tiltCamera(-0.025);
+  if (action === 'down')  tiltCamera(0.025);
+  if (action === 'in')    zoomCamera(0.96);
+  if (action === 'out')   zoomCamera(1.04);
+}
 
 window.fitCameraToModel = (model) => {
   const bld = (model && model.getObjectByName('Generic Models 13')) ? model.getObjectByName('Generic Models 13') : model;
