@@ -319,15 +319,16 @@ camera.position.set(32, 65, -90);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping      = true;
-controls.dampingFactor      = 0.10;
-controls.rotateSpeed        = 0.85;
-controls.zoomSpeed          = 1.15;
-controls.panSpeed           = 0.85;
+controls.dampingFactor      = 0.08;
+controls.rotateSpeed        = 0.65; // Steady, controlled rotation
+controls.zoomSpeed          = 0.95; // Smooth zoom
+controls.panSpeed           = 0.70; // Smooth pan
 controls.screenSpacePanning = true;
-controls.minDistance        = 2;
-controls.maxDistance        = 500;
+controls.minDistance        = 8;
+controls.maxDistance        = 280;
 controls.target.set(22, 10, -5);
-controls.maxPolarAngle      = Math.PI / 2 + 0.04;
+controls.maxPolarAngle      = Math.PI / 2 - 0.03; // Never dip below ground plane
+controls.minPolarAngle      = 0.12; // Never flip over zenith
 
 // 1. Procedural Architectural Studio Environment (Differentiates beautifully from the building)
 function createSkyEnvironment() {
@@ -973,8 +974,7 @@ window.unhoverFloor = (id) => {
   }
 };
 
-let targetCamPos = null;
-let targetLookAt = null;
+let targetLookAtY = null;
 
 window.selectFloor = (id) => {
   currentSelectedFloorId = id;
@@ -989,7 +989,7 @@ window.selectFloor = (id) => {
   if (id === null) {
     card.classList.remove('visible');
     tooltip.classList.remove('visible');
-    setView('facade');
+    targetLookAtY = 10;
     return;
   }
 
@@ -1002,9 +1002,8 @@ window.selectFloor = (id) => {
   document.getElementById('card-area').textContent = floor.area;
   card.classList.add('visible');
 
-  // Smooth camera focus on the selected floor level
-  targetCamPos = new THREE.Vector3(26, floor.targetY + 9, -52);
-  targetLookAt = new THREE.Vector3(22, floor.targetY, -5);
+  // Smoothly shift vertical focus to this floor level WITHOUT jerking or resetting camera angle
+  targetLookAtY = floor.targetY;
 };
 
 // Raycasting for direct 3D mouse hover & selection
@@ -1012,23 +1011,47 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const floorTooltip = document.getElementById('floor-tooltip');
 let lastRaycastTime = 0;
+let isPointerDown = false;
+let pointerDownPos = { x: 0, y: 0 };
+let didDrag = false;
+
+window.addEventListener('pointerdown', (e) => {
+  isPointerDown = true;
+  pointerDownPos.x = e.clientX;
+  pointerDownPos.y = e.clientY;
+  didDrag = false;
+});
+
+window.addEventListener('pointerup', () => {
+  isPointerDown = false;
+});
 
 window.addEventListener('pointermove', (e) => {
+  if (isPointerDown) {
+    const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+    if (dist > 5) {
+      didDrag = true;
+      floorTooltip.classList.remove('visible');
+      return;
+    }
+  }
+
   if (e.buttons > 0) {
     floorTooltip.classList.remove('visible');
     return;
   }
+
   if (e.target.closest('#floor-panel, #btn-panel, #views-bar, #ui, #floor-card, #controls-help')) {
     floorTooltip.classList.remove('visible');
     return;
   }
 
+  const now = performance.now();
+  if (now - lastRaycastTime < 60) return; // Calm 16 FPS hover cap -> zero CPU stutter!
+  lastRaycastTime = now;
+
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-  const now = performance.now();
-  if (now - lastRaycastTime < 35) return; // 30 FPS cap
-  lastRaycastTime = now;
 
   if (buildingRaycastMeshes.length === 0) return;
 
@@ -1059,6 +1082,7 @@ window.addEventListener('pointermove', (e) => {
 });
 
 window.addEventListener('click', (e) => {
+  if (didDrag) return; // User was rotating/panning the camera, NEVER trigger accidental floor select!
   if (e.target.closest('#floor-panel, #btn-panel, #views-bar, #ui, #floor-card, #controls-help')) return;
   if (currentHoveredFloorId) {
     selectFloor(currentHoveredFloorId);
@@ -1177,14 +1201,12 @@ function animate() {
     lastTime = time;
   }
 
-  // Smooth camera floor transition
-  if (targetCamPos && targetLookAt) {
-    camera.position.lerp(targetCamPos, 0.05);
-    controls.target.lerp(targetLookAt, 0.05);
+  // Smooth camera floor focus transition
+  if (targetLookAtY !== null) {
+    controls.target.y += (targetLookAtY - controls.target.y) * 0.08;
     controls.update();
-    if (camera.position.distanceTo(targetCamPos) < 0.25) {
-      targetCamPos = null;
-      targetLookAt = null;
+    if (Math.abs(targetLookAtY - controls.target.y) < 0.05) {
+      targetLookAtY = null;
     }
   }
 
