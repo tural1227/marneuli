@@ -224,30 +224,15 @@
     }
   }
 
-  async function ensureThree() {
-    if (window.THREE && window.THREE.Scene) return window.THREE;
-    try {
-      const mod = await import('three');
-      window.THREE = mod;
-      return mod;
-    } catch (e) {
-      console.warn("Dynamic import of 'three' failed, falling back to CDN script:", e);
-      return new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js';
-        s.onload = () => resolve(window.THREE);
-        s.onerror = reject;
-        document.head.appendChild(s);
-      });
-    }
-  }
-
   // Init Three.js Panorama Scene
-  async function initThreeScene() {
+  function initThreeScene() {
     if (isTourInitialized) return;
-    const THREE = await ensureThree();
+    THREE = window.THREE || (typeof THREE !== 'undefined' ? THREE : null);
     const container = document.getElementById("tour-360-canvas-container");
-    if (!container || !THREE) return;
+    if (!container || !THREE) {
+      console.warn("Three.js or canvas container not yet ready:", { THREE, container });
+      return;
+    }
 
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 1, 1100);
@@ -268,6 +253,7 @@
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
+    container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
     textureLoader = new THREE.TextureLoader();
@@ -323,8 +309,8 @@
 
     // Limit pitch (latitude) to avoid gimbal lock
     lat = Math.max(-85, Math.min(85, lat));
-    phi = THREE.MathUtils.degToRad(90 - lat);
-    theta = THREE.MathUtils.degToRad(lon);
+    phi = ((90 - lat) * Math.PI) / 180;
+    theta = (lon * Math.PI) / 180;
 
     const x = 500 * Math.sin(phi) * Math.cos(theta);
     const y = 500 * Math.cos(phi);
@@ -369,7 +355,11 @@
     if (!textureLoader && T) {
       textureLoader = new T.TextureLoader();
     }
-    if (!textureLoader || !T) return;
+    if (!textureLoader || !T) {
+      console.error("textureLoader or THREE missing!", { textureLoader, T });
+      if (loader) loader.style.display = "none";
+      return;
+    }
 
     textureLoader.load(
       room.image,
@@ -416,8 +406,8 @@
       layer.appendChild(el);
 
       // Convert Pitch & Yaw to 3D Sphere Position
-      const phi = THREE.MathUtils.degToRad(90 - h.pitch);
-      const theta = THREE.MathUtils.degToRad(h.yaw);
+      const phi = ((90 - h.pitch) * Math.PI) / 180;
+      const theta = (h.yaw * Math.PI) / 180;
       const pos = new THREE.Vector3(
         420 * Math.sin(phi) * Math.cos(theta),
         420 * Math.cos(phi),
@@ -457,7 +447,7 @@
   }
 
   // Public Tour APIs
-  window.open360Tour = async function (aptNumber) {
+  window.open360Tour = function (aptNumber) {
     createTourDOMElements();
     const modal = document.getElementById("tour-360-modal");
     if (!modal) return;
@@ -467,7 +457,7 @@
     modal.style.opacity = "1";
     document.body.style.overflow = "hidden";
 
-    await initThreeScene();
+    initThreeScene();
     switchRoom(currentRoomId || "hall");
   };
 
