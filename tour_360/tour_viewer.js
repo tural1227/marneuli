@@ -16,11 +16,11 @@
         name: "Dəhliz / Giriş Zonası",
         icon: "🚪",
         image: "tour_360/apt_52/hall.jpg",
-        yawOffset: 0,
+        initialLon: 18,
         hotspots: [
-          { target: "living", pitch: -4, yaw: 0, label: "Qonaq Otağı & Mətbəx 🛋️" },
-          { target: "bedroom", pitch: -3, yaw: 48, label: "Yataq Otağı 🛏️" },
-          { target: "bathroom", pitch: -4, yaw: 88, label: "Hamam Otağı 🚿" }
+          { target: "living", pitch: -3.2, yaw: 17.8, label: "🛋️ Qonaq Otağı & Mətbəx" },
+          { target: "bedroom", pitch: -4.9, yaw: 48.5, label: "🛏️ Əsas Yataq Otağı" },
+          { target: "bathroom", pitch: -4.9, yaw: 132.9, label: "🚿 Hamam Otağı" }
         ]
       },
       living: {
@@ -28,10 +28,10 @@
         name: "Qonaq Otağı & Açıq Mətbəx",
         icon: "🛋️",
         image: "tour_360/apt_52/living.jpg",
-        yawOffset: 0,
+        initialLon: 60,
         hotspots: [
-          { target: "hall", pitch: -4, yaw: 175, label: "Dəhlizə Qayıt 🚪" },
-          { target: "balcony", pitch: -2, yaw: 72, label: "Eyvana (Balkona) Çıxış 🌿" }
+          { target: "hall", pitch: -6.7, yaw: -23.6, label: "🚪 Dəhlizə Qayıt" },
+          { target: "balcony", pitch: -6.7, yaw: 122.3, label: "🌿 Eyvana (Balkona) Çıxış" }
         ]
       },
       bedroom: {
@@ -39,10 +39,10 @@
         name: "Əsas Yataq Otağı",
         icon: "🛏️",
         image: "tour_360/apt_52/bedroom.jpg",
-        initialYaw: 0,
+        initialLon: 0,
         hotspots: [
-          { target: "hall", pitch: -4, yaw: -110, label: "Dəhlizə Qayıt 🚪" },
-          { target: "balcony", pitch: -2, yaw: 0, label: "Eyvana Çıxış 🌿" }
+          { target: "hall", pitch: -8.4, yaw: -122.0, label: "🚪 Dəhlizə Qayıt" },
+          { target: "balcony", pitch: -4.9, yaw: 30.9, label: "🌿 Eyvana Çıxış" }
         ]
       },
       bathroom: {
@@ -50,9 +50,9 @@
         name: "Hamam Otağı & Sanitar Qovşağı",
         icon: "🚿",
         image: "tour_360/apt_52/bathroom.jpg",
-        yawOffset: 0,
+        initialLon: 20,
         hotspots: [
-          { target: "hall", pitch: -4, yaw: 0, label: "Dəhlizə Qayıt 🚪" }
+          { target: "hall", pitch: -1.4, yaw: 20.4, label: "🚪 Dəhlizə Qayıt" }
         ]
       },
       balcony: {
@@ -60,10 +60,10 @@
         name: "Mənzərəli Eyvan (Balkon - 4.5 m²)",
         icon: "🌿",
         image: "tour_360/apt_52/balcony.jpg",
-        yawOffset: 0,
+        initialLon: -80,
         hotspots: [
-          { target: "living", pitch: -3, yaw: -130, label: "Qonaq Otağına Keçid 🛋️" },
-          { target: "bedroom", pitch: -3, yaw: -75, label: "Yataq Otağına Keçid 🛏️" }
+          { target: "living", pitch: -8.4, yaw: -100.9, label: "🛋️ Qonaq Otağına Keçid" },
+          { target: "bedroom", pitch: -8.4, yaw: -49.9, label: "🛏️ Yataq Otağına Keçid" }
         ]
       }
     }
@@ -80,6 +80,8 @@
   let activeHotspots = [];
   let isTourInitialized = false;
   let fov = 75;
+  let isWalking = false;
+  let roomHistory = [];
 
   // Initialize Tour HTML Elements
   function createTourDOMElements() {
@@ -90,6 +92,7 @@
     modal.innerHTML = `
       <div id="tour-360-canvas-container"></div>
       <div id="tour-hotspots-layer"></div>
+      <div id="tour-walk-flash"></div>
 
       <!-- Top Header -->
       <div class="tour-header">
@@ -103,12 +106,24 @@
 
         <div class="tour-header-actions">
           <button class="tour-btn tour-btn-ai" onclick="window.openBlockadeModal()">
-            ✨ AI 360 Generator (Blockade Labs)
+            ✨ AI 360 Generator
           </button>
           <button class="tour-btn tour-btn-close" onclick="window.close360Tour()" title="Bağla">
             ✕
           </button>
         </div>
+      </div>
+
+      <!-- Walk Navigation Floating Dock -->
+      <div class="tour-walk-nav">
+        <button class="tour-walk-btn" onclick="window.tourWalkForward()" title="Qapıya doğru addımla (W / ↑)">
+          <span>🚶‍♂️ Önə Addımla</span>
+          <span class="walk-key">W</span>
+        </button>
+        <button class="tour-walk-btn" onclick="window.tourWalkBackward()" title="Əvvəlki otağa qayıt (S / ↓)">
+          <span>↩ Geriyə Qayıt</span>
+          <span class="walk-key">S</span>
+        </button>
       </div>
 
       <!-- Side Controls -->
@@ -325,7 +340,7 @@
   }
 
   // Switch Active Room
-  function switchRoom(roomId, targetYaw = null) {
+  function switchRoom(roomId, targetYaw = null, resetView = true) {
     const room = APT_TOUR_CONFIG.rooms[roomId];
     if (!room) return;
 
@@ -342,13 +357,15 @@
     const activeTab = document.getElementById(`tour-tab-${roomId}`);
     if (activeTab) activeTab.classList.add("active");
 
-    // Reset or set angle
-    if (targetYaw !== null) {
-      lon = targetYaw;
-      lat = 0;
-    } else if (room.initialYaw !== undefined) {
-      lon = room.initialYaw;
-      lat = 0;
+    // Reset or set angle if allowed
+    if (resetView) {
+      if (targetYaw !== null) {
+        lon = targetYaw;
+        lat = 0;
+      } else if (room.initialLon !== undefined) {
+        lon = room.initialLon;
+        lat = 0;
+      }
     }
 
     // Show loading indicator
@@ -390,7 +407,121 @@
     );
   }
 
-  // Render Doorway / Transition Hotspots
+  // Smooth Human-like Walk Animation into Room
+  function walkToRoom(targetRoomId, doorYaw, doorPitch) {
+    if (isWalking || !camera) {
+      switchRoom(targetRoomId);
+      return;
+    }
+
+    const targetRoom = APT_TOUR_CONFIG.rooms[targetRoomId];
+    if (!targetRoom) return;
+
+    isWalking = true;
+
+    // Track navigation history for backward walking
+    if (currentRoomId && currentRoomId !== targetRoomId) {
+      roomHistory.push(currentRoomId);
+    }
+
+    const startLon = lon;
+    const startLat = lat;
+    const startFov = fov;
+
+    let targetLon = (doorYaw !== null && doorYaw !== undefined) ? doorYaw : lon;
+    // Normalize shortest rotation direction
+    while (targetLon - startLon > 180) targetLon -= 360;
+    while (targetLon - startLon < -180) targetLon += 360;
+    const targetLat = (doorPitch !== null && doorPitch !== undefined) ? doorPitch : lat;
+
+    const startTime = performance.now();
+    const duration = 650; // ms for the walk
+    const flashEl = document.getElementById("tour-walk-flash");
+
+    let textureSwitched = false;
+
+    function stepWalk(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      // Smooth cubic easing
+      const ease = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      lon = startLon + (targetLon - startLon) * ease;
+      lat = startLat + (targetLat - startLat) * ease;
+
+      // Dolly-in forward through the doorway
+      if (progress < 0.75) {
+        const zoomProg = progress / 0.75;
+        camera.fov = startFov - (startFov - 34) * zoomProg;
+      } else {
+        const emergeProg = (progress - 0.75) / 0.25;
+        camera.fov = 34 + (startFov - 34) * emergeProg;
+      }
+      camera.updateProjectionMatrix();
+
+      // Footstep bobbing motion
+      const stepBob = Math.sin(progress * Math.PI * 4) * 0.9;
+      lat += stepBob;
+
+      // Threshold transition flash
+      if (flashEl) {
+        if (progress > 0.45 && progress < 0.75) {
+          flashEl.style.opacity = String(Math.sin(((progress - 0.45) / 0.3) * Math.PI) * 0.5);
+        } else {
+          flashEl.style.opacity = "0";
+        }
+      }
+
+      // Switch room texture in the middle of crossing the threshold
+      if (progress >= 0.55 && !textureSwitched) {
+        textureSwitched = true;
+        switchRoom(targetRoomId, null, false);
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(stepWalk);
+      } else {
+        camera.fov = startFov;
+        camera.updateProjectionMatrix();
+        if (flashEl) flashEl.style.opacity = "0";
+        isWalking = false;
+      }
+    }
+
+    requestAnimationFrame(stepWalk);
+  }
+
+  // Walk forward towards closest visible door/hotspot
+  function walkForward() {
+    const room = APT_TOUR_CONFIG.rooms[currentRoomId];
+    if (!room || !room.hotspots || !room.hotspots.length) return;
+
+    let closest = null;
+    let minDiff = Infinity;
+    room.hotspots.forEach(h => {
+      let diff = Math.abs((((h.yaw - lon) % 360) + 540) % 360 - 180);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closest = h;
+      }
+    });
+
+    if (closest) {
+      walkToRoom(closest.target, closest.yaw, closest.pitch);
+    }
+  }
+
+  // Walk backward into previously visited room
+  function walkBackward() {
+    if (roomHistory.length > 0) {
+      const prev = roomHistory.pop();
+      walkToRoom(prev, null, null);
+    } else if (currentRoomId !== "hall") {
+      walkToRoom("hall", null, null);
+    }
+  }
+
+  // Render Doorway / Transition Hotspots precisely on the doors
   function renderHotspots(hotspots) {
     const layer = document.getElementById("tour-hotspots-layer");
     if (!layer) return;
@@ -403,12 +534,12 @@
       const el = document.createElement("div");
       el.className = "tour-hotspot";
       el.innerHTML = `
-        <div class="tour-hotspot-pin">➤</div>
+        <div class="tour-hotspot-pin">🚪</div>
         <div class="tour-hotspot-label">${h.label}</div>
       `;
       el.onclick = (e) => {
         e.stopPropagation();
-        switchRoom(h.target, h.yaw ? h.yaw + 180 : 0);
+        walkToRoom(h.target, h.yaw, h.pitch);
       };
 
       layer.appendChild(el);
@@ -487,6 +618,30 @@
     camera.fov = fov;
     camera.updateProjectionMatrix();
   };
+
+  window.tourWalkForward = function () {
+    walkForward();
+  };
+
+  window.tourWalkBackward = function () {
+    walkBackward();
+  };
+
+  // Keyboard navigation for walking (W / S / Up / Down / Backspace)
+  window.addEventListener("keydown", (e) => {
+    const modal = document.getElementById("tour-360-modal");
+    if (!modal || modal.style.display === "none") return;
+
+    if (e.code === "KeyW" || e.code === "ArrowUp") {
+      e.preventDefault();
+      walkForward();
+    } else if (e.code === "KeyS" || e.code === "ArrowDown" || e.code === "Backspace") {
+      e.preventDefault();
+      walkBackward();
+    } else if (e.code === "Escape") {
+      window.close360Tour();
+    }
+  });
 
   window.tourToggleFullscreen = function () {
     if (!document.fullscreenElement) {
