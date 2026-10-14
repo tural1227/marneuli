@@ -894,11 +894,7 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-const modelSource = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-  ? 'marneuli_main.glb'
-  : 'https://github.com/tural1227/marneuli/releases/download/v1.0.0/marneuli_main.glb';
-
-loadScene(modelSource);
+loadScene('marneuli_draco.glb');
 </script>
 </body>
 </html>
