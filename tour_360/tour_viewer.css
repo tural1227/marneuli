@@ -3,7 +3,7 @@
 #tour-360-modal {
   position: fixed;
   inset: 0;
-  z-index: 9999999;
+  z-index: 100000000 !important;
   background: #030712;
   display: none;
   flex-direction: column;
