@@ -2,7 +2,8 @@
 
 Photorealistic WebGL & Three.js 3D architectural visualization platform for the **Marneuli Residence** residential complex.
 
-![Marneuli Residence 3D](live_view.png)
+🌐 **Live Demo**: [https://tural1227.github.io/marneuli/](https://tural1227.github.io/marneuli/)
+📦 **Repository**: [https://github.com/tural1227/marneuli](https://github.com/tural1227/marneuli)
 
 ---
 
