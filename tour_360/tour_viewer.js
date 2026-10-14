@@ -18,9 +18,9 @@
         image: "tour_360/apt_52/hall.jpg",
         yawOffset: 0,
         hotspots: [
-          { target: "living", pitch: -4, yaw: 12, label: "Qonaq Otağı & Mətbəx 🛋️" },
-          { target: "bedroom", pitch: -3, yaw: 96, label: "Yataq Otağı 🛏️" },
-          { target: "bathroom", pitch: -4, yaw: -84, label: "Hamam Otağı 🚿" }
+          { target: "living", pitch: -4, yaw: 0, label: "Qonaq Otağı & Mətbəx 🛋️" },
+          { target: "bedroom", pitch: -3, yaw: 48, label: "Yataq Otağı 🛏️" },
+          { target: "bathroom", pitch: -4, yaw: 88, label: "Hamam Otağı 🚿" }
         ]
       },
       living: {
@@ -30,8 +30,8 @@
         image: "tour_360/apt_52/living.jpg",
         yawOffset: 0,
         hotspots: [
-          { target: "hall", pitch: -4, yaw: 178, label: "Dəhlizə Qayıt 🚪" },
-          { target: "balcony", pitch: -2, yaw: -28, label: "Eyvana (Balkona) Çıxış 🌿" }
+          { target: "hall", pitch: -4, yaw: 175, label: "Dəhlizə Qayıt 🚪" },
+          { target: "balcony", pitch: -2, yaw: 72, label: "Eyvana (Balkona) Çıxış 🌿" }
         ]
       },
       bedroom: {
@@ -39,10 +39,10 @@
         name: "Əsas Yataq Otağı",
         icon: "🛏️",
         image: "tour_360/apt_52/bedroom.jpg",
-        initialYaw: 175,
+        initialYaw: 0,
         hotspots: [
-          { target: "hall", pitch: -4, yaw: 0, label: "Dəhlizə Qayıt 🚪" },
-          { target: "balcony", pitch: -2, yaw: -140, label: "Eyvana Çıxış 🌿" }
+          { target: "hall", pitch: -4, yaw: -110, label: "Dəhlizə Qayıt 🚪" },
+          { target: "balcony", pitch: -2, yaw: 0, label: "Eyvana Çıxış 🌿" }
         ]
       },
       bathroom: {
@@ -52,7 +52,7 @@
         image: "tour_360/apt_52/bathroom.jpg",
         yawOffset: 0,
         hotspots: [
-          { target: "hall", pitch: -4, yaw: 180, label: "Dəhlizə Qayıt 🚪" }
+          { target: "hall", pitch: -4, yaw: 0, label: "Dəhlizə Qayıt 🚪" }
         ]
       },
       balcony: {
@@ -62,8 +62,8 @@
         image: "tour_360/apt_52/balcony.jpg",
         yawOffset: 0,
         hotspots: [
-          { target: "living", pitch: -3, yaw: -140, label: "Qonaq Otağına Keçid 🛋️" },
-          { target: "bedroom", pitch: -3, yaw: 140, label: "Yataq Otağına Keçid 🛏️" }
+          { target: "living", pitch: -3, yaw: -130, label: "Qonaq Otağına Keçid 🛋️" },
+          { target: "bedroom", pitch: -3, yaw: -75, label: "Yataq Otağına Keçid 🛏️" }
         ]
       }
     }
@@ -367,8 +367,9 @@
       return;
     }
 
+    const imgUrl = room.image + (room.image.includes("?") ? "" : "?v=20261015e");
     textureLoader.load(
-      room.image,
+      imgUrl,
       (texture) => {
         texture.mapping = T.EquirectangularReflectionMapping;
         texture.colorSpace = T.SRGBColorSpace;
