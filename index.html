@@ -90,11 +90,123 @@
       position: fixed; bottom: 20px; right: 24px;
       background: rgba(18, 20, 26, 0.85); backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px; padding: 12px 16px;
-      color: #9da3af; font-size: 0.75rem; line-height: 1.7;
+      border-radius: 10px; padding: 10px 14px;
+      color: #9da3af; font-size: 0.72rem; line-height: 1.6;
       z-index: 10; font-family: monospace;
     }
     #stats span { color: #dfc882; font-weight: 600; }
+
+    /* Floor Selector Panel (Right Side) */
+    #floor-panel {
+      position: fixed; top: 82px; right: 24px;
+      display: flex; flex-direction: column;
+      background: rgba(18, 20, 26, 0.90); backdrop-filter: blur(14px);
+      border: 1px solid rgba(223,200,130,0.3);
+      border-radius: 12px; padding: 10px 8px;
+      z-index: 15; box-shadow: 0 10px 35px rgba(0,0,0,0.6);
+      width: 175px; max-height: calc(100vh - 180px);
+      transition: all 0.25s ease;
+    }
+    #floor-panel-title {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px;
+      color: #dfc882; font-weight: 600; text-align: center;
+      margin-bottom: 8px; padding-bottom: 6px;
+      border-bottom: 1px solid rgba(223,200,130,0.2);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .btn-reset-floor {
+      background: rgba(223,200,130,0.15); border: 1px solid rgba(223,200,130,0.3);
+      color: #dfc882; border-radius: 4px; padding: 2px 6px;
+      font-size: 0.65rem; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-reset-floor:hover { background: #dfc882; color: #12141a; font-weight: 600; }
+    #floor-list {
+      display: flex; flex-direction: column; gap: 4px;
+      overflow-y: auto; padding-right: 2px;
+    }
+    #floor-list::-webkit-scrollbar { width: 4px; }
+    #floor-list::-webkit-scrollbar-thumb { background: rgba(223,200,130,0.3); border-radius: 4px; }
+    .floor-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 9px; border-radius: 6px;
+      background: rgba(255,255,255,0.03); border: 1px solid transparent;
+      color: #ccc; cursor: pointer; font-size: 0.75rem;
+      transition: all 0.15s ease;
+    }
+    .floor-item:hover {
+      background: rgba(223,200,130,0.18);
+      border-color: rgba(223,200,130,0.5);
+      color: #fff; transform: translateX(-2px);
+    }
+    .floor-item.hovered {
+      background: rgba(223,200,130,0.25);
+      border-color: #dfc882;
+      color: #dfc882;
+    }
+    .floor-item.active {
+      background: linear-gradient(135deg, #dfc882, #e5b356);
+      color: #12141a; font-weight: 700;
+      border-color: #f5b041;
+      box-shadow: 0 2px 10px rgba(223,200,130,0.4);
+    }
+    .floor-badge {
+      font-size: 0.60rem; padding: 2px 5px; border-radius: 4px;
+      background: rgba(0,0,0,0.3); color: #aaa;
+    }
+    .floor-item.active .floor-badge {
+      background: rgba(0,0,0,0.25); color: #12141a; font-weight: 600;
+    }
+
+    /* Floating Floor Tooltip (Tracks Cursor in 3D) */
+    #floor-tooltip {
+      position: fixed; pointer-events: none; z-index: 50;
+      background: rgba(18, 20, 26, 0.94); backdrop-filter: blur(14px);
+      border: 1px solid #dfc882; border-radius: 10px;
+      padding: 10px 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.8);
+      opacity: 0; transform: translate(15px, -50%);
+      transition: opacity 0.18s ease;
+      min-width: 175px;
+    }
+    #floor-tooltip.visible { opacity: 1; }
+    #tt-floor-badge {
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px;
+      color: #dfc882; font-weight: 700; margin-bottom: 2px;
+    }
+    #tt-floor-name { font-size: 0.92rem; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    #tt-floor-info { font-size: 0.72rem; color: #a4abb8; line-height: 1.4; }
+
+    /* Selected Floor Card (Bottom Left) */
+    #floor-card {
+      position: fixed; bottom: 85px; left: 24px; z-index: 15;
+      background: rgba(18, 20, 26, 0.94); backdrop-filter: blur(16px);
+      border: 1px solid rgba(223,200,130,0.4); border-radius: 12px;
+      padding: 16px 20px; box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+      width: 290px; opacity: 0; pointer-events: none;
+      transform: translateY(15px); transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #floor-card.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    #card-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;
+    }
+    #card-title { font-size: 1.05rem; font-weight: 600; color: #dfc882; }
+    #card-close {
+      background: transparent; border: none; color: #888;
+      font-size: 1.1rem; cursor: pointer; padding: 0 4px;
+    }
+    #card-close:hover { color: #fff; }
+    #card-type { font-size: 0.8rem; color: #fff; font-weight: 500; margin-bottom: 6px; }
+    .card-row { display: flex; justify-content: space-between; font-size: 0.76rem; color: #a0a6b5; margin-bottom: 4px; }
+    .card-row span:last-child { color: #fff; font-weight: 500; }
+    .card-action-btn {
+      width: 100%; margin-top: 10px;
+      background: linear-gradient(135deg, #dfc882, #e5b356);
+      border: none; color: #12141a; font-weight: 700;
+      padding: 9px; border-radius: 8px; cursor: pointer;
+      font-size: 0.78rem; letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+    }
+    .card-action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(223,200,130,0.4); }
   </style>
 </head>
 <body>
@@ -110,7 +222,7 @@
 
 <div id="ui">
   <h1>🏢 Marneuli Residence 3D</h1>
-  <small id="model-info">Klassik Daş Fasad &bull; Şüşə Pəncərələr &bull; Avtomobillər &bull; Yaşıllıq &amp; Park</small>
+  <small id="model-info">Klassik Daş Fasad &bull; Mərtəbə Seçimi &bull; Park &amp; İstirahət</small>
 </div>
 
 <div id="views-bar">
@@ -128,15 +240,48 @@
   <button class="btn" onclick="takeScreenshot()">📸 Şəkil Çək</button>
 </div>
 
+<!-- Vertical Floor Selector Panel (Right Side) -->
+<div id="floor-panel">
+  <div id="floor-panel-title">
+    <span>🏢 Mərtəbələr</span>
+    <button class="btn-reset-floor" onclick="selectFloor(null)">Hamısı</button>
+  </div>
+  <div id="floor-list"></div>
+</div>
+
+<!-- Floating 3D Hover Tooltip -->
+<div id="floor-tooltip">
+  <div id="tt-floor-badge">MƏRTƏBƏ</div>
+  <div id="tt-floor-name">6-cı Mərtəbə</div>
+  <div id="tt-floor-info">8 Mənzil &bull; 2-3 otaqlı</div>
+</div>
+
+<!-- Selected Floor Card (Bottom Left) -->
+<div id="floor-card">
+  <div id="card-header">
+    <div>
+      <div id="card-title">6-cı Mərtəbə</div>
+      <div id="card-type">Premium Yaşayış Mənzilləri</div>
+    </div>
+    <button id="card-close" onclick="selectFloor(null)">&times;</button>
+  </div>
+  <div class="card-row"><span>Mənzil sayı:</span><span id="card-apts">8 Mənzil</span></div>
+  <div class="card-row"><span>Sahələr:</span><span id="card-area">65 - 125 m²</span></div>
+  <div class="card-row"><span>Tavan hündürlüyü:</span><span>3.30 metr</span></div>
+  <div class="card-row"><span>Eyvan:</span><span>Fransız eyvanları &amp; Teras</span></div>
+  <button class="card-action-btn" onclick="alert('Mənzil planları tezliklə interaktiv əlavə ediləcək!')">📐 Mənzil Planlarına Bax</button>
+</div>
+
 <div id="controls-help">
   <span>Sol klik + Sürüşdür</span> — Kameranı fırlat<br>
   <span>Sağ klik + Sürüşdür</span> — Səhnəni sürüşdür (Pan)<br>
+  <span>Mərtəbənin üzərinə gəl</span> — Mərtəbəni seç &amp; işıqlandır<br>
   <span>Təkər (Scroll)</span> — Zoom yaxınlaş / uzaqlaş<br>
-  <span>F</span> — Tam ekran &nbsp;|&nbsp; <span>W A S D</span> — Birinci şəxs gəzinti
+  <span>F</span> — Tam ekran &nbsp;|&nbsp; <span>W A S D</span> — Gəzinti
 </div>
 
 <div id="stats">
-  <div>Obyektlər (Meshes): <span id="stat-meshes">-</span></div>
+  <div>Obyektlər: <span id="stat-meshes">-</span></div>
   <div>FPS: <span id="stat-fps">60</span></div>
 </div>
 
@@ -157,8 +302,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const container = document.getElementById('canvas-container');
 const renderer  = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-// Balanced pixel ratio for high FPS
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+// Balanced pixel ratio to prevent GPU overload and computer lag
+renderer.setPixelRatio(1.0);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping       = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
@@ -733,6 +878,12 @@ function loadScene(url) {
           meshCount++;
           child.frustumCulled = true;
           assignHighFidelityMaterial(child);
+          const name = (child.name || '').toLowerCase();
+          const parentName = child.parent ? (child.parent.name || '').toLowerCase() : '';
+          const fullName = name + ' ' + parentName;
+          if (fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('1746174')) {
+            buildingRaycastMeshes.push(child);
+          }
         }
       });
 
@@ -760,6 +911,206 @@ function loadScene(url) {
     }
   );
 }
+
+// ==========================================
+// 🌟 INTERACTIVE FLOOR SELECTOR & HOVER SYSTEM
+// ==========================================
+
+const FLOORS = [
+  { id: 11, num: "11", name: "11-ci Mərtəbə (Mansard)", badge: "Penthaus", type: "Eksklüziv Penthaus & Teras", apts: "4 Eksklüziv Penthaus", area: "145 – 280 m²", yMin: 34.0, yMax: 41.5, targetY: 37.0 },
+  { id: 10, num: "10", name: "10-cu Mərtəbə", badge: "Yaşayış", type: "Panoramik Yaşayış Mənzilləri", apts: "8 Mənzil (2, 3 və 4 otaqlı)", area: "65 – 135 m²", yMin: 30.7, yMax: 34.0, targetY: 32.3 },
+  { id: 9,  num: "9",  name: "9-cu Mərtəbə",  badge: "Yaşayış", type: "Panoramik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 27.4, yMax: 30.7, targetY: 29.0 },
+  { id: 8,  num: "8",  name: "8-ci Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 24.1, yMax: 27.4, targetY: 25.7 },
+  { id: 7,  num: "7",  name: "7-ci Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 20.8, yMax: 24.1, targetY: 22.4 },
+  { id: 6,  num: "6",  name: "6-cı Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 17.5, yMax: 20.8, targetY: 19.1 },
+  { id: 5,  num: "5",  name: "5-ci Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 14.2, yMax: 17.5, targetY: 15.8 },
+  { id: 4,  num: "4",  name: "4-cü Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 10.9, yMax: 14.2, targetY: 12.5 },
+  { id: 3,  num: "3",  name: "3-cü Mərtəbə",  badge: "Yaşayış", type: "Klassik Yaşayış Mənzilləri", apts: "8 Mənzil (2 və 3 otaqlı)", area: "65 – 125 m²", yMin: 7.6,  yMax: 10.9, targetY: 9.2 },
+  { id: 2,  num: "2",  name: "2-ci Mərtəbə",  badge: "Biznes",  type: "Biznes & Ofis Mərkəzi", apts: "6 Ofis & Xidmət Sahəsi", area: "85 – 350 m²", yMin: 4.2,  yMax: 7.6,  targetY: 5.9 },
+  { id: 1,  num: "1",  name: "1-ci Mərtəbə",  badge: "Kommersiya", type: "Kommersiya & Ticarət Bazası", apts: "Restoran, Kafe, Brend Mağazalar", area: "120 – 600 m²", yMin: 0.0,  yMax: 4.2,  targetY: 2.1 }
+];
+
+const buildingRaycastMeshes = [];
+let currentHoveredFloorId = null;
+let currentSelectedFloorId = null;
+
+// Glowing 3D Floor Indicator Volumes (Luxury Golden Amber)
+const highlightMat = new THREE.MeshBasicMaterial({
+  color: 0xdfc882,
+  transparent: true,
+  opacity: 0.0,
+  side: THREE.DoubleSide,
+  depthWrite: false
+});
+
+const highlightLineMat = new THREE.LineBasicMaterial({
+  color: 0xfff0b8,
+  transparent: true,
+  opacity: 0.0,
+  linewidth: 2
+});
+
+const highlightGeomA = new THREE.BoxGeometry(40, 3.2, 40);
+const highlightMeshA = new THREE.Mesh(highlightGeomA, highlightMat);
+highlightMeshA.position.set(48, 10, -5);
+const highlightWireA = new THREE.LineSegments(new THREE.EdgesGeometry(highlightGeomA), highlightLineMat);
+highlightMeshA.add(highlightWireA);
+scene.add(highlightMeshA);
+
+const highlightGeomB = new THREE.BoxGeometry(36, 3.2, 38);
+const highlightMeshB = new THREE.Mesh(highlightGeomB, highlightMat);
+highlightMeshB.position.set(6, 10, -5);
+const highlightWireB = new THREE.LineSegments(new THREE.EdgesGeometry(highlightGeomB), highlightLineMat);
+highlightMeshB.add(highlightWireB);
+scene.add(highlightMeshB);
+
+// Build UI List
+const floorListContainer = document.getElementById('floor-list');
+FLOORS.forEach(f => {
+  const item = document.createElement('div');
+  item.className = 'floor-item';
+  item.id = `floor-item-${f.id}`;
+  item.innerHTML = `<span><strong>${f.num}</strong>-ci Mərtəbə</span><span class="floor-badge">${f.badge}</span>`;
+  item.addEventListener('mouseenter', () => hoverFloor(f.id));
+  item.addEventListener('mouseleave', () => unhoverFloor(f.id));
+  item.addEventListener('click', () => selectFloor(f.id));
+  floorListContainer.appendChild(item);
+});
+
+function updateHighlightGeometry(floor, opacityFill, opacityWire) {
+  const floorHeight = floor.yMax - floor.yMin;
+  const floorCenterY = (floor.yMin + floor.yMax) / 2;
+
+  highlightMeshA.position.y = floorCenterY;
+  highlightMeshA.scale.y = floorHeight / 3.2;
+  highlightMeshB.position.y = floorCenterY;
+  highlightMeshB.scale.y = floorHeight / 3.2;
+
+  highlightMat.opacity = opacityFill;
+  highlightLineMat.opacity = opacityWire;
+}
+
+window.hoverFloor = (id) => {
+  if (currentSelectedFloorId === id) return;
+  currentHoveredFloorId = id;
+  const floor = FLOORS.find(f => f.id === id);
+  if (!floor) return;
+
+  document.querySelectorAll('.floor-item').forEach(el => {
+    if (el.id === `floor-item-${id}`) el.classList.add('hovered');
+    else el.classList.remove('hovered');
+  });
+
+  updateHighlightGeometry(floor, 0.22, 0.75);
+};
+
+window.unhoverFloor = (id) => {
+  if (currentHoveredFloorId === id) {
+    currentHoveredFloorId = null;
+    document.querySelectorAll('.floor-item').forEach(el => el.classList.remove('hovered'));
+
+    if (currentSelectedFloorId) {
+      const selected = FLOORS.find(f => f.id === currentSelectedFloorId);
+      if (selected) updateHighlightGeometry(selected, 0.38, 0.95);
+    } else {
+      highlightMat.opacity = 0.0;
+      highlightLineMat.opacity = 0.0;
+      document.getElementById('floor-tooltip').classList.remove('visible');
+    }
+  }
+};
+
+let targetCamPos = null;
+let targetLookAt = null;
+
+window.selectFloor = (id) => {
+  currentSelectedFloorId = id;
+  document.querySelectorAll('.floor-item').forEach(el => {
+    if (id !== null && el.id === `floor-item-${id}`) el.classList.add('active');
+    else el.classList.remove('active');
+  });
+
+  const card = document.getElementById('floor-card');
+  const tooltip = document.getElementById('floor-tooltip');
+
+  if (id === null) {
+    highlightMat.opacity = 0.0;
+    highlightLineMat.opacity = 0.0;
+    card.classList.remove('visible');
+    tooltip.classList.remove('visible');
+    setView('facade');
+    return;
+  }
+
+  const floor = FLOORS.find(f => f.id === id);
+  if (!floor) return;
+
+  updateHighlightGeometry(floor, 0.36, 0.95);
+
+  document.getElementById('card-title').textContent = floor.name;
+  document.getElementById('card-type').textContent = floor.type;
+  document.getElementById('card-apts').textContent = floor.apts;
+  document.getElementById('card-area').textContent = floor.area;
+  card.classList.add('visible');
+
+  // Smooth camera focus
+  targetCamPos = new THREE.Vector3(26, floor.targetY + 9, -52);
+  targetLookAt = new THREE.Vector3(22, floor.targetY, -5);
+};
+
+// Raycasting for direct 3D mouse hover & selection
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+const floorTooltip = document.getElementById('floor-tooltip');
+let lastRaycastTime = 0;
+
+window.addEventListener('pointermove', (e) => {
+  if (e.target.closest('#floor-panel, #btn-panel, #views-bar, #ui, #floor-card, #controls-help')) {
+    floorTooltip.classList.remove('visible');
+    return;
+  }
+
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+  const now = performance.now();
+  if (now - lastRaycastTime < 35) return; // 30 FPS cap
+  lastRaycastTime = now;
+
+  if (buildingRaycastMeshes.length === 0) return;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(buildingRaycastMeshes, false);
+
+  if (intersects.length > 0) {
+    const hitY = intersects[0].point.y;
+    const floor = FLOORS.find(f => hitY >= f.yMin && hitY < f.yMax);
+    if (floor) {
+      hoverFloor(floor.id);
+      floorTooltip.style.left = e.clientX + 'px';
+      floorTooltip.style.top = e.clientY + 'px';
+      document.getElementById('tt-floor-badge').textContent = `MƏRTƏBƏ ${floor.num}`;
+      document.getElementById('tt-floor-name').textContent = floor.name;
+      document.getElementById('tt-floor-info').textContent = `${floor.apts} • ${floor.area}`;
+      floorTooltip.classList.add('visible');
+      renderer.domElement.style.cursor = 'pointer';
+      return;
+    }
+  }
+
+  if (!currentSelectedFloorId && currentHoveredFloorId) {
+    unhoverFloor(currentHoveredFloorId);
+  }
+  floorTooltip.classList.remove('visible');
+  renderer.domElement.style.cursor = 'default';
+});
+
+window.addEventListener('click', (e) => {
+  if (e.target.closest('#floor-panel, #btn-panel, #views-bar, #ui, #floor-card, #controls-help')) return;
+  if (currentHoveredFloorId) {
+    selectFloor(currentHoveredFloorId);
+  }
+});
 
 // Preset Architectural Views (Hero Perspectives calibrated to reference a5d249b0.jpg)
 window.setView = (view) => {
@@ -862,12 +1213,26 @@ const walkDir = new THREE.Vector3(), walkRight = new THREE.Vector3();
 function animate() {
   requestAnimationFrame(animate);
 
+  // Stop GPU/CPU execution when tab is hidden to prevent computer freeze
+  if (document.hidden) return;
+
   fpsFrames++;
   const time = performance.now();
   if (time >= lastTime + 1000) {
     document.getElementById('stat-fps').textContent = fpsFrames;
     fpsFrames = 0;
     lastTime = time;
+  }
+
+  // Smooth camera floor transition
+  if (targetCamPos && targetLookAt) {
+    camera.position.lerp(targetCamPos, 0.05);
+    controls.target.lerp(targetLookAt, 0.05);
+    controls.update();
+    if (camera.position.distanceTo(targetCamPos) < 0.25) {
+      targetCamPos = null;
+      targetLookAt = null;
+    }
   }
 
   if (currentMode === 'walk') {
