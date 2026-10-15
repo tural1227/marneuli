@@ -1052,19 +1052,19 @@
 
       <!-- Human Walk Navigation Floating Dock -->
       <div class="tour-walk-nav" id="tour-walk-dock">
-        <button class="tour-walk-btn" id="btn-walk-forward" onmousedown="window.startWalk('KeyW')" onmouseup="window.stopWalk('KeyW')" onmouseleave="window.stopWalk('KeyW')" ontouchstart="window.startWalk('KeyW')" ontouchend="window.stopWalk('KeyW')" onclick="window.tourWalkForward()" title="Önə doğru addımla (W / ↑)">
+        <button class="tour-walk-btn" id="btn-walk-forward" onmousedown="window.startWalk('KeyW')" onmouseup="window.stopWalk('KeyW')" onmouseleave="window.stopWalk('KeyW')" ontouchstart="window.startWalk('KeyW')" ontouchend="window.stopWalk('KeyW')" onclick="window.stepWalk('forward')" title="Önə doğru addımla (W / ↑)">
           <span>🚶‍♂️ Önə</span>
           <span class="walk-key">W</span>
         </button>
-        <button class="tour-walk-btn" id="btn-walk-backward" onmousedown="window.startWalk('KeyS')" onmouseup="window.stopWalk('KeyS')" onmouseleave="window.stopWalk('KeyS')" ontouchstart="window.startWalk('KeyS')" ontouchend="window.stopWalk('KeyS')" onclick="window.tourWalkBackward()" title="Geriyə addımla (S / ↓)">
+        <button class="tour-walk-btn" id="btn-walk-backward" onmousedown="window.startWalk('KeyS')" onmouseup="window.stopWalk('KeyS')" onmouseleave="window.stopWalk('KeyS')" ontouchstart="window.startWalk('KeyS')" ontouchend="window.stopWalk('KeyS')" onclick="window.stepWalk('backward')" title="Geriyə addımla (S / ↓)">
           <span>↩ Geri</span>
           <span class="walk-key">S</span>
         </button>
-        <button class="tour-walk-btn" id="btn-walk-left" onmousedown="window.startWalk('KeyA')" onmouseup="window.stopWalk('KeyA')" onmouseleave="window.stopWalk('KeyA')" ontouchstart="window.startWalk('KeyA')" ontouchend="window.stopWalk('KeyA')" title="Sola Addımla (A / ←)">
+        <button class="tour-walk-btn" id="btn-walk-left" onmousedown="window.startWalk('KeyA')" onmouseup="window.stopWalk('KeyA')" onmouseleave="window.stopWalk('KeyA')" ontouchstart="window.startWalk('KeyA')" ontouchend="window.stopWalk('KeyA')" onclick="window.stepWalk('left')" title="Sola Addımla (A / ←)">
           <span>◀ Sola</span>
           <span class="walk-key">A</span>
         </button>
-        <button class="tour-walk-btn" id="btn-walk-right" onmousedown="window.startWalk('KeyD')" onmouseup="window.stopWalk('KeyD')" onmouseleave="window.stopWalk('KeyD')" ontouchstart="window.startWalk('KeyD')" ontouchend="window.stopWalk('KeyD')" title="Sağa Addımla (D / →)">
+        <button class="tour-walk-btn" id="btn-walk-right" onmousedown="window.startWalk('KeyD')" onmouseup="window.stopWalk('KeyD')" onmouseleave="window.stopWalk('KeyD')" ontouchstart="window.startWalk('KeyD')" ontouchend="window.stopWalk('KeyD')" onclick="window.stepWalk('right')" title="Sağa Addımla (D / →)">
           <span>Sağa ▶</span>
           <span class="walk-key">D</span>
         </button>
@@ -1352,9 +1352,6 @@
       if (camera) {
         camera.position.set(cameraOffset.x, currentBob, cameraOffset.z);
         camera.lookAt(cameraOffset.x + lookX, cameraOffset.y + lookY, cameraOffset.z + lookZ);
-        if (isHumanMode) {
-          camera.rotation.z = headRoll;
-        }
       }
 
       if (renderer && scene && camera) {
@@ -1383,14 +1380,15 @@
     if (moveForward === 0 && moveSide === 0) return;
 
     const rad = (lon * Math.PI) / 180;
-    const fX = Math.sin(rad);
-    const fZ = Math.cos(rad);
-    const sX = Math.cos(rad);
-    const sZ = -Math.sin(rad);
+    // EXACT FORWARD & STRAFE DIRECTION (Aligned 1:1 with camera lookAt):
+    const fX = Math.cos(rad);
+    const fZ = Math.sin(rad);
+    const rX = Math.sin(rad);
+    const rZ = -Math.cos(rad);
 
-    const speed = 75; // units per second
-    const dx = (fX * moveForward + sX * moveSide) * speed * dt;
-    const dz = (fZ * moveForward + sZ * moveSide) * speed * dt;
+    const speed = 80; // units per second
+    const dx = (fX * moveForward + rX * moveSide) * speed * dt;
+    const dz = (fZ * moveForward + rZ * moveSide) * speed * dt;
 
     targetOffset.x += dx;
     targetOffset.z += dz;
@@ -1631,11 +1629,11 @@
       // Facing a doorway: walk straight through it!
       walkToRoom(facingDoor.target, facingDoor.yaw, facingDoor.pitch);
     } else {
-      // Walk forward inside room
+      // Walk forward inside room aligned 1:1 with camera look direction
       playFootstepSound();
       const rad = (lon * Math.PI) / 180;
-      targetOffset.x += Math.sin(rad) * 35;
-      targetOffset.z += Math.cos(rad) * 35;
+      targetOffset.x += Math.cos(rad) * 35;
+      targetOffset.z += Math.sin(rad) * 35;
       walkBobPhase += Math.PI * 0.8;
 
       const dist = Math.hypot(targetOffset.x, targetOffset.z);
@@ -1650,14 +1648,33 @@
   // Walk backward button action
   function walkBackward() {
     playFootstepSound();
-    if (roomHistory.length > 0) {
-      const prev = roomHistory.pop();
-      walkToRoom(prev, null, null);
-    } else {
-      const rad = (lon * Math.PI) / 180;
-      targetOffset.x -= Math.sin(rad) * 30;
-      targetOffset.z -= Math.cos(rad) * 30;
-      walkBobPhase += Math.PI * 0.8;
+    const rad = (lon * Math.PI) / 180;
+    targetOffset.x -= Math.cos(rad) * 35;
+    targetOffset.z -= Math.sin(rad) * 35;
+    walkBobPhase += Math.PI * 0.8;
+
+    const dist = Math.hypot(targetOffset.x, targetOffset.z);
+    if (dist > 95) {
+      const scale = 95 / dist;
+      targetOffset.x *= scale;
+      targetOffset.z *= scale;
+    }
+  }
+
+  // Walk strafe left / right action
+  function walkStrafe(side) {
+    playFootstepSound();
+    const rad = (lon * Math.PI) / 180;
+    const factor = (side === 'right' ? 32 : -32);
+    targetOffset.x += Math.sin(rad) * factor;
+    targetOffset.z += -Math.cos(rad) * factor;
+    walkBobPhase += Math.PI * 0.8;
+
+    const dist = Math.hypot(targetOffset.x, targetOffset.z);
+    if (dist > 95) {
+      const scale = 95 / dist;
+      targetOffset.x *= scale;
+      targetOffset.z *= scale;
     }
   }
 
@@ -1891,6 +1908,21 @@
 
   window.tourWalkBackward = function () {
     walkBackward();
+  };
+
+  window.tourWalkLeft = function () {
+    walkStrafe('left');
+  };
+
+  window.tourWalkRight = function () {
+    walkStrafe('right');
+  };
+
+  window.stepWalk = function (dir) {
+    if (dir === 'forward') walkForward();
+    else if (dir === 'backward') walkBackward();
+    else if (dir === 'left') walkStrafe('left');
+    else if (dir === 'right') walkStrafe('right');
   };
 
   window.startWalk = function (keyCode) {
