@@ -850,6 +850,7 @@
   let roomHistory = [];
 
   // GPU Memory Preload Cache (keyed by image URL)
+  const CACHE_BUST = "?v=20261015_v20";
   const textureCache = {};
 
   // Walking Physics State
@@ -1095,7 +1096,7 @@
     const config = getCurrentAptConfig();
     Object.values(config.rooms).forEach(room => {
       if (!textureCache[room.image]) {
-        textureLoader.load(room.image, (tex) => {
+        textureLoader.load(room.image + CACHE_BUST, (tex) => {
           tex.mapping = window.THREE.UVMapping;
           tex.colorSpace = window.THREE.SRGBColorSpace;
           tex.minFilter = window.THREE.LinearFilter;
@@ -1351,7 +1352,7 @@
     }
 
     textureLoader.load(
-      room.image,
+      room.image + CACHE_BUST,
       (texture) => {
         texture.mapping = window.THREE.UVMapping;
         texture.colorSpace = window.THREE.SRGBColorSpace;
