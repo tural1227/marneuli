@@ -1602,29 +1602,20 @@
       if (diff > 180) diff -= 360;
       if (diff < -180) diff += 360;
       let absDiff = Math.abs(diff);
-      if (absDiff < minDiff) {
-        minDiff = absDiff;
-        facingDoor = h;
-      }
-    });
+    // Walk forward inside room aligned 1:1 with camera look direction
+    playFootstepSound();
+    const rad = (lon * Math.PI) / 180;
+    const fX = Math.cos(rad);
+    const fZ = Math.sin(rad);
+    targetOffset.x += fX * 32;
+    targetOffset.z += fZ * 32;
+    walkBobPhase += Math.PI * 0.8;
 
-    if (facingDoor && minDiff < 48) {
-      // Facing a doorway: walk straight through it!
-      walkToRoom(facingDoor.target, facingDoor.yaw, facingDoor.pitch);
-    } else {
-      // Walk forward inside room aligned 1:1 with camera look direction
-      playFootstepSound();
-      const rad = (lon * Math.PI) / 180;
-      targetOffset.x += Math.cos(rad) * 35;
-      targetOffset.z += Math.sin(rad) * 35;
-      walkBobPhase += Math.PI * 0.8;
-
-      const dist = Math.hypot(targetOffset.x, targetOffset.z);
-      if (dist > 95) {
-        const scale = 95 / dist;
-        targetOffset.x *= scale;
-        targetOffset.z *= scale;
-      }
+    const dist = Math.hypot(targetOffset.x, targetOffset.z);
+    if (dist > 95) {
+      const scale = 95 / dist;
+      targetOffset.x *= scale;
+      targetOffset.z *= scale;
     }
   }
 
@@ -1632,8 +1623,10 @@
   function walkBackward() {
     playFootstepSound();
     const rad = (lon * Math.PI) / 180;
-    targetOffset.x -= Math.cos(rad) * 35;
-    targetOffset.z -= Math.sin(rad) * 35;
+    const fX = Math.cos(rad);
+    const fZ = Math.sin(rad);
+    targetOffset.x -= fX * 32;
+    targetOffset.z -= fZ * 32;
     walkBobPhase += Math.PI * 0.8;
 
     const dist = Math.hypot(targetOffset.x, targetOffset.z);
@@ -1648,9 +1641,11 @@
   function walkStrafe(side) {
     playFootstepSound();
     const rad = (lon * Math.PI) / 180;
-    const factor = (side === 'right' ? 32 : -32);
-    targetOffset.x += Math.sin(rad) * factor;
-    targetOffset.z += -Math.cos(rad) * factor;
+    // Right is (-sin(rad), cos(rad)), Left is (sin(rad), -cos(rad))
+    const rX = (side === 'right' ? -Math.sin(rad) : Math.sin(rad));
+    const rZ = (side === 'right' ? Math.cos(rad) : -Math.cos(rad));
+    targetOffset.x += rX * 30;
+    targetOffset.z += rZ * 30;
     walkBobPhase += Math.PI * 0.8;
 
     const dist = Math.hypot(targetOffset.x, targetOffset.z);
@@ -1906,6 +1901,16 @@
     else if (dir === 'backward') walkBackward();
     else if (dir === 'left') walkStrafe('left');
     else if (dir === 'right') walkStrafe('right');
+  };
+
+  let isFlippedV = false;
+  window.toggleFlipV = function () {
+    isFlippedV = !isFlippedV;
+    if (sphereMesh) {
+      sphereMesh.scale.y = isFlippedV ? -1 : 1;
+    }
+    const btn = document.getElementById("btn-flip-v");
+    if (btn) btn.classList.toggle("active", isFlippedV);
   };
 
   window.startWalk = function (keyCode) {
