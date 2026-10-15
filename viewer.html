@@ -390,9 +390,6 @@
   <div id="progress-bar-outer"><div id="progress-bar"></div></div>
   <div id="progress-text">Yüklənir...</div>
 
-  <div id="loading-quick-actions" style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; z-index: 105;">
-    <button type="button" onclick="openFloorPlanModal()" style="background: rgba(223,200,130,0.18); color: #dfc882; border: 1px solid #dfc882; padding: 9px 18px; border-radius: 24px; font-size: 0.82rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(8px); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">🗺️ 2D Mərtəbə Planını Aç</button>
-  </div>
 </div>
 
 <div id="canvas-container"></div>
@@ -406,7 +403,6 @@
   <button class="view-btn active" data-view="facade" onclick="setView('facade')">🏢 Fasad (Əsas Görünüş)</button>
   <button class="view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı</button>
   <button class="view-btn btn-cinematic-glow" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic Görünüş</button>
-  <button class="view-btn" style="color: #dfc882; font-weight: 700; border: 1px solid rgba(223,200,130,0.4);" onclick="openFloorPlanModal()" title="2D Mərtəbə Planı və Mənzil Eskizləri">🗺️ 2D Mərtəbə Planı</button>
 </div>
 
 <!-- Vertical Floor Selector Panel (Right Side) -->
@@ -438,7 +434,7 @@
   <div class="card-row"><span>Sahələr:</span><span id="card-area">65 - 125 m²</span></div>
   <div class="card-row"><span>Tavan hündürlüyü:</span><span>3.30 metr</span></div>
   <div class="card-row"><span>Eyvan:</span><span>Fransız eyvanları &amp; Teras</span></div>
-  <button class="card-action-btn" onclick="openFloorPlanModal()">📐 Bu Mərtəbənin Eskiz Planını Aç</button>
+  <button class="card-action-btn" onclick="openFloorPlanModal(window.currentSelectedFloorId)">📐 Bu Mərtəbənin Eskiz Planını Aç</button>
   <button class="card-action-btn" style="background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; margin-top: 6px;" onclick="open360Tour(52)">🔮 Mənzil 52-yə Daxil Ol (360° Mənzilin İçi)</button>
 </div>
 
@@ -1513,10 +1509,16 @@ FLOORS.forEach(f => {
   const item = document.createElement('div');
   item.className = 'floor-item';
   item.id = `floor-item-${f.id}`;
+  item.title = `${f.num}-ci mərtəbənin planını açmaq üçün klikləyin`;
   item.innerHTML = `<span><strong>${f.num}</strong>-ci Mərtəbə</span><span class="floor-badge">${f.badge}</span>`;
   item.addEventListener('mouseenter', () => hoverFloor(f.id));
   item.addEventListener('mouseleave', () => unhoverFloor(f.id));
-  item.addEventListener('click', () => selectFloor(f.id));
+  item.addEventListener('click', () => {
+    selectFloor(f.id);
+    if (typeof openFloorPlanModal === 'function') {
+      openFloorPlanModal(f.id);
+    }
+  });
   floorListContainer.appendChild(item);
 });
 
