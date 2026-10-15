@@ -1,10 +1,10 @@
 // ============================================================================
 // 🏢 MARNEULI RESIDENCE — 360° INTERACTIVE APARTMENT VIRTUAL TOUR
-// Integrates 360 panorama rendering, room-to-room hotspots, and Blockade Labs API
+// Realistic Walk Physics, Cohesive 3D Architectural Set & Zero Distortion
 // ============================================================================
 
 (function () {
-  // Tour configuration for Apartment 52 (Marneuli Residence, 5th Floor, 68.6 m²)
+  // Main Room Categories for Marneuli Residence, Apartment 52 (Floor 5, 68.6 m²)
   const APT_TOUR_CONFIG = {
     apartment: 52,
     floor: 5,
@@ -15,75 +15,166 @@
         id: "hall",
         name: "Dəhliz / Giriş Zonası",
         icon: "🚪",
-        image: "tour_360/apt_52/hall.jpg",
-        initialLon: 14.5,
-        hotspots: [
-          { target: "living", pitch: -3.0, yaw: 14.5, label: "Qonaq Otağı & Mətbəx" },
-          { target: "bathroom", pitch: -6.0, yaw: 92.5, label: "Hamam Otağı" },
-          { target: "bedroom", pitch: -6.0, yaw: 150.0, label: "Əsas Yataq Otağı" }
-        ]
+        defaultSpot: "entry"
       },
       living: {
         id: "living",
         name: "Qonaq Otağı & Açıq Mətbəx",
         icon: "🛋️",
-        image: "tour_360/apt_52/living.jpg",
-        initialLon: 8.0,
-        hotspots: [
-          { target: "balcony", pitch: -3.0, yaw: 8.0, label: "Eyvana (Balkona) Çıxış" },
-          { target: "hall", pitch: -3.0, yaw: 147.0, label: "Dəhlizə Qayıt" }
-        ]
+        defaultSpot: "living_1"
       },
       bedroom: {
         id: "bedroom",
         name: "Əsas Yataq Otağı",
         icon: "🛏️",
-        image: "tour_360/apt_52/bedroom.jpg",
-        initialLon: 41.5,
-        hotspots: [
-          { target: "balcony", pitch: -3.0, yaw: 41.5, label: "Eyvana Çıxış" },
-          { target: "hall", pitch: -5.0, yaw: -3.2, label: "Dəhlizə Qayıt" }
-        ]
+        defaultSpot: "bedroom_1"
       },
       bathroom: {
         id: "bathroom",
-        name: "Hamam Otağı & Sanitar Qovşağı",
+        name: "Hamam & Sanitar Qovşağı",
         icon: "🚿",
-        image: "tour_360/apt_52/bathroom.jpg",
-        initialLon: -30.0,
-        hotspots: [
-          { target: "hall", pitch: -5.0, yaw: 121.0, label: "Dəhlizə Qayıt" }
-        ]
+        defaultSpot: "bath_1"
       },
       balcony: {
         id: "balcony",
-        name: "Mənzərəli Eyvan (Balkon - 4.5 m²)",
+        name: "Mənzərəli Eyvan (Balkon)",
         icon: "🌿",
-        image: "tour_360/apt_52/balcony.jpg",
-        initialLon: 80.0,
-        hotspots: [
-          { target: "living", pitch: -4.0, yaw: -76.0, label: "Qonaq Otağına Keçid" },
-          { target: "bedroom", pitch: -4.0, yaw: -52.0, label: "Yataq Otağına Keçid" }
-        ]
+        defaultSpot: "balcony"
       }
     }
   };
 
+  // Full 3D Coordinate Network of Viewpoints across Apartment 52 (in centimeters)
+  const SPOTS = {
+    entry: {
+      id: "entry",
+      room: "hall",
+      label: "Dəhliz & Giriş Qapısı",
+      image: "tour_360/apt_52/entry.jpg",
+      x: -470, y: 320, z: 160,
+      initialYaw: -0.2
+    },
+    living_1: {
+      id: "living_1",
+      room: "living",
+      label: "Qonaq Otağı (Yemək Masası)",
+      image: "tour_360/apt_52/living_1.jpg",
+      x: -150, y: 330, z: 160,
+      initialYaw: 1.5
+    },
+    living_2: {
+      id: "living_2",
+      room: "living",
+      label: "Qonaq Otağı (Pəncərə & Eyvan Önü)",
+      image: "tour_360/apt_52/living_2.jpg",
+      x: -140, y: -30, z: 160,
+      initialYaw: 3.1
+    },
+    living_3: {
+      id: "living_3",
+      room: "living",
+      label: "Qonaq Otağı (Divan & Konsol)",
+      image: "tour_360/apt_52/living_3.jpg",
+      x: -345, y: 300, z: 160,
+      initialYaw: 1.8
+    },
+    kitchen_1: {
+      id: "kitchen_1",
+      room: "living",
+      label: "Açıq Mətbəx Zonası",
+      image: "tour_360/apt_52/kitchen_1.jpg",
+      x: 100, y: 150, z: 160,
+      initialYaw: -1.2
+    },
+    bedroom_1: {
+      id: "bedroom_1",
+      room: "bedroom",
+      label: "Əsas Yataq Otağı (Giriş)",
+      image: "tour_360/apt_52/bedroom_1.jpg",
+      x: 400, y: 200, z: 160,
+      initialYaw: 0.8
+    },
+    bedroom_2: {
+      id: "bedroom_2",
+      room: "bedroom",
+      label: "Yataq Otağı (Qarderob & Şkaf)",
+      image: "tour_360/apt_52/bedroom_2.jpg",
+      x: 640, y: 200, z: 160,
+      initialYaw: 2.2
+    },
+    bedroom_3: {
+      id: "bedroom_3",
+      room: "bedroom",
+      label: "Yataq Otağı (Çarpayı Yanı)",
+      image: "tour_360/apt_52/bedroom_3.jpg",
+      x: 400, y: 80, z: 160,
+      initialYaw: 1.0
+    },
+    bath_1: {
+      id: "bath_1",
+      room: "bathroom",
+      label: "Sanitar Qovşaq (Giriş)",
+      image: "tour_360/apt_52/bath_1.jpg",
+      x: 150, y: 330, z: 160,
+      initialYaw: -1.8
+    },
+    bath_2: {
+      id: "bath_2",
+      room: "bathroom",
+      label: "Sanitar Qovşaq (Moydadır & Güzgü)",
+      image: "tour_360/apt_52/bath_2.jpg",
+      x: 110, y: 370, z: 160,
+      initialYaw: -2.4
+    },
+    balcony: {
+      id: "balcony",
+      room: "balcony",
+      label: "Mənzərəli Eyvan (Balkon)",
+      image: "tour_360/apt_52/balcony.jpg",
+      x: -140, y: -260, z: 160,
+      initialYaw: 0.0
+    }
+  };
+
+  // Navigable Walkable Graph between Spots
+  const SPOT_LINKS = {
+    entry: ["living_3", "living_1", "bath_1"],
+    living_1: ["living_2", "living_3", "entry"],
+    living_2: ["living_1", "living_3", "kitchen_1", "balcony"],
+    living_3: ["living_1", "living_2", "entry"],
+    kitchen_1: ["living_2", "bath_1", "bedroom_1"],
+    bedroom_1: ["kitchen_1", "bedroom_2", "bedroom_3", "balcony"],
+    bedroom_2: ["bedroom_1", "bedroom_3"],
+    bedroom_3: ["bedroom_1", "bedroom_2"],
+    bath_1: ["kitchen_1", "bath_2", "entry"],
+    bath_2: ["bath_1"],
+    balcony: ["living_2", "bedroom_1"]
+  };
+
   let scene, camera, renderer, sphereMesh;
+  let currentSpotId = "entry";
   let currentRoomId = "hall";
-  let lon = 0, lat = 0;
-  let phi = 0, theta = 0;
+  let yaw = 0, pitch = 0;
   let isUserInteracting = false;
-  let onPointerDownPointerX = 0, onPointerDownPointerY = 0;
-  let onPointerDownLon = 0, onPointerDownLat = 0;
+  let dragStart = { x: 0, y: 0, yaw: 0, pitch: 0 };
+  let hasMoved = false;
   let textureLoader = null;
-  let activeHotspots = [];
   let isTourInitialized = false;
-  let fov = 60; // 60° natural architectural human FOV (eliminates circular barrel/well distortion)
-  let isWalking = false;
+  let fov = 60; // 60° natural architectural FOV — straight vertical walls, zero circular well distortion
+  let isTransitioning = false;
+  let markersGroup = null;
+  let raycaster = null;
+  let mouse = null;
   let roomHistory = [];
 
-  // Initialize Tour HTML Elements
+  // Walking Physics State inside Room
+  let camOffset = { x: 0, y: 0, z: 0 };
+  let targetCamOffset = { x: 0, y: 0, z: 0 };
+  let walkBobPhase = 0;
+  let currentBob = 0;
+  let activeHotspots = [];
+
+  // Create UI DOM
   function createTourDOMElements() {
     if (document.getElementById("tour-360-modal")) return;
 
@@ -116,11 +207,11 @@
 
       <!-- Walk Navigation Floating Dock -->
       <div class="tour-walk-nav">
-        <button class="tour-walk-btn" onclick="window.tourWalkForward()" title="Qapıya doğru addımla (W / ↑)">
+        <button class="tour-walk-btn" onclick="window.tourWalkForward()" title="Otağın içində önə addımla (W / ↑)">
           <span>🚶‍♂️ Önə Addımla</span>
           <span class="walk-key">W</span>
         </button>
-        <button class="tour-walk-btn" onclick="window.tourWalkBackward()" title="Əvvəlki otağa qayıt (S / ↓)">
+        <button class="tour-walk-btn" onclick="window.tourWalkBackward()" title="Geriyə addımla (S / ↓)">
           <span>↩ Geriyə Qayıt</span>
           <span class="walk-key">S</span>
         </button>
@@ -128,8 +219,8 @@
 
       <!-- Side Controls -->
       <div class="tour-side-controls">
-        <button class="tour-icon-btn" onclick="window.tourZoom(-10)" title="Yaxınlaşdır">+</button>
-        <button class="tour-icon-btn" onclick="window.tourZoom(10)" title="Uzaqlaşdır">−</button>
+        <button class="tour-icon-btn" onclick="window.tourZoom(-8)" title="Yaxınlaşdır">+</button>
+        <button class="tour-icon-btn" onclick="window.tourZoom(8)" title="Uzaqlaşdır">−</button>
         <button class="tour-icon-btn" onclick="window.tourToggleFullscreen()" title="Tam Ekran">⛶</button>
       </div>
 
@@ -139,10 +230,10 @@
       <!-- Loading Indicator -->
       <div id="tour-loading-indicator">
         <div class="tour-spinner"></div>
-        <div style="font-size: 13px; font-weight: 600;">Otaq 360° Yüklənir...</div>
+        <div style="font-size: 13px; font-weight: 600;">Otaq Yüklənir...</div>
       </div>
 
-      <!-- AI 360 Generator Modal (Pollinations.ai 100% Free & Blockade Labs) -->
+      <!-- AI 360 Generator Modal -->
       <div id="blockade-ai-modal">
         <div class="blockade-box">
           <div class="blockade-header">
@@ -213,57 +304,41 @@
       tabsContainer.appendChild(tab);
     });
 
-    // Populate saved API Key if any
     const savedKey = localStorage.getItem("BLOCKADE_API_KEY");
     if (savedKey) {
       const keyInput = document.getElementById("blockade-api-key-input");
       if (keyInput) keyInput.value = savedKey;
     }
-
-    // Update prompt when room selection changes in modal
-    const roomSelect = document.getElementById("blockade-room-select");
-    const promptInput = document.getElementById("blockade-prompt-input");
-    const defaultPrompts = {
-      hall: "Ultra-realistic interior 360 equirectangular panorama of an elegant entrance hall and corridor of modern luxury apartment. Polished porcelain marble floor tiles, sleek hidden coat storage wall, full-length mirror with warm backlighting, modern interior wooden doors leading to living room, bedroom and bathroom, warm recessed ceiling spotlights, 8k resolution.",
-      living: "Ultra-realistic interior 360 equirectangular panorama of modern luxury open-space living room and kitchen studio in a premium apartment, Marneuli Residence. L-shaped stylish cream sofa, oak wood herringbone parquet floor, marble dining island with modern barstools, sleek contemporary dark kitchen cabinetry with warm LED accents, floor-to-ceiling glass sliding doors opening to balcony, warm natural daylight, 8k resolution.",
-      bedroom: "Ultra-realistic interior 360 equirectangular panorama of modern master bedroom in a luxury apartment, Marneuli Residence. King size bed with designer beige upholstered headboard, built-in wooden wardrobe, modern bedside pendant lights, soft wool carpet on hardwood floor, glass door leading to balcony, sheer white curtains, cozy warm ambient light, 8k resolution.",
-      bathroom: "Ultra-realistic interior 360 equirectangular panorama of a contemporary luxury bathroom. Italian marble tile walls, floating oak wood vanity with illuminated round mirror, walk-in glass shower enclosure, matte black fixtures, recessed warm ceiling lights, spa atmosphere, clean hotel aesthetic, 8k resolution.",
-      balcony: "Ultra-realistic 360 equirectangular panorama from a high-floor 5th floor apartment balcony. Modern black steel railing, outdoor tiled floor, panoramic daylight view overlooking classical limestone facade of Marneuli Residence and landscaped green courtyard park below, blue sky, bright sunny day, 8k resolution."
-    };
-
-    if (roomSelect && promptInput) {
-      promptInput.value = defaultPrompts.hall;
-      roomSelect.addEventListener("change", () => {
-        promptInput.value = defaultPrompts[roomSelect.value] || "";
-      });
-    }
   }
 
-  // Init Three.js Panorama Scene
+  // Initialize Three.js Scene
   function initThreeScene() {
     if (isTourInitialized) return;
-    THREE = window.THREE || (typeof THREE !== 'undefined' ? THREE : null);
+    const THREE = window.THREE;
     const container = document.getElementById("tour-360-canvas-container");
     if (!container || !THREE) {
-      console.warn("Three.js or canvas container not yet ready:", { THREE, container });
+      console.warn("Three.js not ready:", { THREE, container });
       return;
     }
 
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 1, 1100);
-    camera.target = new THREE.Vector3(0, 0, 0);
+    camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 200);
+    camera.rotation.order = "YXZ";
 
-    // Inverted sphere for 360 panorama projection
-    const geometry = new THREE.SphereGeometry(500, 64, 40);
-    geometry.scale(-1, 1, 1);
-
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      side: THREE.DoubleSide
-    });
-
-    sphereMesh = new THREE.Mesh(geometry, material);
+    // 360 Panoramic Sphere
+    const sphereGeo = new THREE.SphereGeometry(60, 96, 64);
+    sphereGeo.scale(-1, 1, 1);
+    const sphereMat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+    sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+    sphereMesh.rotation.y = -Math.PI / 2; // Matches 3D plan coordinates
     scene.add(sphereMesh);
+
+    // Interactive 3D Floor Markers
+    markersGroup = new THREE.Group();
+    scene.add(markersGroup);
+
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -275,42 +350,59 @@
 
     textureLoader = new THREE.TextureLoader();
 
-    // Event Listeners for Interaction
+    // Interaction Listeners
     container.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("pointermove", onPointerMove);
-    document.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
     container.addEventListener("wheel", onDocumentMouseWheel, { passive: false });
     window.addEventListener("resize", onWindowResize);
 
     isTourInitialized = true;
-    animate();
+    startRenderLoop();
   }
 
-  function onPointerDown(event) {
-    if (event.isPrimary === false) return;
+  function onPointerDown(e) {
     isUserInteracting = true;
-    onPointerDownPointerX = event.clientX;
-    onPointerDownPointerY = event.clientY;
-    onPointerDownLon = lon;
-    onPointerDownLat = lat;
+    hasMoved = false;
+    dragStart = { x: e.clientX, y: e.clientY, yaw, pitch };
   }
 
-  function onPointerMove(event) {
-    if (event.isPrimary === false || !isUserInteracting) return;
-    lon = (onPointerDownPointerX - event.clientX) * 0.15 + onPointerDownLon;
-    lat = (event.clientY - onPointerDownPointerY) * 0.15 + onPointerDownLat;
+  function onPointerMove(e) {
+    if (!isUserInteracting) return;
+    const dx = e.clientX - dragStart.x;
+    const dy = e.clientY - dragStart.y;
+    if (Math.abs(dx) + Math.abs(dy) > 5) hasMoved = true;
+    yaw = dragStart.yaw + dx * 0.0035;
+    pitch = Math.max(-1.3, Math.min(1.3, dragStart.pitch + dy * 0.0035));
   }
 
-  function onPointerUp(event) {
-    if (event.isPrimary === false) return;
+  function onPointerUp(e) {
+    if (isUserInteracting && !hasMoved && markersGroup) {
+      // Check click on 3D floor markers
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(markersGroup.children, true);
+      if (intersects.length > 0) {
+        let obj = intersects[0].object;
+        while (obj && !obj.userData.spotId && obj.parent) {
+          obj = obj.parent;
+        }
+        if (obj && obj.userData.spotId) {
+          walkToSpot(obj.userData.spotId);
+        }
+      }
+    }
     isUserInteracting = false;
   }
 
-  function onDocumentMouseWheel(event) {
-    event.preventDefault();
-    fov = Math.max(42, Math.min(70, fov + event.deltaY * 0.04));
-    camera.fov = fov;
-    camera.updateProjectionMatrix();
+  function onDocumentMouseWheel(e) {
+    e.preventDefault();
+    fov = Math.max(42, Math.min(70, fov + e.deltaY * 0.035));
+    if (camera) {
+      camera.fov = fov;
+      camera.updateProjectionMatrix();
+    }
   }
 
   function onWindowResize() {
@@ -318,266 +410,145 @@
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    updateHotspotPositions();
+    updateHotspotPins();
   }
 
-  function animate() {
-    requestAnimationFrame(animate);
+  // Animation Loop with Real-time Walking Physics
+  function startRenderLoop() {
+    function animate() {
+      requestAnimationFrame(animate);
 
-    // Limit pitch (latitude) to avoid gimbal lock
-    lat = Math.max(-85, Math.min(85, lat));
-    phi = ((90 - lat) * Math.PI) / 180;
-    theta = (lon * Math.PI) / 180;
+      // Smooth camera position damping for physical walk
+      camOffset.x += (targetCamOffset.x - camOffset.x) * 0.15;
+      camOffset.z += (targetCamOffset.z - camOffset.z) * 0.15;
+      currentBob += ((Math.sin(walkBobPhase) * 0.04) - currentBob) * 0.2;
 
-    const x = 500 * Math.sin(phi) * Math.cos(theta);
-    const y = 500 * Math.cos(phi);
-    const z = 500 * Math.sin(phi) * Math.sin(theta);
+      if (camera) {
+        camera.rotation.set(0, 0, 0);
+        camera.rotateY(yaw);
+        camera.rotateX(pitch);
+        camera.position.set(camOffset.x, currentBob, camOffset.z);
+      }
 
-    camera.lookAt(x, y, z);
-    renderer.render(scene, camera);
+      // Animate floor markers pulsing ring
+      if (markersGroup) {
+        const t = performance.now() / 250;
+        markersGroup.children.forEach(m => {
+          m.scale.setScalar(1 + 0.06 * Math.sin(t));
+        });
+      }
 
-    updateHotspotPositions();
+      if (renderer && scene && camera) {
+        renderer.render(scene, camera);
+      }
+
+      updateHotspotPins();
+    }
+
+    animate();
   }
 
-  // Switch Active Room
-  function switchRoom(roomId, targetYaw = null, resetView = true) {
-    const room = APT_TOUR_CONFIG.rooms[roomId];
-    if (!room) return;
+  // Build 3D Floor Navigation Markers
+  function rebuildFloorMarkers(spotId) {
+    if (!markersGroup || !window.THREE) return;
+    markersGroup.clear();
 
-    currentRoomId = roomId;
+    const here = SPOTS[spotId];
+    if (!here) return;
 
-    // Update Room Title
-    const titleEl = document.getElementById("tour-room-title");
-    if (titleEl) {
-      titleEl.innerHTML = `<strong>${APT_TOUR_CONFIG.title}</strong> &bull; <span style="color:#60a5fa;">${room.name}</span>`;
-    }
+    const THREE = window.THREE;
+    const ringGeo = new THREE.RingGeometry(0.24, 0.36, 48);
+    ringGeo.rotateX(-Math.PI / 2);
+    const discGeo = new THREE.CircleGeometry(0.24, 48);
+    discGeo.rotateX(-Math.PI / 2);
 
-    // Update bottom tabs
-    document.querySelectorAll(".tour-room-tab").forEach(tab => tab.classList.remove("active"));
-    const activeTab = document.getElementById(`tour-tab-${roomId}`);
-    if (activeTab) activeTab.classList.add("active");
+    const neighborIds = SPOT_LINKS[spotId] || [];
+    neighborIds.forEach(nid => {
+      const target = SPOTS[nid];
+      if (!target) return;
 
-    // Reset or set angle if allowed
-    if (resetView) {
-      if (targetYaw !== null) {
-        lon = targetYaw;
-        lat = 0;
-      } else if (room.initialLon !== undefined) {
-        lon = room.initialLon;
-        lat = 0;
-      }
-    }
+      const dx = (target.x - here.x) / 100;
+      const dz = (target.y - here.y) / 100;
 
-    // Show loading indicator
-    const loader = document.getElementById("tour-loading-indicator");
-    if (loader) loader.style.display = "flex";
+      const group = new THREE.Group();
+      group.position.set(dx, -1.55, dz);
+      group.userData = { spotId: nid, label: target.label };
 
-    // Load Panorama Texture
-    const T = window.THREE;
-    if (!textureLoader && T) {
-      textureLoader = new T.TextureLoader();
-    }
-    if (!textureLoader || !T) {
-      console.error("textureLoader or THREE missing!", { textureLoader, T });
-      if (loader) loader.style.display = "none";
-      return;
-    }
+      // Cyan / Aqua Glowing Floor Ring
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.9,
+        depthTest: false
+      });
+      const discMat = new THREE.MeshBasicMaterial({
+        color: 0x0284c7,
+        transparent: true,
+        opacity: 0.35,
+        depthTest: false
+      });
 
-    const imgUrl = room.image + (room.image.includes("?") ? "" : "?v=20261015_clean360");
-    textureLoader.load(
-      imgUrl,
-      (texture) => {
-        texture.mapping = T.UVMapping;
-        texture.colorSpace = T.SRGBColorSpace;
-        texture.minFilter = T.LinearFilter;
-        texture.magFilter = T.LinearFilter;
-        if (sphereMesh && sphereMesh.material) {
-          sphereMesh.material.color.setHex(0xffffff);
-          sphereMesh.material.map = texture;
-          sphereMesh.material.needsUpdate = true;
-        }
-        if (loader) loader.style.display = "none";
-        renderHotspots(room.hotspots);
-      },
-      undefined,
-      (err) => {
-        console.error("Error loading room panorama:", err);
-        if (loader) loader.style.display = "none";
-      }
-    );
-  }
-
-  // Smooth Human-like Walk Animation into Room
-  function walkToRoom(targetRoomId, doorYaw, doorPitch) {
-    if (isWalking || !camera) {
-      switchRoom(targetRoomId);
-      return;
-    }
-
-    const targetRoom = APT_TOUR_CONFIG.rooms[targetRoomId];
-    if (!targetRoom) return;
-
-    isWalking = true;
-
-    // Track navigation history for backward walking
-    if (currentRoomId && currentRoomId !== targetRoomId) {
-      roomHistory.push(currentRoomId);
-    }
-
-    const startLon = lon;
-    const startLat = lat;
-    const startFov = fov;
-
-    let targetLon = (doorYaw !== null && doorYaw !== undefined) ? doorYaw : lon;
-    // Normalize shortest rotation direction
-    while (targetLon - startLon > 180) targetLon -= 360;
-    while (targetLon - startLon < -180) targetLon += 360;
-    const targetLat = (doorPitch !== null && doorPitch !== undefined) ? doorPitch : lat;
-
-    const startTime = performance.now();
-    const duration = 650; // ms for the walk
-    const flashEl = document.getElementById("tour-walk-flash");
-
-    let textureSwitched = false;
-
-    function stepWalk(now) {
-      const elapsed = now - startTime;
-      const progress = Math.min(1, elapsed / duration);
-      // Smooth cubic easing
-      const ease = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-
-      lon = startLon + (targetLon - startLon) * ease;
-      lat = startLat + (targetLat - startLat) * ease;
-
-      // Dolly-in forward through the doorway
-      if (progress < 0.75) {
-        const zoomProg = progress / 0.75;
-        camera.fov = startFov - (startFov - 34) * zoomProg;
-      } else {
-        const emergeProg = (progress - 0.75) / 0.25;
-        camera.fov = 34 + (startFov - 34) * emergeProg;
-      }
-      camera.updateProjectionMatrix();
-
-      // Footstep bobbing motion
-      const stepBob = Math.sin(progress * Math.PI * 4) * 0.9;
-      lat += stepBob;
-
-      // Threshold transition flash
-      if (flashEl) {
-        if (progress > 0.45 && progress < 0.75) {
-          flashEl.style.opacity = String(Math.sin(((progress - 0.45) / 0.3) * Math.PI) * 0.5);
-        } else {
-          flashEl.style.opacity = "0";
-        }
-      }
-
-      // Switch room texture in the middle of crossing the threshold
-      if (progress >= 0.55 && !textureSwitched) {
-        textureSwitched = true;
-        switchRoom(targetRoomId, null, false);
-      }
-
-      if (progress < 1) {
-        requestAnimationFrame(stepWalk);
-      } else {
-        camera.fov = startFov;
-        camera.updateProjectionMatrix();
-        if (flashEl) flashEl.style.opacity = "0";
-        isWalking = false;
-      }
-    }
-
-    requestAnimationFrame(stepWalk);
-  }
-
-  // Walk forward towards closest visible door/hotspot
-  function walkForward() {
-    const room = APT_TOUR_CONFIG.rooms[currentRoomId];
-    if (!room || !room.hotspots || !room.hotspots.length) return;
-
-    let closest = null;
-    let minDiff = Infinity;
-    room.hotspots.forEach(h => {
-      let diff = Math.abs((((h.yaw - lon) % 360) + 540) % 360 - 180);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closest = h;
-      }
+      group.add(new THREE.Mesh(ringGeo, ringMat));
+      group.add(new THREE.Mesh(discGeo, discMat));
+      markersGroup.add(group);
     });
 
-    if (closest) {
-      walkToRoom(closest.target, closest.yaw, closest.pitch);
-    }
+    rebuildHotspotPins(spotId);
   }
 
-  // Walk backward into previously visited room
-  function walkBackward() {
-    if (roomHistory.length > 0) {
-      const prev = roomHistory.pop();
-      walkToRoom(prev, null, null);
-    } else if (currentRoomId !== "hall") {
-      walkToRoom("hall", null, null);
-    }
-  }
-
-  // Render Doorway / Transition Hotspots precisely on the doors
-  function renderHotspots(hotspots) {
+  // Build Minimalist 2D/3D Doorway Pins
+  function rebuildHotspotPins(spotId) {
     const layer = document.getElementById("tour-hotspots-layer");
     if (!layer) return;
     layer.innerHTML = "";
     activeHotspots = [];
 
-    if (!hotspots || !hotspots.length) return;
+    const here = SPOTS[spotId];
+    if (!here) return;
 
-    hotspots.forEach(h => {
-      const el = document.createElement("div");
-      el.className = "tour-hotspot";
-      // Pure minimalist architectural door portal — NO text badges obscuring doors
-      el.innerHTML = `
-        <div class="tour-hotspot-pin" title="${h.label}">
-          <div class="tour-hotspot-ripple"></div>
-          <svg class="tour-hotspot-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </div>
-      `;
-      el.onclick = (e) => {
-        e.stopPropagation();
-        walkToRoom(h.target, h.yaw, h.pitch);
-      };
+    const neighborIds = SPOT_LINKS[spotId] || [];
+    neighborIds.forEach(nid => {
+      const target = SPOTS[nid];
+      if (!target) return;
 
-      layer.appendChild(el);
+      // Only show doorway pins when changing rooms or major areas
+      if (target.room !== here.room) {
+        const dx = (target.x - here.x) / 100;
+        const dz = (target.y - here.y) / 100;
 
-      // Convert Pitch & Yaw to 3D Sphere Position
-      const phi = ((90 - h.pitch) * Math.PI) / 180;
-      const theta = (h.yaw * Math.PI) / 180;
-      const pos = new THREE.Vector3(
-        420 * Math.sin(phi) * Math.cos(theta),
-        420 * Math.cos(phi),
-        420 * Math.sin(phi) * Math.sin(theta)
-      );
+        const el = document.createElement("div");
+        el.className = "tour-hotspot";
+        el.innerHTML = `
+          <div class="tour-hotspot-pin" title="${target.label}">
+            <div class="tour-hotspot-ripple"></div>
+            <svg class="tour-hotspot-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        `;
+        el.onclick = (e) => {
+          e.stopPropagation();
+          walkToSpot(nid);
+        };
+        layer.appendChild(el);
 
-      activeHotspots.push({ element: el, position: pos });
+        const pos = new THREE.Vector3(dx, -0.1, dz);
+        activeHotspots.push({ element: el, position: pos });
+      }
     });
 
-    updateHotspotPositions();
+    updateHotspotPins();
   }
 
-  // Project 3D Hotspot positions to 2D Screen Coordinates
-  function updateHotspotPositions() {
+  function updateHotspotPins() {
     if (!camera || !activeHotspots.length) return;
-
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const widthHalf = width / 2;
-    const heightHalf = height / 2;
+    const widthHalf = window.innerWidth / 2;
+    const heightHalf = window.innerHeight / 2;
 
     activeHotspots.forEach(h => {
       const p = h.position.clone();
       p.project(camera);
 
-      // Behind the camera check
       if (p.z > 1.0) {
         h.element.style.display = "none";
       } else {
@@ -589,6 +560,235 @@
       }
     });
   }
+
+  // Switch Room Category (via tabs or exterior)
+  function switchRoom(roomId) {
+    const room = APT_TOUR_CONFIG.rooms[roomId];
+    if (!room) return;
+    const targetSpotId = room.defaultSpot || "entry";
+    walkToSpot(targetSpotId);
+  }
+
+  // Go to Spot with Human-Like Doorway Glide & Transition
+  function walkToSpot(targetSpotId) {
+    if (isTransitioning) return;
+    const nextSpot = SPOTS[targetSpotId];
+    if (!nextSpot) return;
+
+    const here = SPOTS[currentSpotId];
+    if (here && here.room !== nextSpot.room) {
+      roomHistory.push(currentSpotId);
+    }
+
+    isTransitioning = true;
+    const flashEl = document.getElementById("tour-walk-flash");
+    const loader = document.getElementById("tour-loading-indicator");
+
+    // Smooth doorway walk-through animation
+    if (flashEl) flashEl.style.opacity = "0.7";
+
+    const imgUrl = nextSpot.image + "?v=20261015_clean360";
+
+    textureLoader.load(
+      imgUrl,
+      (texture) => {
+        texture.mapping = window.THREE.UVMapping;
+        texture.colorSpace = window.THREE.SRGBColorSpace;
+        texture.minFilter = window.THREE.LinearFilter;
+        texture.magFilter = window.THREE.LinearFilter;
+
+        if (sphereMesh && sphereMesh.material) {
+          sphereMesh.material.map = texture;
+          sphereMesh.material.needsUpdate = true;
+        }
+
+        currentSpotId = targetSpotId;
+        currentRoomId = nextSpot.room;
+
+        // Reset walk offset at the new center
+        targetCamOffset = { x: 0, y: 0, z: 0 };
+        camOffset = { x: 0, y: 0, z: 0 };
+        walkBobPhase = 0;
+
+        // Update Header and Tabs
+        const roomConf = APT_TOUR_CONFIG.rooms[currentRoomId];
+        const titleEl = document.getElementById("tour-room-title");
+        if (titleEl && roomConf) {
+          titleEl.innerHTML = `<strong>${APT_TOUR_CONFIG.title}</strong> &bull; <span style="color:#60a5fa;">${roomConf.name}</span> &bull; <span style="color:#94a3b8; font-size:12px;">${nextSpot.label}</span>`;
+        }
+
+        document.querySelectorAll(".tour-room-tab").forEach(tab => tab.classList.remove("active"));
+        const activeTab = document.getElementById(`tour-tab-${currentRoomId}`);
+        if (activeTab) activeTab.classList.add("active");
+
+        rebuildFloorMarkers(currentSpotId);
+
+        setTimeout(() => {
+          if (flashEl) flashEl.style.opacity = "0";
+          if (loader) loader.style.display = "none";
+          isTransitioning = false;
+        }, 180);
+      },
+      undefined,
+      (err) => {
+        console.error("Texture error:", err);
+        if (flashEl) flashEl.style.opacity = "0";
+        if (loader) loader.style.display = "none";
+        isTransitioning = false;
+      }
+    );
+  }
+
+  // PHYSICAL WALKING INSIDE ROOM (W / Up Arrow / Button)
+  // Does NOT immediately kick you out — you physically walk across the floor inside the room!
+  function walkForward() {
+    if (isTransitioning) return;
+    const here = SPOTS[currentSpotId];
+    if (!here) return;
+
+    // Forward direction from current camera yaw
+    const forwardX = -Math.sin(yaw);
+    const forwardZ = -Math.cos(yaw);
+
+    // Human step size: 42 cm
+    const stepDist = 0.42;
+    const newTargetX = targetCamOffset.x + forwardX * stepDist;
+    const newTargetZ = targetCamOffset.z + forwardZ * stepDist;
+
+    walkBobPhase += Math.PI;
+
+    // Check if step approaches an adjacent doorway or connected spot
+    const simWorldX = here.x + newTargetX * 100;
+    const simWorldY = here.y + newTargetZ * 100;
+
+    const neighbors = SPOT_LINKS[currentSpotId] || [];
+    let closestNeighbor = null;
+    let minDist = Infinity;
+
+    neighbors.forEach(nid => {
+      const q = SPOTS[nid];
+      if (!q) return;
+      const d = Math.hypot(q.x - simWorldX, q.y - simWorldY);
+      if (d < minDist) {
+        minDist = d;
+        closestNeighbor = nid;
+      }
+    });
+
+    // If within 85 cm of the neighbor spot (door threshold): step through!
+    if (minDist < 85 && closestNeighbor) {
+      walkToSpot(closestNeighbor);
+      return;
+    }
+
+    // Inside-room perimeter check (stay within realistic room boundary ~1.7 meters from spot)
+    const offsetDist = Math.hypot(newTargetX, newTargetZ);
+    if (offsetDist > 1.7) {
+      // Reached room wall/boundary — gently clamp position
+      const scale = 1.7 / offsetDist;
+      targetCamOffset.x = newTargetX * scale;
+      targetCamOffset.z = newTargetZ * scale;
+    } else {
+      targetCamOffset.x = newTargetX;
+      targetCamOffset.z = newTargetZ;
+    }
+  }
+
+  // PHYSICAL WALKING BACKWARD INSIDE ROOM (S / Down Arrow / Button)
+  function walkBackward() {
+    if (isTransitioning) return;
+    const here = SPOTS[currentSpotId];
+    if (!here) return;
+
+    const forwardX = -Math.sin(yaw);
+    const forwardZ = -Math.cos(yaw);
+
+    const stepDist = 0.40;
+    const newTargetX = targetCamOffset.x - forwardX * stepDist;
+    const newTargetZ = targetCamOffset.z - forwardZ * stepDist;
+
+    walkBobPhase += Math.PI;
+
+    const simWorldX = here.x + newTargetX * 100;
+    const simWorldY = here.y + newTargetZ * 100;
+
+    const neighbors = SPOT_LINKS[currentSpotId] || [];
+    let closestNeighbor = null;
+    let minDist = Infinity;
+
+    neighbors.forEach(nid => {
+      const q = SPOTS[nid];
+      if (!q) return;
+      const d = Math.hypot(q.x - simWorldX, q.y - simWorldY);
+      if (d < minDist) {
+        minDist = d;
+        closestNeighbor = nid;
+      }
+    });
+
+    // If stepped back near the entrance doorway / previous spot: step through
+    if (minDist < 85 && closestNeighbor) {
+      walkToSpot(closestNeighbor);
+      return;
+    }
+
+    const offsetDist = Math.hypot(newTargetX, newTargetZ);
+    if (offsetDist > 1.7) {
+      const scale = 1.7 / offsetDist;
+      targetCamOffset.x = newTargetX * scale;
+      targetCamOffset.z = newTargetZ * scale;
+    } else {
+      targetCamOffset.x = newTargetX;
+      targetCamOffset.z = newTargetZ;
+    }
+  }
+
+  // Strafe Left (A)
+  function strafeLeft() {
+    const leftX = -Math.cos(yaw);
+    const leftZ = Math.sin(yaw);
+    const stepDist = 0.35;
+    targetCamOffset.x += leftX * stepDist;
+    targetCamOffset.z += leftZ * stepDist;
+    walkBobPhase += Math.PI * 0.8;
+  }
+
+  // Strafe Right (D)
+  function strafeRight() {
+    const rightX = Math.cos(yaw);
+    const rightZ = -Math.sin(yaw);
+    const stepDist = 0.35;
+    targetCamOffset.x += rightX * stepDist;
+    targetCamOffset.z += rightZ * stepDist;
+    walkBobPhase += Math.PI * 0.8;
+  }
+
+  // Keyboard navigation
+  window.addEventListener("keydown", (e) => {
+    const modal = document.getElementById("tour-360-modal");
+    if (!modal || modal.style.display === "none") return;
+
+    if (e.code === "KeyW" || e.code === "ArrowUp") {
+      e.preventDefault();
+      walkForward();
+    } else if (e.code === "KeyS" || e.code === "ArrowDown") {
+      e.preventDefault();
+      walkBackward();
+    } else if (e.code === "KeyA") {
+      e.preventDefault();
+      strafeLeft();
+    } else if (e.code === "KeyD") {
+      e.preventDefault();
+      strafeRight();
+    } else if (e.code === "Escape") {
+      const bModal = document.getElementById("blockade-ai-modal");
+      if (bModal && bModal.classList.contains("active")) {
+        window.closeBlockadeModal();
+        return;
+      }
+      window.close360Tour();
+    }
+  });
 
   // Public Tour APIs
   window.open360Tour = function (aptNumber) {
@@ -602,7 +802,7 @@
     document.body.style.overflow = "hidden";
 
     initThreeScene();
-    switchRoom(currentRoomId || "hall");
+    walkToSpot("entry");
   };
 
   window.close360Tour = function () {
@@ -632,22 +832,6 @@
     walkBackward();
   };
 
-  // Keyboard navigation for walking (W / S / Up / Down / Backspace)
-  window.addEventListener("keydown", (e) => {
-    const modal = document.getElementById("tour-360-modal");
-    if (!modal || modal.style.display === "none") return;
-
-    if (e.code === "KeyW" || e.code === "ArrowUp") {
-      e.preventDefault();
-      walkForward();
-    } else if (e.code === "KeyS" || e.code === "ArrowDown" || e.code === "Backspace") {
-      e.preventDefault();
-      walkBackward();
-    } else if (e.code === "Escape") {
-      window.close360Tour();
-    }
-  });
-
   window.tourToggleFullscreen = function () {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {});
@@ -656,7 +840,7 @@
     }
   };
 
-  // Blockade Labs API Integration Modal Actions
+  // Blockade / AI Modal Actions
   window.openBlockadeModal = function () {
     const m = document.getElementById("blockade-ai-modal");
     if (m) m.classList.add("active");
@@ -668,31 +852,28 @@
   };
 
   window.onAiEngineChange = function () {
-    const engine = document.getElementById("ai-engine-select").value;
+    const engine = document.getElementById("ai-engine-select") ? document.getElementById("ai-engine-select").value : "pollinations";
     const keyGroup = document.getElementById("blockade-key-group");
     const submitBtn = document.getElementById("blockade-submit-btn");
-
     if (engine === "pollinations") {
       if (keyGroup) keyGroup.style.display = "none";
       if (submitBtn) submitBtn.textContent = "🚀 360° Şəkli Pulsuz Generasiya Et";
     } else {
       if (keyGroup) keyGroup.style.display = "flex";
-      if (submitBtn) submitBtn.textContent = "🚀 Blockade Labs ilə Generasiya Et";
+      if (submitBtn) submitBtn.textContent = "🚀 Blockade Skybox İlə Generasiya Et";
     }
   };
 
-  window.startAIGeneration = async function () {
-    const engineSelect = document.getElementById("ai-engine-select");
-    const engine = engineSelect ? engineSelect.value : "pollinations";
-
-    if (engine === "blockade") {
-      return startBlockadeGeneration();
+  window.startAIGeneration = function () {
+    const engine = document.getElementById("ai-engine-select") ? document.getElementById("ai-engine-select").value : "pollinations";
+    if (engine === "pollinations") {
+      startPollinationsGeneration();
     } else {
-      return startPollinationsGeneration();
+      startBlockadeGeneration();
     }
   };
 
-  async function startPollinationsGeneration() {
+  function startPollinationsGeneration() {
     const roomSelect = document.getElementById("blockade-room-select");
     const promptInput = document.getElementById("blockade-prompt-input");
     const progressBox = document.getElementById("blockade-progress-box");
@@ -702,48 +883,46 @@
 
     const roomId = roomSelect.value;
     const userPrompt = promptInput.value.trim();
-    const finalPrompt = `360 degree equirectangular panorama 2:1 ratio, ${userPrompt}, 8k, photorealistic architectural photography`;
+    if (!userPrompt) {
+      alert("Zəhmət olmasa təsvir (prompt) daxil edin!");
+      return;
+    }
 
     progressBox.style.display = "flex";
     submitBtn.disabled = true;
     submitBtn.style.opacity = "0.5";
-    progressBar.style.width = "30%";
-    statusText.textContent = "Pollinations AI (Flux) 360° şəkli render edir (tamamilə pulsuz)...";
+    progressBar.style.width = "25%";
+    statusText.textContent = "AI modeli hazırlanır...";
 
-    const seed = Math.floor(Math.random() * 999999);
-    const encodedPrompt = encodeURIComponent(finalPrompt);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=2048&height=1024&nologo=true&seed=${seed}`;
+    const seed = Math.floor(Math.random() * 9999999);
+    const cleanPrompt = encodeURIComponent(`equirectangular 360 panorama, rectilinear straight walls, ${userPrompt}, modern luxury apartment, architectural photography, 8k, realistic lighting`);
+    const imageUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=2048&height=1024&seed=${seed}&nologo=true&enhance=true`;
 
-    let progress = 30;
-    const progressInterval = setInterval(() => {
-      if (progress < 90) {
-        progress += 10;
-        progressBar.style.width = `${progress}%`;
-      }
-    }, 800);
+    progressBar.style.width = "60%";
+    statusText.textContent = "AI 360° panoramik fotonu çəkir...";
 
-    // Preload image
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.onload = () => {
-      clearInterval(progressInterval);
+    img.onload = function () {
       progressBar.style.width = "100%";
-      statusText.textContent = "✅ Şəkil hazırdır! Otaq panoraması yenilənir...";
+      statusText.textContent = "✅ Uğurla tamamlandı! Otaq yenilənir...";
 
-      APT_TOUR_CONFIG.rooms[roomId].image = imageUrl;
+      const targetSpot = APT_TOUR_CONFIG.rooms[roomId].defaultSpot;
+      if (SPOTS[targetSpot]) {
+        SPOTS[targetSpot].image = imageUrl;
+      }
 
       setTimeout(() => {
         window.closeBlockadeModal();
-        switchRoom(roomId);
+        walkToSpot(targetSpot);
         submitBtn.disabled = false;
         submitBtn.style.opacity = "1";
         progressBox.style.display = "none";
-      }, 800);
+      }, 1000);
     };
 
-    img.onerror = () => {
-      clearInterval(progressInterval);
-      statusText.textContent = "❌ Xəta baş verdi. Şəbəkə bağlantısını yoxlayın.";
+    img.onerror = function () {
+      statusText.textContent = "❌ Yükləmə xətası baş verdi.";
       submitBtn.disabled = false;
       submitBtn.style.opacity = "1";
     };
@@ -762,12 +941,11 @@
 
     const apiKey = keyInput ? keyInput.value.trim() : "";
     if (!apiKey) {
-      alert("Zəhmət olmasa Blockade Labs API açarını daxil edin!\n(https://skybox.blockadelabs.com/api)");
+      alert("Zəhmət olmasa Blockade Labs API açarını daxil edin!");
       return;
     }
 
     localStorage.setItem("BLOCKADE_API_KEY", apiKey);
-
     const roomId = roomSelect.value;
     const prompt = promptInput.value.trim();
 
@@ -775,7 +953,7 @@
     submitBtn.disabled = true;
     submitBtn.style.opacity = "0.5";
     progressBar.style.width = "20%";
-    statusText.textContent = "Blockade Labs Skybox sorğusu göndərilir (POST /skybox)...";
+    statusText.textContent = "Blockade Labs Skybox sorğusu göndərilir...";
 
     try {
       const res = await fetch("https://backend.blockadelabs.com/api/v1/skybox", {
@@ -792,13 +970,11 @@
       });
 
       const data = await res.json();
-      if (!res.ok || data.error_message) {
-        throw new Error(data.error_message || `Xəta kodu: ${res.status}`);
-      }
+      if (!res.ok || data.error_message) throw new Error(data.error_message || `Xəta: ${res.status}`);
 
       const reqId = data.id;
       progressBar.style.width = "40%";
-      statusText.textContent = `Generasiya növbəyə alındı (ID: ${reqId}). Gözlənilir...`;
+      statusText.textContent = `Generasiya ID: ${reqId}. Gözlənilir...`;
 
       let pollCount = 0;
       const pollTimer = setInterval(async () => {
@@ -811,23 +987,20 @@
           const req = checkData.request || checkData;
           const status = req.status;
 
-          if (status === "dispatched") {
-            progressBar.style.width = "50%";
-            statusText.textContent = "AI işçilərinə ötürüldü (Dispatched)...";
-          } else if (status === "processing") {
-            progressBar.style.width = "75%";
-            statusText.textContent = "AI 360° fotonu render edir (Processing)...";
-          } else if (status === "complete") {
+          if (status === "complete") {
             clearInterval(pollTimer);
             progressBar.style.width = "100%";
             statusText.textContent = "✅ Tamamlandı! Otaq panoraması yenilənir...";
 
             const fileUrl = req.file_url;
-            APT_TOUR_CONFIG.rooms[roomId].image = fileUrl;
+            const targetSpot = APT_TOUR_CONFIG.rooms[roomId].defaultSpot;
+            if (SPOTS[targetSpot]) {
+              SPOTS[targetSpot].image = fileUrl;
+            }
 
             setTimeout(() => {
               window.closeBlockadeModal();
-              switchRoom(roomId);
+              walkToSpot(targetSpot);
               submitBtn.disabled = false;
               submitBtn.style.opacity = "1";
               progressBox.style.display = "none";
@@ -839,7 +1012,7 @@
 
           if (pollCount > 60) {
             clearInterval(pollTimer);
-            throw new Error("Vaxt bitdi. Zəhmət olmasa bir az sonra yoxlayın.");
+            throw new Error("Vaxt bitdi.");
           }
         } catch (err) {
           clearInterval(pollTimer);
@@ -854,21 +1027,6 @@
       submitBtn.disabled = false;
       submitBtn.style.opacity = "1";
     }
-  };
-
-  // Keyboard escape
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      const bModal = document.getElementById("blockade-ai-modal");
-      if (bModal && bModal.classList.contains("active")) {
-        window.closeBlockadeModal();
-        return;
-      }
-      const tModal = document.getElementById("tour-360-modal");
-      if (tModal && tModal.classList.contains("active")) {
-        window.close360Tour();
-      }
-    }
-  });
+  }
 
 })();
