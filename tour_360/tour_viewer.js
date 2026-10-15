@@ -34,15 +34,29 @@
         },
         living: {
           id: "living",
-          name: "Qonaq Otağı & Açıq Mətbəx",
+          name: "Qonaq Otağı",
           area: "31.7 m²",
           icon: "🛋️",
           image: "tour_360/apt_52/living.jpg",
           initialLon: 12.0,
           hotspots: [
-            { target: "balcony", pitch: -3.0, yaw: 12.0, label: "Mənzərəli Eyvana Çıxış" },
+            { target: "kitchen", pitch: -3.0, yaw: 35.0, label: "Mətbəx Zonası" },
+            { target: "balcony", pitch: -3.0, yaw: -45.0, label: "Mənzərəli Eyvana Çıxış" },
             { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağına Keçid" },
-            { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }
+            { target: "hall", pitch: -2.0, yaw: 175.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        kitchen: {
+          id: "kitchen",
+          name: "Mətbəx & Yemək",
+          area: "12.4 m²",
+          icon: "🍳",
+          image: "tour_360/apt_52/kitchen.jpg",
+          initialLon: 0.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: 110.0, label: "Qonaq Otağına Keçid" },
+            { target: "hall", pitch: -3.0, yaw: -140.0, label: "Dəhlizə Qayıt" },
+            { target: "balcony", pitch: -3.0, yaw: -45.0, label: "Eyvana Çıxış" }
           ]
         },
         bedroom: {
@@ -850,7 +864,7 @@
   let roomHistory = [];
 
   // GPU Memory Preload Cache (keyed by image URL)
-  const CACHE_BUST = "?v=20261015_v20";
+  const CACHE_BUST = "?v=20261015_v23";
   const textureCache = {};
 
   // Walking Physics State

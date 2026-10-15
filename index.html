@@ -418,8 +418,8 @@
   <script src="floorplans/floors_data.js?v=20261015d"></script>
   <script src="floorplan-viewer.js?v=20261015d"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js"></script>
-  <link rel="stylesheet" href="tour_360/tour_viewer.css?v=20261015_v20" />
-  <script src="tour_360/tour_viewer.js?v=20261015_v20"></script>
+  <link rel="stylesheet" href="tour_360/tour_viewer.css?v=20261015_v23" />
+  <script src="tour_360/tour_viewer.js?v=20261015_v23"></script>
 </head>
 <body>
 
@@ -689,6 +689,8 @@ const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerH
 camera.position.set(32, 65, -90);
 
 const controls = new OrbitControls(camera, renderer.domElement);
+window.camera = camera;
+window.controls = controls;
 controls.enableDamping      = true;
 controls.dampingFactor      = 0.08;
 controls.rotateSpeed        = 0.65; // Steady, controlled rotation
