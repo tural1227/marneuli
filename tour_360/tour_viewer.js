@@ -864,7 +864,7 @@
   let roomHistory = [];
 
   // GPU Memory Preload Cache (keyed by image URL)
-  const CACHE_BUST = "?v=20261016_v26";
+  const CACHE_BUST = "?v=20261016_v27";
   const textureCache = {};
 
   // Walking Physics State
@@ -872,9 +872,97 @@
   let targetOffset = { x: 0, y: 0, z: 0 };
   let walkBobPhase = 0;
   let currentBob = 0;
+  let headRoll = 0;
+
+  // 🚶‍♂️ Human Walking Mode & Procedural Audio Engine
+  let isHumanMode = true; // Enabled by default for natural human immersion
+  let isFootstepSoundEnabled = true;
+  let audioCtx = null;
+  let footstepIndex = 0;
+  let lastStepPhase = 0;
+  let isMiniMapCollapsed = false;
 
   // Key tracking
   const keysDown = {};
+
+  // Procedural Web Audio Footstep Engine (Zero external audio files required)
+  function playFootstepSound() {
+    if (!isFootstepSoundEnabled) return;
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+      const now = audioCtx.currentTime;
+      footstepIndex++;
+      const isLeft = (footstepIndex % 2 === 0);
+
+      // Floor material acoustic tuning:
+      // Marble/Tile for Hall & Bathroom, Warm Oak Parquet for Living & Bedroom, Pavers for Balcony
+      let baseFreq = isLeft ? 108 : 122;
+      let qVal = 2.4;
+      let filterFreq = isLeft ? 920 : 1120;
+      let gainVol = 0.36;
+
+      if (currentRoomId === "hall" || currentRoomId === "bathroom" || currentRoomId === "kitchen") {
+        baseFreq = isLeft ? 132 : 148; // Crisp acoustic marble/tile slap
+        filterFreq = isLeft ? 1150 : 1380;
+        gainVol = 0.42;
+      } else if (currentRoomId === "balcony") {
+        baseFreq = isLeft ? 92 : 106; // Textured terrace paver
+        filterFreq = isLeft ? 820 : 960;
+        gainVol = 0.32;
+      }
+
+      // 1. Low Frequency Impulse (shoe heel / sole contact)
+      const osc = audioCtx.createOscillator();
+      const oscGain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(baseFreq, now);
+      osc.frequency.exponentialRampToValueAtTime(32, now + 0.08);
+
+      oscGain.gain.setValueAtTime(gainVol, now);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+      osc.connect(oscGain);
+      oscGain.connect(audioCtx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.085);
+
+      // 2. High Frequency Friction Scuff
+      const sampleRate = audioCtx.sampleRate;
+      const bufferSize = Math.floor(sampleRate * 0.035);
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+      }
+
+      const whiteNoise = audioCtx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(filterFreq, now);
+      filter.Q.value = qVal;
+
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(gainVol * 0.35, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+      whiteNoise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+
+      whiteNoise.start(now);
+      whiteNoise.stop(now + 0.04);
+    } catch (e) {
+      // AudioContext policy
+    }
+  }
 
   function createTourDOMElements() {
     if (document.getElementById("tour-360-modal")) return;
@@ -905,8 +993,15 @@
         </div>
 
         <div class="tour-header-actions">
+          <button class="tour-btn tour-btn-human active" id="btn-human-mode" onclick="window.toggleHumanMode()" title="İnsan Modu (Real Gəzinti, Yellənmə & Addım Səsi)">
+            <span class="human-dot"></span>
+            <span id="human-mode-text">🚶 İnsan Modu: AKTİV</span>
+          </button>
+          <button class="tour-btn tour-btn-sound active" id="btn-sound-toggle" onclick="window.toggleFootstepSound()" title="Addım Səsi Aç / Bağla">
+            <span id="sound-icon">🔊</span>
+          </button>
           <button class="tour-btn tour-btn-ai" onclick="window.openBlockadeModal()">
-            ✨ AI 360 Generator
+            ✨ AI 360
           </button>
           <button class="tour-btn tour-btn-close" onclick="window.close360Tour()" title="Bağla">
             ✕
@@ -921,7 +1016,10 @@
             <button id="mm-tab-room" class="mm-tab active" onclick="window.setMiniMapMode('room')">🏠 Otaq</button>
             <button id="mm-tab-floor" class="mm-tab" onclick="window.setMiniMapMode('floor')">📐 5-ci Mərtəbə</button>
           </div>
-          <span id="tour-minimap-apt-info" style="color:#60a5fa; font-weight:800; font-size:11px;">№ 52 &bull; 68.6 m²</span>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span id="tour-minimap-apt-info" style="color:#60a5fa; font-weight:800; font-size:11px;">№ 52 &bull; 68.6 m²</span>
+            <button class="mm-btn-collapse" id="btn-toggle-minimap" onclick="window.toggleMiniMapCollapse()" title="Xəritəni Gizlət / Göstər">−</button>
+          </div>
         </div>
 
         <!-- Mode 1: Single Apartment Room Blueprint with Live Radar Cone -->
@@ -952,15 +1050,23 @@
         </div>
       </div>
 
-      <!-- Walk Navigation Floating Dock -->
-      <div class="tour-walk-nav">
-        <button class="tour-walk-btn" onclick="window.tourWalkForward()" title="Önə doğru addımla (W / ↑)">
-          <span>🚶‍♂️ Önə Addımla</span>
+      <!-- Human Walk Navigation Floating Dock -->
+      <div class="tour-walk-nav" id="tour-walk-dock">
+        <button class="tour-walk-btn" id="btn-walk-forward" onmousedown="window.startWalk('KeyW')" onmouseup="window.stopWalk('KeyW')" onmouseleave="window.stopWalk('KeyW')" ontouchstart="window.startWalk('KeyW')" ontouchend="window.stopWalk('KeyW')" onclick="window.tourWalkForward()" title="Önə doğru addımla (W / ↑)">
+          <span>🚶‍♂️ Önə</span>
           <span class="walk-key">W</span>
         </button>
-        <button class="tour-walk-btn" onclick="window.tourWalkBackward()" title="Geriyə addımla (S / ↓)">
-          <span>↩ Geriyə Qayıt</span>
+        <button class="tour-walk-btn" id="btn-walk-backward" onmousedown="window.startWalk('KeyS')" onmouseup="window.stopWalk('KeyS')" onmouseleave="window.stopWalk('KeyS')" ontouchstart="window.startWalk('KeyS')" ontouchend="window.stopWalk('KeyS')" onclick="window.tourWalkBackward()" title="Geriyə addımla (S / ↓)">
+          <span>↩ Geri</span>
           <span class="walk-key">S</span>
+        </button>
+        <button class="tour-walk-btn" id="btn-walk-left" onmousedown="window.startWalk('KeyA')" onmouseup="window.stopWalk('KeyA')" onmouseleave="window.stopWalk('KeyA')" ontouchstart="window.startWalk('KeyA')" ontouchend="window.stopWalk('KeyA')" title="Sola Addımla (A / ←)">
+          <span>◀ Sola</span>
+          <span class="walk-key">A</span>
+        </button>
+        <button class="tour-walk-btn" id="btn-walk-right" onmousedown="window.startWalk('KeyD')" onmouseup="window.stopWalk('KeyD')" onmouseleave="window.stopWalk('KeyD')" ontouchstart="window.startWalk('KeyD')" ontouchend="window.stopWalk('KeyD')" title="Sağa Addımla (D / →)">
+          <span>Sağa ▶</span>
+          <span class="walk-key">D</span>
         </button>
       </div>
 
@@ -1224,7 +1330,15 @@
       // Smooth camera position damping
       cameraOffset.x += (targetOffset.x - cameraOffset.x) * 0.18;
       cameraOffset.z += (targetOffset.z - cameraOffset.z) * 0.18;
-      currentBob += ((Math.sin(walkBobPhase) * 1.8) - currentBob) * 0.2;
+
+      // Natural Human Walk Dynamics
+      if (isHumanMode) {
+        currentBob += ((Math.sin(walkBobPhase) * 2.8) - currentBob) * 0.22;
+        headRoll += ((Math.sin(walkBobPhase * 0.5) * 0.007) - headRoll) * 0.16;
+      } else {
+        currentBob += (0 - currentBob) * 0.2;
+        headRoll += (0 - headRoll) * 0.2;
+      }
 
       // Limit pitch to prevent gimbal lock
       lat = Math.max(-85, Math.min(85, lat));
@@ -1238,6 +1352,9 @@
       if (camera) {
         camera.position.set(cameraOffset.x, currentBob, cameraOffset.z);
         camera.lookAt(cameraOffset.x + lookX, cameraOffset.y + lookY, cameraOffset.z + lookZ);
+        if (isHumanMode) {
+          camera.rotation.z = headRoll;
+        }
       }
 
       if (renderer && scene && camera) {
@@ -1277,7 +1394,13 @@
 
     targetOffset.x += dx;
     targetOffset.z += dz;
-    walkBobPhase += dt * 9;
+    const prevPhase = walkBobPhase;
+    walkBobPhase += dt * 8.6;
+
+    // Trigger procedural footstep sound at the bottom of each step
+    if (Math.floor(walkBobPhase / Math.PI) > Math.floor(prevPhase / Math.PI)) {
+      playFootstepSound();
+    }
 
     // Check if stepping forward towards a doorway hotspot
     if (moveForward > 0) {
@@ -1421,6 +1544,7 @@
     const flashEl = document.getElementById("tour-walk-flash");
 
     let textureSwitched = false;
+    let step1Done = false, step2Done = false, step3Done = false;
 
     function stepWalk(now) {
       const elapsed = now - startTime;
@@ -1438,6 +1562,20 @@
         camera.fov = (startFov - 12) + 12 * ((progress - 0.7) / 0.3);
       }
       camera.updateProjectionMatrix();
+
+      // Footstep audio cues during doorway walking
+      if (progress >= 0.15 && !step1Done) {
+        step1Done = true;
+        playFootstepSound();
+      }
+      if (progress >= 0.48 && !step2Done) {
+        step2Done = true;
+        playFootstepSound();
+      }
+      if (progress >= 0.80 && !step3Done) {
+        step3Done = true;
+        playFootstepSound();
+      }
 
       // Doorway crossing threshold flash
       if (flashEl) {
@@ -1494,6 +1632,7 @@
       walkToRoom(facingDoor.target, facingDoor.yaw, facingDoor.pitch);
     } else {
       // Walk forward inside room
+      playFootstepSound();
       const rad = (lon * Math.PI) / 180;
       targetOffset.x += Math.sin(rad) * 35;
       targetOffset.z += Math.cos(rad) * 35;
@@ -1510,6 +1649,7 @@
 
   // Walk backward button action
   function walkBackward() {
+    playFootstepSound();
     if (roomHistory.length > 0) {
       const prev = roomHistory.pop();
       walkToRoom(prev, null, null);
@@ -1751,6 +1891,68 @@
 
   window.tourWalkBackward = function () {
     walkBackward();
+  };
+
+  window.startWalk = function (keyCode) {
+    keysDown[keyCode] = true;
+    const modal = document.getElementById("tour-360-modal");
+    if (modal) modal.classList.add("walking-active");
+  };
+
+  window.stopWalk = function (keyCode) {
+    keysDown[keyCode] = false;
+    const anyWalking = keysDown["KeyW"] || keysDown["KeyS"] || keysDown["KeyA"] || keysDown["KeyD"] || keysDown["ArrowUp"] || keysDown["ArrowDown"] || keysDown["ArrowLeft"] || keysDown["ArrowRight"];
+    if (!anyWalking) {
+      const modal = document.getElementById("tour-360-modal");
+      if (modal) modal.classList.remove("walking-active");
+    }
+  };
+
+  window.toggleHumanMode = function () {
+    isHumanMode = !isHumanMode;
+    const btn = document.getElementById("btn-human-mode");
+    const txt = document.getElementById("human-mode-text");
+    if (btn) {
+      if (isHumanMode) {
+        btn.classList.add("active");
+        if (txt) txt.textContent = "🚶 İnsan Modu: AKTİV";
+      } else {
+        btn.classList.remove("active");
+        if (txt) txt.textContent = "🚶 İnsan Modu: DEAKTİV";
+      }
+    }
+    if (isHumanMode) playFootstepSound();
+  };
+
+  window.toggleFootstepSound = function () {
+    isFootstepSoundEnabled = !isFootstepSoundEnabled;
+    const icon = document.getElementById("sound-icon");
+    const btn = document.getElementById("btn-sound-toggle");
+    if (btn) {
+      if (isFootstepSoundEnabled) {
+        btn.classList.add("active");
+        if (icon) icon.textContent = "🔊";
+        playFootstepSound();
+      } else {
+        btn.classList.remove("active");
+        if (icon) icon.textContent = "🔇";
+      }
+    }
+  };
+
+  window.toggleMiniMapCollapse = function () {
+    isMiniMapCollapsed = !isMiniMapCollapsed;
+    const mm = document.getElementById("tour-minimap");
+    const btn = document.getElementById("btn-toggle-minimap");
+    if (mm) {
+      if (isMiniMapCollapsed) {
+        mm.classList.add("collapsed");
+        if (btn) btn.textContent = "+";
+      } else {
+        mm.classList.remove("collapsed");
+        if (btn) btn.textContent = "−";
+      }
+    }
   };
 
   window.tourToggleFullscreen = function () {

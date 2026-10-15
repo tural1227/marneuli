@@ -751,3 +751,127 @@
     font-size: 11px;
   }
 }
+
+/* 🚶‍♂️ Human Walking Mode & Decluttered HUD Styles */
+.tour-btn-human {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.5) !important;
+  color: #34d399 !important;
+  font-weight: 700 !important;
+  gap: 8px;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+  transition: all 0.25s ease;
+}
+
+.tour-btn-human:hover {
+  background: rgba(16, 185, 129, 0.28) !important;
+  border-color: #34d399 !important;
+  transform: translateY(-1px);
+}
+
+.tour-btn-human.active {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.35), rgba(5, 150, 105, 0.45)) !important;
+  border-color: #10b981 !important;
+  color: #ecfdf5 !important;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.45);
+}
+
+.human-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  display: inline-block;
+  box-shadow: 0 0 8px #34d399;
+  animation: pulse-dot 1.5s infinite;
+}
+
+.tour-btn-sound {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.16);
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.tour-btn-sound.active {
+  border-color: #60a5fa;
+  color: #60a5fa;
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.3);
+}
+
+/* Minimap Collapse Toggle */
+.mm-btn-collapse {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #94a3b8;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  transition: all 0.18s ease;
+}
+
+.mm-btn-collapse:hover {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+
+.tour-minimap-box.collapsed {
+  width: auto !important;
+  padding: 6px 10px !important;
+}
+
+.tour-minimap-box.collapsed .tour-minimap-blueprint-wrap {
+  display: none !important;
+}
+
+.tour-minimap-box.collapsed .tour-minimap-tabs {
+  display: none !important;
+}
+
+/* Zero Clutter ("Basırıq Olmasın") — Immersive Fade While Walking */
+#tour-360-modal.walking-active .tour-header,
+#tour-360-modal.walking-active .tour-footer,
+#tour-360-modal.walking-active .tour-minimap-box,
+#tour-360-modal.walking-active .tour-side-controls {
+  opacity: 0.18 !important;
+  pointer-events: none !important;
+  transition: opacity 0.35s ease;
+}
+
+#tour-360-modal.walking-active .tour-walk-nav {
+  opacity: 0.88 !important;
+  transform: translateX(-50%) scale(1.03);
+}
+
+.tour-header, .tour-footer, .tour-minimap-box, .tour-side-controls {
+  transition: opacity 0.3s ease;
+}
+
+/* Enhanced 4-Way Walk Navigation Dock */
+.tour-walk-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 40px;
+  padding: 6px 14px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.55);
+}
+
+.tour-walk-btn:active {
+  transform: translateY(1px) scale(0.96);
+  background: rgba(59, 130, 246, 0.45);
+  border-color: #3b82f6;
+}
+
