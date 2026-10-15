@@ -275,83 +275,7 @@
     }
     .card-action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(223,200,130,0.4); }
 
-    /* Cinematic 3D Turntable / Drone View Integration */
-    .btn-cinematic {
-      background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(56, 189, 248, 0.45)) !important;
-      border: 1px solid #38bdf8 !important;
-      color: #38bdf8 !important;
-      font-weight: 700 !important;
-      letter-spacing: 0.5px !important;
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.35) !important;
-      transition: all 0.25s ease !important;
-    }
-    .btn-cinematic:hover {
-      background: linear-gradient(135deg, #0284c7, #38bdf8) !important;
-      color: #02050e !important;
-      transform: translateY(-2px) scale(1.03) !important;
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.75) !important;
-    }
-    .view-btn.btn-cinematic-glow {
-      background: linear-gradient(135deg, #0284c7, #38bdf8) !important;
-      color: #ffffff !important;
-      font-weight: 700 !important;
-      border: none !important;
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.5) !important;
-      animation: pulse-cinematic 2.2s infinite alternate !important;
-    }
-    @keyframes pulse-cinematic {
-      0% { box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
-      100% { box-shadow: 0 0 22px rgba(56, 189, 248, 0.85); }
-    }
-    #cinematic-modal {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #02050e;
-      z-index: 99999;
-      display: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    #cinematic-modal.active {
-      display: block;
-      opacity: 1;
-    }
-    #cinematic-iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-    }
-    .cinematic-close-floating {
-      position: fixed;
-      top: 24px;
-      right: 28px;
-      z-index: 100000;
-      background: rgba(10, 15, 29, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #f8fafc;
-      padding: 9px 18px;
-      border-radius: 30px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-      transition: all 0.2s ease;
-    }
-    .cinematic-close-floating:hover {
-      background: rgba(239, 68, 68, 0.85);
-      border-color: #ef4444;
-      transform: scale(1.05);
-      color: #fff;
-    }
+
   </style>
   <link rel="stylesheet" href="floorplan-viewer.css?v=20261015d" />
   <script src="floorplans/floors_data.js?v=20261015d"></script>
@@ -381,12 +305,10 @@
   <button class="view-btn" data-view="courtyard" onclick="setView('courtyard')">🌳 Həyət &amp; Park</button>
   <button class="view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı (Top View)</button>
   <button class="view-btn" data-view="street" onclick="setView('street')">🚗 Giriş &amp; Küçə</button>
-  <button class="view-btn btn-cinematic-glow" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic Görünüş</button>
   <button class="view-btn" style="background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; font-weight: 700; border: none; box-shadow: 0 0 16px rgba(219, 39, 119, 0.6); animation: pulse-btn-glow 2s infinite alternate;" onclick="open360Tour(52)">🔮 Mənzilin İçi (360° Tur)</button>
 </div>
 
 <div id="btn-panel">
-  <button class="btn btn-cinematic" id="btn-cinematic" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic Görünüş</button>
   <button class="btn active" id="btn-orbit" onclick="setMode('orbit')">🔄 Orbit Kamera</button>
   <button class="btn" id="btn-walk"  onclick="setMode('walk')">🚶 Gəzinti (WASD)</button>
   <button class="btn" id="btn-floorplan" onclick="openFloorPlanModal()">🗺️ 2D Mərtəbə Planı</button>
@@ -494,11 +416,8 @@
 
   <div class="dock-divider"></div>
 
-  <!-- 5. Floor Plan, 360 Apartment Tour & Cinematic View -->
+  <!-- 5. Floor Plan & 360 Apartment Tour -->
   <div class="dock-group">
-    <button class="dock-btn btn-cinematic" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">
-      🎬 Cinematic Görünüş
-    </button>
     <button class="dock-btn" style="color: #dfc882; font-weight: 700;" onclick="openFloorPlanModal()" title="2D Mərtəbə Planı və Mənzil Eskizləri">
       🗺️ 2D Plan
     </button>
@@ -514,15 +433,6 @@
 <div id="stats">
   <div>Obyektlər: <span id="stat-meshes">-</span></div>
   <div>FPS: <span id="stat-fps">60</span></div>
-</div>
-
-<!-- Cinematic 3D Turntable / Drone View Fullscreen Modal -->
-<div id="cinematic-modal">
-  <button class="cinematic-close-floating" onclick="closeCinematicModal()" title="3D Sistemə Qayıt (ESC)">
-    <span>⬅️</span>
-    <span>Əsas Sistemə Qayıt (ESC)</span>
-  </button>
-  <iframe id="cinematic-iframe" src="" allowfullscreen></iframe>
 </div>
 
 <!-- Interactive 2D Floor Plan & Apartment Map Modal -->
@@ -1647,42 +1557,11 @@ window.addEventListener('keydown', e => {
     document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
   }
   if (e.code === 'Escape') {
-    if (document.getElementById('cinematic-modal')?.classList.contains('active')) {
-      closeCinematicModal();
-    } else if (currentMode === 'walk') {
+    if (currentMode === 'walk') {
       setMode('orbit');
     }
   }
 });
-
-/* =========================================================================
-   CINEMATIC 3D TURNTABLE & DAY/NIGHT DRONE VIEW CONTROLS
-   ========================================================================= */
-
-window.openCinematicView = function () {
-  const modal = document.getElementById('cinematic-modal');
-  const iframe = document.getElementById('cinematic-iframe');
-  if (!modal || !iframe) return;
-
-  if (!iframe.src || iframe.src === 'about:blank' || !iframe.src.includes('cinematic/index.html')) {
-    iframe.src = 'cinematic/index.html';
-  }
-  modal.style.display = 'block';
-  requestAnimationFrame(() => {
-    modal.classList.add('active');
-  });
-  document.body.style.overflow = 'hidden';
-};
-
-window.closeCinematicModal = function () {
-  const modal = document.getElementById('cinematic-modal');
-  if (!modal) return;
-  modal.classList.remove('active');
-  setTimeout(() => {
-    modal.style.display = 'none';
-  }, 250);
-  document.body.style.overflow = '';
-};
 
 let fpsFrames = 0, lastTime = performance.now();
 const walkDir = new THREE.Vector3(), walkRight = new THREE.Vector3();

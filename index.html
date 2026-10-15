@@ -71,45 +71,7 @@
     .view-btn:hover { color: #dfc882; background: rgba(223,200,130,0.15); }
     .view-btn.active { color: #12141a; background: #dfc882; font-weight: 600; }
 
-    /* Day / Night Control Bar */
-    .day-night-bar {
-      display: flex;
-      align-items: center;
-      background: rgba(18, 22, 30, 0.92);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(223, 200, 130, 0.35);
-      border-radius: 30px;
-      padding: 3px;
-      gap: 3px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
-    }
-    .dn-btn {
-      background: transparent;
-      border: none;
-      color: #a4abb8;
-      padding: 6px 13px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.76rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.25s ease;
-      white-space: nowrap;
-    }
-    .dn-btn:hover { color: #fff; }
-    .dn-btn.active[data-mode="day"] {
-      background: linear-gradient(135deg, #f59e0b, #eab308);
-      color: #12141a;
-      box-shadow: 0 2px 12px rgba(245, 158, 11, 0.45);
-    }
-    .dn-btn.active[data-mode="night"] {
-      background: linear-gradient(135deg, #2563eb, #6366f1);
-      color: #fff;
-      box-shadow: 0 2px 14px rgba(37, 99, 235, 0.55);
-    }
+
     .btn-360-spin {
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(37, 99, 235, 0.3)) !important;
       border: 1px solid rgba(56, 189, 248, 0.5) !important;
@@ -336,83 +298,7 @@
     }
     .card-action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(223,200,130,0.4); }
 
-    /* Cinematic 3D Turntable / Drone View Integration */
-    .btn-cinematic {
-      background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(56, 189, 248, 0.45)) !important;
-      border: 1px solid #38bdf8 !important;
-      color: #38bdf8 !important;
-      font-weight: 700 !important;
-      letter-spacing: 0.5px !important;
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.35) !important;
-      transition: all 0.25s ease !important;
-    }
-    .btn-cinematic:hover {
-      background: linear-gradient(135deg, #0284c7, #38bdf8) !important;
-      color: #02050e !important;
-      transform: translateY(-2px) scale(1.03) !important;
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.75) !important;
-    }
-    .view-btn.btn-cinematic-glow {
-      background: linear-gradient(135deg, #0284c7, #38bdf8) !important;
-      color: #ffffff !important;
-      font-weight: 700 !important;
-      border: none !important;
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.5) !important;
-      animation: pulse-cinematic 2.2s infinite alternate !important;
-    }
-    @keyframes pulse-cinematic {
-      0% { box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
-      100% { box-shadow: 0 0 22px rgba(56, 189, 248, 0.85); }
-    }
-    #cinematic-modal {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #02050e;
-      z-index: 99999;
-      display: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    #cinematic-modal.active {
-      display: block;
-      opacity: 1;
-    }
-    #cinematic-iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-    }
-    .cinematic-close-floating {
-      position: fixed;
-      top: 24px;
-      right: 28px;
-      z-index: 100000;
-      background: rgba(10, 15, 29, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #f8fafc;
-      padding: 9px 18px;
-      border-radius: 30px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-      transition: all 0.2s ease;
-    }
-    .cinematic-close-floating:hover {
-      background: rgba(239, 68, 68, 0.85);
-      border-color: #ef4444;
-      transform: scale(1.05);
-      color: #fff;
-    }
+
   </style>
   <link rel="stylesheet" href="floorplan-viewer.css?v=20261015d" />
   <script src="floorplans/floors_data.js?v=20261015d"></script>
@@ -442,19 +328,12 @@
   <button class="view-btn" data-view="courtyard" onclick="setView('courtyard')">🌳 Həyət &amp; Park</button>
   <button class="view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı</button>
   <button class="view-btn" data-view="street" onclick="setView('street')">🚗 Giriş &amp; Küçə</button>
-  <div class="day-night-bar" title="Gündüz və Gecə rejimi">
-    <button class="dn-btn active" id="dn-btn-day" data-mode="day" onclick="setDayNight('day')">☀️ Gündüz</button>
-    <button class="dn-btn" id="dn-btn-night" data-mode="night" onclick="setDayNight('night')">🌙 Gecə</button>
-  </div>
-  <button class="view-btn btn-360-spin" id="btn-spin-360" onclick="toggle360CinematicOrbit()" title="Binanı 360° Kinematik Fırlat">🔄 360° Fırlat</button>
-  <button class="view-btn btn-cinematic-glow" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic 360</button>
+  <button class="view-btn btn-360-spin" id="btn-spin-360" onclick="toggle360CinematicOrbit()" title="Binanı 360° Fırlat">🔄 360° Fırlat</button>
   <button class="view-btn" style="background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; font-weight: 700; border: none; box-shadow: 0 0 16px rgba(219, 39, 119, 0.6); animation: pulse-btn-glow 2s infinite alternate;" onclick="open360Tour(52)">🔮 Mənzilin İçi (360° Tur)</button>
 </div>
 
 <div id="btn-panel">
-  <button class="btn" id="btn-daynight-toggle" onclick="toggleDayNight()" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(37, 99, 235, 0.2)); border-color: #f59e0b;">☀️ Gündüz / 🌙 Gecə</button>
-  <button class="btn btn-360-spin" id="btn-360-toggle" onclick="toggle360CinematicOrbit()">🔄 360° Kinematik Fırlat</button>
-  <button class="btn btn-cinematic" id="btn-cinematic" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic 360</button>
+  <button class="btn btn-360-spin" id="btn-360-toggle" onclick="toggle360CinematicOrbit()">🔄 360° Fırlat</button>
   <button class="btn active" id="btn-orbit" onclick="setMode('orbit')">🔄 Orbit Kamera</button>
   <button class="btn" id="btn-walk"  onclick="setMode('walk')">🚶 Gəzinti (WASD)</button>
   <button class="btn" id="btn-floorplan" onclick="openFloorPlanModal()">🗺️ 2D Mərtəbə Planı</button>
@@ -543,12 +422,9 @@
 
   <div class="dock-divider"></div>
 
-  <!-- 2b. Day / Night & 360 Cinematic Orbit -->
+  <!-- 2b. 360 Orbit -->
   <div class="dock-group">
-    <button class="dock-btn" id="btn-dock-daynight" onclick="toggleDayNight()" title="Gündüz və Gecə rejimini dəyiş">
-      ☀️ / 🌙 Gündüz-Gecə
-    </button>
-    <button class="dock-btn btn-360-spin" id="btn-dock-spin" onclick="toggle360CinematicOrbit()" title="360° Kinematik Dairəvi Baxış">
+    <button class="dock-btn btn-360-spin" id="btn-dock-spin" onclick="toggle360CinematicOrbit()" title="360° Dairəvi Baxış">
       🔄 360° Fırlat
     </button>
   </div>
@@ -574,11 +450,8 @@
 
   <div class="dock-divider"></div>
 
-  <!-- 5. Floor Plan, 360 Apartment Tour & Cinematic View -->
+  <!-- 5. Floor Plan & 360 Apartment Tour -->
   <div class="dock-group">
-    <button class="dock-btn btn-cinematic" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">
-      🎬 Cinematic Görünüş
-    </button>
     <button class="dock-btn" style="color: #dfc882; font-weight: 700;" onclick="openFloorPlanModal()" title="2D Mərtəbə Planı və Mənzil Eskizləri">
       🗺️ 2D Plan
     </button>
@@ -594,15 +467,6 @@
 <div id="stats">
   <div>Obyektlər: <span id="stat-meshes">-</span></div>
   <div>FPS: <span id="stat-fps">60</span></div>
-</div>
-
-<!-- Cinematic 3D Turntable / Drone View Fullscreen Modal -->
-<div id="cinematic-modal">
-  <button class="cinematic-close-floating" onclick="closeCinematicModal()" title="3D Sistemə Qayıt (ESC)">
-    <span>⬅️</span>
-    <span>Əsas Sistemə Qayıt (ESC)</span>
-  </button>
-  <iframe id="cinematic-iframe" src="" allowfullscreen></iframe>
 </div>
 
 <!-- Interactive 2D Floor Plan & Apartment Map Modal -->
@@ -1678,126 +1542,7 @@ window.addEventListener('click', (e) => {
   }
 });
 
-// ==========================================
-// ☀️ / 🌙 DAY & NIGHT ARCHITECTURAL ENGINE
-// ==========================================
 
-let currentDayNightMode = 'day';
-
-window.setDayNight = (mode) => {
-  currentDayNightMode = mode;
-
-  // Update Top Bar buttons
-  const btnDay = document.getElementById('dn-btn-day');
-  const btnNight = document.getElementById('dn-btn-night');
-  if (btnDay && btnNight) {
-    if (mode === 'day') {
-      btnDay.classList.add('active');
-      btnNight.classList.remove('active');
-    } else {
-      btnDay.classList.remove('active');
-      btnNight.classList.add('active');
-    }
-  }
-
-  // Update Right Panel button
-  const btnToggle = document.getElementById('btn-daynight-toggle');
-  if (btnToggle) {
-    btnToggle.textContent = mode === 'day' ? '☀️ Gündüz Rejimi' : '🌙 Gecə Rejimi';
-    if (mode === 'night') btnToggle.classList.add('active');
-    else btnToggle.classList.remove('active');
-  }
-
-  // Update Bottom Dock button
-  const btnDock = document.getElementById('btn-dock-daynight');
-  if (btnDock) {
-    btnDock.innerHTML = mode === 'day' ? '☀️ Gündüz' : '🌙 Gecə';
-    if (mode === 'night') btnDock.classList.add('active');
-    else btnDock.classList.remove('active');
-  }
-
-  if (mode === 'day') {
-    scene.background = daySkyEnvMap;
-    scene.environment = daySkyEnvMap;
-    scene.fog.color.setHex(0xa8c4dc);
-    scene.fog.density = 0.0011;
-
-    sunLight.color.setHex(0xfff5e4);
-    sunLight.intensity = 3.2;
-    sunLight.position.set(115, 190, -115);
-
-    skyLight.color.setHex(0xb5d4f6);
-    skyLight.groundColor.setHex(0x453b30);
-    skyLight.intensity = 1.2;
-
-    ambientLight.color.setHex(0xffffff);
-    ambientLight.intensity = 0.40;
-
-    fillLight.color.setHex(0x8ab8e6);
-    fillLight.intensity = 0.80;
-
-    nightLightsGroup.visible = false;
-
-    // Daytime reflective windows
-    matWindowGlass.color.setHex(0x3d748d);
-    matWindowGlass.emissive.setHex(0x000000);
-    matWindowGlass.emissiveIntensity = 0.0;
-    matWindowGlass.opacity = 0.60;
-
-    if (window.matRotundaGlass) {
-      window.matRotundaGlass.color.setHex(0x4f8ba6);
-      window.matRotundaGlass.emissive.setHex(0x000000);
-      window.matRotundaGlass.emissiveIntensity = 0.0;
-      window.matRotundaGlass.opacity = 0.65;
-    }
-
-    matUpperFacade.color.setHex(0xd6cebe);
-    renderer.toneMappingExposure = 1.25;
-  } else {
-    scene.background = nightSkyEnvMap;
-    scene.environment = nightSkyEnvMap;
-    scene.fog.color.setHex(0x060913);
-    scene.fog.density = 0.0018;
-
-    // Soft cool moonlight
-    sunLight.color.setHex(0x5c7ea8);
-    sunLight.intensity = 0.40;
-    sunLight.position.set(-80, 140, 80);
-
-    skyLight.color.setHex(0x18243e);
-    skyLight.groundColor.setHex(0x080c14);
-    skyLight.intensity = 0.45;
-
-    ambientLight.color.setHex(0x1a2238);
-    ambientLight.intensity = 0.35;
-
-    fillLight.color.setHex(0x283854);
-    fillLight.intensity = 0.20;
-
-    nightLightsGroup.visible = true;
-
-    // Night illuminated windows with golden warmth!
-    matWindowGlass.color.setHex(0x22170c);
-    matWindowGlass.emissive.setHex(0xffaa44);
-    matWindowGlass.emissiveIntensity = 1.55;
-    matWindowGlass.opacity = 0.95;
-
-    if (window.matRotundaGlass) {
-      window.matRotundaGlass.color.setHex(0x332211);
-      window.matRotundaGlass.emissive.setHex(0xffc266);
-      window.matRotundaGlass.emissiveIntensity = 2.0;
-      window.matRotundaGlass.opacity = 0.92;
-    }
-
-    matUpperFacade.color.setHex(0x6e6860);
-    renderer.toneMappingExposure = 1.35;
-  }
-};
-
-window.toggleDayNight = () => {
-  const nextMode = currentDayNightMode === 'day' ? 'night' : 'day';
-  setDayNight(nextMode);
-};
 
 // ==========================================
 // 🔄 360° KİNEMATİK DAİRƏVİ FIRLANMA
@@ -2002,42 +1747,11 @@ window.addEventListener('keydown', e => {
     document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
   }
   if (e.code === 'Escape') {
-    if (document.getElementById('cinematic-modal')?.classList.contains('active')) {
-      closeCinematicModal();
-    } else if (currentMode === 'walk') {
+    if (currentMode === 'walk') {
       setMode('orbit');
     }
   }
 });
-
-/* =========================================================================
-   CINEMATIC 3D TURNTABLE & DAY/NIGHT DRONE VIEW CONTROLS
-   ========================================================================= */
-
-window.openCinematicView = function () {
-  const modal = document.getElementById('cinematic-modal');
-  const iframe = document.getElementById('cinematic-iframe');
-  if (!modal || !iframe) return;
-
-  if (!iframe.src || iframe.src === 'about:blank' || !iframe.src.includes('cinematic/index.html')) {
-    iframe.src = 'cinematic/index.html';
-  }
-  modal.style.display = 'block';
-  requestAnimationFrame(() => {
-    modal.classList.add('active');
-  });
-  document.body.style.overflow = 'hidden';
-};
-
-window.closeCinematicModal = function () {
-  const modal = document.getElementById('cinematic-modal');
-  if (!modal) return;
-  modal.classList.remove('active');
-  setTimeout(() => {
-    modal.style.display = 'none';
-  }, 250);
-  document.body.style.overflow = '';
-};
 
 let fpsFrames = 0, lastTime = performance.now();
 const walkDir = new THREE.Vector3(), walkRight = new THREE.Vector3();
