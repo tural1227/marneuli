@@ -864,7 +864,7 @@
   let roomHistory = [];
 
   // GPU Memory Preload Cache (keyed by image URL)
-  const CACHE_BUST = "?v=20261015_v23";
+  const CACHE_BUST = "?v=20261015_v24";
   const textureCache = {};
 
   // Walking Physics State
@@ -928,15 +928,15 @@
         <div id="tour-minimap-room-wrap" class="tour-minimap-blueprint-wrap">
           <img class="tour-minimap-img" id="tour-minimap-img" src="tour_360/apt_52/blueprint.png" alt="Mənzil Çertyoj Planı" />
           <div class="minimap-overlay">
-            <div id="map-room-hall" class="minimap-zone" style="left: 60%; top: 28%; width: 14%; height: 18%;" onclick="window.switchRoom('hall')" title="Dəhliz"></div>
-            <div id="map-room-bathroom" class="minimap-zone" style="left: 62%; top: 44%; width: 13%; height: 12%;" onclick="window.switchRoom('bathroom')" title="Sanitar qovşaq"></div>
-            <div id="map-room-kitchen" class="minimap-zone" style="left: 45%; top: 24%; width: 16%; height: 16%;" onclick="window.switchRoom('kitchen')" title="Mətbəx"></div>
-            <div id="map-room-living" class="minimap-zone" style="left: 32%; top: 40%; width: 22%; height: 26%;" onclick="window.switchRoom('living')" title="Qonaq otağı"></div>
-            <div id="map-room-bedroom" class="minimap-zone" style="left: 52%; top: 52%; width: 20%; height: 22%;" onclick="window.switchRoom('bedroom')" title="Yataq otağı"></div>
-            <div id="map-room-balcony" class="minimap-zone" style="left: 30%; top: 66%; width: 24%; height: 15%;" onclick="window.switchRoom('balcony')" title="Eyvan"></div>
+            <div id="map-room-hall" class="minimap-zone" style="left: 60%; top: 24%; width: 12%; height: 14%;" onclick="window.switchRoom('hall')" title="Dəhliz"></div>
+            <div id="map-room-kitchen" class="minimap-zone" style="left: 45%; top: 24%; width: 15%; height: 14%;" onclick="window.switchRoom('kitchen')" title="Mətbəx"></div>
+            <div id="map-room-bathroom" class="minimap-zone" style="left: 61%; top: 38%; width: 13%; height: 14%;" onclick="window.switchRoom('bathroom')" title="Sanitar qovşaq"></div>
+            <div id="map-room-living" class="minimap-zone" style="left: 28%; top: 38%; width: 23%; height: 23%;" onclick="window.switchRoom('living')" title="Qonaq otağı"></div>
+            <div id="map-room-bedroom" class="minimap-zone" style="left: 46%; top: 54%; width: 17%; height: 18%;" onclick="window.switchRoom('bedroom')" title="Yataq otağı"></div>
+            <div id="map-room-balcony" class="minimap-zone" style="left: 28%; top: 64%; width: 18%; height: 14%;" onclick="window.switchRoom('balcony')" title="Eyvan"></div>
             
             <!-- Live Radar Cone & Position Marker -->
-            <div id="minimap-radar-marker" style="left: 58%; top: 19%;">
+            <div id="minimap-radar-marker" style="left: 65%; top: 30%;">
               <div id="minimap-radar-cone"></div>
               <div id="minimap-radar-dot"></div>
             </div>
@@ -1591,17 +1591,20 @@
     const radarCone = document.getElementById("minimap-radar-cone");
     if (!radarMarker) return;
 
-    // Room center percentages matching blueprint
-    const roomPositions = {
-      hall: { left: 58, top: 19 },
-      bathroom: { left: 84, top: 19 },
-      living: { left: 30, top: 56 },
-      bedroom: { left: 74, top: 56 },
-      bedroom2: { left: 74, top: 72 },
-      balcony: { left: 50, top: 89 }
+    // Room center percentages matching each apartment's individual blueprint crop
+    const aptRoomPositions = {
+      52: {
+        hall: { left: 65, top: 30 },
+        kitchen: { left: 52, top: 30 },
+        bathroom: { left: 68, top: 45 },
+        living: { left: 40, top: 48 },
+        bedroom: { left: 55, top: 62 },
+        balcony: { left: 37, top: 72 }
+      }
     };
 
-    const pos = roomPositions[currentRoomId] || { left: 50, top: 50 };
+    const aptMap = aptRoomPositions[currentAptNum] || aptRoomPositions[52];
+    const pos = aptMap[currentRoomId] || { left: 50, top: 50 };
     radarMarker.style.left = `${pos.left}%`;
     radarMarker.style.top = `${pos.top}%`;
 
