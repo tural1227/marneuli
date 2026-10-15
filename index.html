@@ -66,13 +66,14 @@
     }
     #views-bar::-webkit-scrollbar { display: none; }
     .view-btn {
-      background: transparent; border: none;
-      color: #ccc; padding: 7px 14px; border-radius: 20px;
-      cursor: pointer; font-size: 0.78rem; font-weight: 500;
-      transition: all 0.2s ease; display: flex; align-items: center; gap: 6px;
+      background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ccc; width: 40px; height: 40px; border-radius: 50%;
+      cursor: pointer; font-size: 1.15rem; font-weight: 500;
+      transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center;
+      padding: 0; flex-shrink: 0;
     }
-    .view-btn:hover { color: #dfc882; background: rgba(223,200,130,0.15); }
-    .view-btn.active { color: #12141a; background: #dfc882; font-weight: 600; }
+    .view-btn:hover { color: #dfc882; background: rgba(223,200,130,0.2); border-color: #dfc882; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(223, 200, 130, 0.35); }
+    .view-btn.active { color: #12141a; background: #dfc882; font-weight: 600; border-color: #dfc882; }
 
 
     .btn-360-spin {
@@ -144,11 +145,12 @@
     .dock-btn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #e0e4ec; padding: 7px 11px; border-radius: 20px;
-      cursor: pointer; font-size: 0.75rem; font-weight: 600;
-      display: flex; align-items: center; gap: 5px;
+      color: #e0e4ec; width: 38px; height: 38px; border-radius: 50%;
+      cursor: pointer; font-size: 1.05rem; font-weight: 600;
+      display: inline-flex; align-items: center; justify-content: center;
       transition: all 0.18s ease;
       white-space: nowrap; flex-shrink: 0;
+      padding: 0;
     }
     .dock-btn:hover {
       background: rgba(223, 200, 130, 0.22);
@@ -167,13 +169,23 @@
       box-shadow: 0 2px 10px rgba(223, 200, 130, 0.4);
     }
     .dock-btn-icon {
-      padding: 7px 10px; font-size: 0.85rem;
+      font-size: 1.05rem;
+    }
+    #ui-tooltip {
+      position: fixed; display: none; pointer-events: none; z-index: 99999;
+      background: rgba(14, 17, 24, 0.95); color: #dfc882; font-size: 0.75rem;
+      font-weight: 600; padding: 6px 12px; border-radius: 8px;
+      border: 1px solid rgba(223, 200, 130, 0.45);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+      white-space: nowrap; transition: opacity 0.15s ease;
+      letter-spacing: 0.3px;
     }
     @media (max-width: 768px) {
       #controls-help { display: none; }
       #stats { display: none; }
-      #bottom-controls-dock { bottom: 10px; padding: 4px 8px; }
-      .dock-btn { padding: 5px 8px; font-size: 0.70rem; }
+      #bottom-controls-dock { bottom: 10px; padding: 4px 8px; gap: 4px; }
+      .dock-btn { width: 32px; height: 32px; font-size: 0.90rem; }
+      .view-btn { width: 34px; height: 34px; font-size: 0.95rem; }
     }
 
     #stats {
@@ -400,9 +412,9 @@
 </div>
 
 <div id="views-bar">
-  <button class="view-btn active" data-view="facade" onclick="setView('facade')">🏢 Fasad (Əsas Görünüş)</button>
-  <button class="view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı</button>
-  <button class="view-btn btn-cinematic-glow" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic Görünüş</button>
+  <button class="view-btn active" data-view="facade" onclick="setView('facade')" title="Fasad (Əsas Görünüş)" data-tooltip="Fasad (Əsas Görünüş)">🏢</button>
+  <button class="view-btn" data-view="birds" onclick="setView('birds')" title="Quşbaxışı Görünüş" data-tooltip="Quşbaxışı Görünüş">🦅</button>
+  <button class="view-btn btn-cinematic-glow" onclick="openCinematicView()" title="Cinematic Görünüş (Dron &amp; 360°)" data-tooltip="Cinematic Görünüş">🎬</button>
 </div>
 
 <!-- Vertical Floor Selector Panel (Right Side) -->
@@ -451,11 +463,11 @@
   <!-- 1. Zoom In / Out -->
   <div class="dock-group">
     <button class="dock-btn dock-btn-icon" 
-      title="Yaxınlaşdır (Zoom In - basıb saxlaya bilərsiniz)" 
+      title="Yaxınlaşdır (Zoom In)" data-tooltip="Yaxınlaşdır (Zoom In)"
       onmousedown="startNavAction('in')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
       ontouchstart="startNavAction('in')" ontouchend="stopNavAction()">➕</button>
     <button class="dock-btn dock-btn-icon" 
-      title="Uzaqlaşdır (Zoom Out - basıb saxlaya bilərsiniz)" 
+      title="Uzaqlaşdır (Zoom Out)" data-tooltip="Uzaqlaşdır (Zoom Out)"
       onmousedown="startNavAction('out')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
       ontouchstart="startNavAction('out')" ontouchend="stopNavAction()">➖</button>
   </div>
@@ -464,53 +476,54 @@
 
   <!-- 2. Rotate Left / Right / Tilt Up / Down -->
   <div class="dock-group">
-    <button class="dock-btn" 
-      title="Sola Fırla (Basıb saxlayın)" 
-      onmousedown="startNavAction('left')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
-      ontouchstart="startNavAction('left')" ontouchend="stopNavAction()">↺ Sola</button>
     <button class="dock-btn dock-btn-icon" 
-      title="Yuxarı Bax (Tilt Up)" 
+      title="Sola Fırla" data-tooltip="Sola Fırla"
+      onmousedown="startNavAction('left')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
+      ontouchstart="startNavAction('left')" ontouchend="stopNavAction()">↺</button>
+    <button class="dock-btn dock-btn-icon" 
+      title="Yuxarı Bax (Tilt Up)" data-tooltip="Yuxarı Bax (Tilt Up)"
       onmousedown="startNavAction('up')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
       ontouchstart="startNavAction('up')" ontouchend="stopNavAction()">▲</button>
     <button class="dock-btn dock-btn-icon" 
-      title="Aşağı Bax (Tilt Down)" 
+      title="Aşağı Bax (Tilt Down)" data-tooltip="Aşağı Bax (Tilt Down)"
       onmousedown="startNavAction('down')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
       ontouchstart="startNavAction('down')" ontouchend="stopNavAction()">▼</button>
-    <button class="dock-btn" 
-      title="Sağa Fırla (Basıb saxlayın)" 
+    <button class="dock-btn dock-btn-icon" 
+      title="Sağa Fırla" data-tooltip="Sağa Fırla"
       onmousedown="startNavAction('right')" onmouseup="stopNavAction()" onmouseleave="stopNavAction()"
-      ontouchstart="startNavAction('right')" ontouchend="stopNavAction()">Sağa ↻</button>
-  </div>
-
-
-
-  <div class="dock-divider"></div>
-
-  <!-- 4. Fırlanma və Avto-Dönüş -->
-  <div class="dock-group">
-    <button class="dock-btn btn-360-spin" id="btn-dock-spin" onclick="toggle360CinematicOrbit()" title="360° Dairəvi Kinematik Baxış">
-      🔄 360° Fırlat
-    </button>
-    <button class="dock-btn" id="btn-autorotate" onclick="toggleAutoRotate()" title="Binanı Avtomatik Fırlat">
-      ▶️ Avto-Dönüş
-    </button>
+      ontouchstart="startNavAction('right')" ontouchend="stopNavAction()">↻</button>
   </div>
 
   <div class="dock-divider"></div>
 
-  <!-- 5. Əlavə Alətlər -->
+  <!-- 3. Fırlanma və Avto-Dönüş -->
   <div class="dock-group">
-    <button class="dock-btn" onclick="takeScreenshot()" title="Ekran Şəkli Çək">
-      📸 Şəkil
+    <button class="dock-btn btn-360-spin dock-btn-icon" id="btn-dock-spin" onclick="toggle360CinematicOrbit()" title="360° Dairəvi Kinematik Baxış" data-tooltip="360° Dairəvi Baxış">
+      🔄
     </button>
-    <button class="dock-btn" onclick="toggleWireframe()" title="Şəbəkə Görünüşü (Wireframe)">
-      〰️ Wireframe
+    <button class="dock-btn dock-btn-icon" id="btn-autorotate" onclick="toggleAutoRotate()" title="Binanı Avtomatik Fırlat" data-tooltip="Avto-Dönüş">
+      ▶️
     </button>
-    <button class="dock-btn" onclick="resetCamera()" title="Kameranı Əsas Görünüşə Qaytar">
-      🏠 Sıfırla
+  </div>
+
+  <div class="dock-divider"></div>
+
+  <!-- 4. Əlavə Alətlər -->
+  <div class="dock-group">
+    <button class="dock-btn dock-btn-icon" onclick="takeScreenshot()" title="Ekran Şəkli Çək" data-tooltip="Ekran Şəkli Çək">
+      📸
+    </button>
+    <button class="dock-btn dock-btn-icon" onclick="toggleWireframe()" title="Şəbəkə Görünüşü (Wireframe)" data-tooltip="Şəbəkə (Wireframe)">
+      〰️
+    </button>
+    <button class="dock-btn dock-btn-icon" onclick="resetCamera()" title="Kameranı Əsas Görünüşə Qaytar" data-tooltip="Kameranı Sıfırla">
+      🏠
     </button>
   </div>
 </div>
+
+<!-- Floating Luxury UI Tooltip -->
+<div id="ui-tooltip"></div>
 
 <div id="stats">
   <div>Obyektlər: <span id="stat-meshes">-</span></div>
@@ -1959,6 +1972,50 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+// Floating Luxury Tooltip logic for Icon Buttons
+const uiTooltip = document.getElementById('ui-tooltip');
+function setupTooltips() {
+  document.querySelectorAll('[data-tooltip]').forEach(el => {
+    const text = el.getAttribute('data-tooltip');
+    if (!text) return;
+    el.setAttribute('aria-label', text);
+    el.removeAttribute('title');
+    
+    el.addEventListener('mouseenter', () => {
+      if (!uiTooltip) return;
+      uiTooltip.textContent = text;
+      uiTooltip.style.display = 'block';
+      uiTooltip.style.opacity = '1';
+      const rect = el.getBoundingClientRect();
+      const isTop = rect.top < 150;
+      if (isTop) {
+        uiTooltip.style.left = (rect.left + rect.width / 2) + 'px';
+        uiTooltip.style.top = (rect.bottom + 8) + 'px';
+        uiTooltip.style.transform = 'translate(-50%, 0)';
+      } else {
+        uiTooltip.style.left = (rect.left + rect.width / 2) + 'px';
+        uiTooltip.style.top = (rect.top - 8) + 'px';
+        uiTooltip.style.transform = 'translate(-50%, -100%)';
+      }
+    });
+
+    el.addEventListener('mouseleave', () => {
+      if (uiTooltip) {
+        uiTooltip.style.display = 'none';
+        uiTooltip.style.opacity = '0';
+      }
+    });
+
+    el.addEventListener('click', () => {
+      if (uiTooltip) {
+        uiTooltip.style.display = 'none';
+        uiTooltip.style.opacity = '0';
+      }
+    });
+  });
+}
+setupTooltips();
 
 loadScene();
 </script>

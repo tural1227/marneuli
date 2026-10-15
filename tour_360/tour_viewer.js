@@ -25,9 +25,9 @@
           area: "5.8 m²",
           icon: "🚪",
           image: "tour_360/apt_52/hall.jpg",
-          initialLon: 15.0,
+          initialLon: 180.0,
           hotspots: [
-            { target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı & Açıq Mətbəx" },
+            { target: "living", pitch: -2.0, yaw: 180.0, label: "Qonaq Otağı & Açıq Mətbəx" },
             { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" },
             { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }
           ]
@@ -38,12 +38,12 @@
           area: "31.7 m²",
           icon: "🛋️",
           image: "tour_360/apt_52/living.jpg",
-          initialLon: 12.0,
+          initialLon: 180.0,
           hotspots: [
             { target: "kitchen", pitch: -3.0, yaw: 35.0, label: "Mətbəx Zonası" },
             { target: "balcony", pitch: -3.0, yaw: -45.0, label: "Mənzərəli Eyvana Çıxış" },
             { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağına Keçid" },
-            { target: "hall", pitch: -2.0, yaw: 175.0, label: "Dəhlizə Qayıt" }
+            { target: "hall", pitch: -2.0, yaw: 0.0, label: "Dəhlizə Qayıt" }
           ]
         },
         kitchen: {
@@ -52,9 +52,9 @@
           area: "12.4 m²",
           icon: "🍳",
           image: "tour_360/apt_52/kitchen.jpg",
-          initialLon: 0.0,
+          initialLon: 180.0,
           hotspots: [
-            { target: "living", pitch: -3.0, yaw: 110.0, label: "Qonaq Otağına Keçid" },
+            { target: "living", pitch: -3.0, yaw: 0.0, label: "Qonaq Otağına Keçid" },
             { target: "hall", pitch: -3.0, yaw: -140.0, label: "Dəhlizə Qayıt" },
             { target: "balcony", pitch: -3.0, yaw: -45.0, label: "Eyvana Çıxış" }
           ]
@@ -65,10 +65,10 @@
           area: "18.2 m²",
           icon: "🛏️",
           image: "tour_360/apt_52/bedroom.jpg",
-          initialLon: 38.0,
+          initialLon: 180.0,
           hotspots: [
             { target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" },
-            { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağına Qayıt" },
+            { target: "living", pitch: -4.0, yaw: 0.0, label: "Qonaq Otağına Qayıt" },
             { target: "hall", pitch: -4.0, yaw: -45.0, label: "Dəhlizə Keçid" }
           ]
         },
@@ -78,9 +78,9 @@
           area: "4.4 m²",
           icon: "🚿",
           image: "tour_360/apt_52/bathroom.jpg",
-          initialLon: -30.0,
+          initialLon: 170.0,
           hotspots: [
-            { target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }
+            { target: "hall", pitch: -3.0, yaw: 0.0, label: "Dəhlizə Qayıt" }
           ]
         },
         balcony: {
@@ -89,9 +89,9 @@
           area: "4.5 m²",
           icon: "🌿",
           image: "tour_360/apt_52/balcony.jpg",
-          initialLon: 80.0,
+          initialLon: 180.0,
           hotspots: [
-            { target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağına Daxil Ol" },
+            { target: "living", pitch: -3.0, yaw: 0.0, label: "Qonaq Otağına Daxil Ol" },
             { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağına Daxil Ol" }
           ]
         }
@@ -864,7 +864,7 @@
   let roomHistory = [];
 
   // GPU Memory Preload Cache (keyed by image URL)
-  const CACHE_BUST = "?v=20261016_v27";
+  const CACHE_BUST = "?v=20261016_v31";
   const textureCache = {};
 
   // Walking Physics State
@@ -1052,19 +1052,19 @@
 
       <!-- Human Walk Navigation Floating Dock -->
       <div class="tour-walk-nav" id="tour-walk-dock">
-        <button class="tour-walk-btn" id="btn-walk-forward" onmousedown="window.startWalk('KeyW')" onmouseup="window.stopWalk('KeyW')" onmouseleave="window.stopWalk('KeyW')" ontouchstart="window.startWalk('KeyW')" ontouchend="window.stopWalk('KeyW')" onclick="window.stepWalk('forward')" title="Önə doğru addımla (W / ↑)">
+        <button class="tour-walk-btn" id="btn-walk-forward" onclick="window.stepWalk('forward')" title="Önə doğru addımla (W / ↑)">
           <span>🚶‍♂️ Önə</span>
           <span class="walk-key">W</span>
         </button>
-        <button class="tour-walk-btn" id="btn-walk-backward" onmousedown="window.startWalk('KeyS')" onmouseup="window.stopWalk('KeyS')" onmouseleave="window.stopWalk('KeyS')" ontouchstart="window.startWalk('KeyS')" ontouchend="window.stopWalk('KeyS')" onclick="window.stepWalk('backward')" title="Geriyə addımla (S / ↓)">
+        <button class="tour-walk-btn" id="btn-walk-backward" onclick="window.stepWalk('backward')" title="Geriyə addımla (S / ↓)">
           <span>↩ Geri</span>
           <span class="walk-key">S</span>
         </button>
-        <button class="tour-walk-btn" id="btn-walk-left" onmousedown="window.startWalk('KeyA')" onmouseup="window.stopWalk('KeyA')" onmouseleave="window.stopWalk('KeyA')" ontouchstart="window.startWalk('KeyA')" ontouchend="window.stopWalk('KeyA')" onclick="window.stepWalk('left')" title="Sola Addımla (A / ←)">
+        <button class="tour-walk-btn" id="btn-walk-left" onclick="window.stepWalk('left')" title="Sola Addımla (A / ←)">
           <span>◀ Sola</span>
           <span class="walk-key">A</span>
         </button>
-        <button class="tour-walk-btn" id="btn-walk-right" onmousedown="window.startWalk('KeyD')" onmouseup="window.stopWalk('KeyD')" onmouseleave="window.stopWalk('KeyD')" ontouchstart="window.startWalk('KeyD')" ontouchend="window.stopWalk('KeyD')" onclick="window.stepWalk('right')" title="Sağa Addımla (D / →)">
+        <button class="tour-walk-btn" id="btn-walk-right" onclick="window.stepWalk('right')" title="Sağa Addımla (D / →)">
           <span>Sağa ▶</span>
           <span class="walk-key">D</span>
         </button>
@@ -1074,6 +1074,7 @@
       <div class="tour-side-controls">
         <button class="tour-icon-btn" onclick="window.tourZoom(-8)" title="Yaxınlaşdır">+</button>
         <button class="tour-icon-btn" onclick="window.tourZoom(8)" title="Uzaqlaşdır">−</button>
+        <button class="tour-icon-btn" id="btn-flip-v" onclick="window.toggleFlipV()" title="Şəkli Şaquli Çevir (Baş-Ayaq)">↕</button>
         <button class="tour-icon-btn" onclick="window.tourToggleFullscreen()" title="Tam Ekran">⛶</button>
       </div>
 
@@ -1383,10 +1384,10 @@
     // EXACT FORWARD & STRAFE DIRECTION (Aligned 1:1 with camera lookAt):
     const fX = Math.cos(rad);
     const fZ = Math.sin(rad);
-    const rX = Math.sin(rad);
-    const rZ = -Math.cos(rad);
+    const rX = -Math.sin(rad);
+    const rZ = Math.cos(rad);
 
-    const speed = 80; // units per second
+    const speed = 75; // units per second
     const dx = (fX * moveForward + rX * moveSide) * speed * dt;
     const dz = (fZ * moveForward + rZ * moveSide) * speed * dt;
 
@@ -1400,11 +1401,6 @@
       playFootstepSound();
     }
 
-    // Check if stepping forward towards a doorway hotspot
-    if (moveForward > 0) {
-      checkDoorwayApproach();
-    }
-
     // Keep camera within natural room boundary
     const dist = Math.hypot(targetOffset.x, targetOffset.z);
     if (dist > 95) {
@@ -1416,20 +1412,7 @@
 
   // Check if walking steps brought user through a doorway
   function checkDoorwayApproach() {
-    const config = getCurrentAptConfig();
-    const room = config.rooms[currentRoomId];
-    if (!room || !room.hotspots) return;
-
-    room.hotspots.forEach(h => {
-      let diff = (h.yaw - lon) % 360;
-      if (diff > 180) diff -= 360;
-      if (diff < -180) diff += 360;
-
-      // If looking directly at doorway (< 40°) and advanced forward
-      if (Math.abs(diff) < 40 && Math.hypot(targetOffset.x, targetOffset.z) > 45) {
-        walkToRoom(h.target, h.yaw, h.pitch);
-      }
-    });
+    // Doorway navigation is intentionally triggered via clicking doorway pins
   }
 
   // Switch Active Room
