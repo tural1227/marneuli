@@ -1,6 +1,6 @@
-# 🏢 Marneuli Residence 3D Architectural Viewer
+# 🏢 PREMIUM PARK RESIDENCE 3D Architectural Viewer
 
-Photorealistic WebGL & Three.js 3D architectural visualization platform for the **Marneuli Residence** residential complex.
+Photorealistic WebGL & Three.js 3D architectural visualization platform for the **PREMIUM PARK RESIDENCE** residential complex.
 
 🌐 **Live Demo**: [https://tural1227.github.io/marneuli/](https://tural1227.github.io/marneuli/)
 📦 **Repository**: [https://github.com/tural1227/marneuli](https://github.com/tural1227/marneuli)

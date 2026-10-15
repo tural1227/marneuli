@@ -1,5 +1,5 @@
 // ============================================================================
-// 🏢 MARNEULI RESIDENCE — 360° INTERACTIVE APARTMENT VIRTUAL TOUR
+// 🏢 PREMIUM PARK RESIDENCE — 360° INTERACTIVE APARTMENT VIRTUAL TOUR
 // Silk-Smooth Walking Engine, Exact Blueprint Alignment & Live Radar Mini-Map
 // Multi-Apartment Architecture for Floor 5 (All 17 Apartments: № 52 to 68)
 // ============================================================================
@@ -864,7 +864,7 @@
   let roomHistory = [];
 
   // GPU Memory Preload Cache (keyed by image URL)
-  const CACHE_BUST = "?v=20261015_v24";
+  const CACHE_BUST = "?v=20261016_v25";
   const textureCache = {};
 
   // Walking Physics State
@@ -891,7 +891,7 @@
         <div class="tour-badge-box">
           <div class="tour-title">
             <span class="dot"></span>
-            <span>MARNEULI RESIDENCE &bull; 360° VİRTUAL TUR</span>
+            <span>PREMIUM PARK RESIDENCE &bull; 360° VİRTUAL TUR</span>
           </div>
           
           <div class="tour-apt-select-row">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Marneuli Residence 3D — Real Architectural Viewer</title>
+  <title>PREMIUM PARK RESIDENCE 3D — Real Architectural Viewer</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #12141a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; color: #fff; }
@@ -281,13 +281,13 @@
   <script src="floorplans/floors_data.js?v=20261015d"></script>
   <script src="floorplan-viewer.js?v=20261015d"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js"></script>
-  <link rel="stylesheet" href="tour_360/tour_viewer.css?v=20261015_v24" />
-  <script src="tour_360/tour_viewer.js?v=20261015_v24"></script>
+  <link rel="stylesheet" href="tour_360/tour_viewer.css?v=20261016_v25" />
+  <script src="tour_360/tour_viewer.js?v=20261016_v25"></script>
 </head>
 <body>
 
 <div id="loading">
-  <h2>MARNEULI RESIDENCE</h2>
+  <h2>PREMIUM PARK RESIDENCE</h2>
   <p id="loading-sub">Bütün memarlıq elementləri, şəffaf pəncərələr, fasad daşları, avtomobillər və yaşıllıqlar tənzimlənir...</p>
   <div id="progress-bar-outer"><div id="progress-bar"></div></div>
   <div id="progress-text">Yüklənir...</div>
@@ -296,7 +296,7 @@
 <div id="canvas-container"></div>
 
 <div id="ui">
-  <h1>🏢 Marneuli Residence 3D</h1>
+  <h1>🏢 PREMIUM PARK RESIDENCE 3D</h1>
   <small id="model-info">Klassik Daş Fasad &bull; Mərtəbə Seçimi &bull; Park &amp; İstirahət</small>
 </div>
 
@@ -1544,7 +1544,7 @@ window.toggleWireframe = () => {
 window.takeScreenshot = () => {
   renderer.render(scene, camera);
   const link = document.createElement('a');
-  link.download = 'marneuli_residence_view.png';
+  link.download = 'premium_park_residence_view.png';
   link.href = renderer.domElement.toDataURL('image/png');
   link.click();
 };

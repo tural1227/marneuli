@@ -1,5 +1,5 @@
 // ============================================================================
-// 🏢 MARNEULI RESIDENCE — INTERACTIVE 2D FLOOR PLAN & APARTMENT MAP VIEWER
+// 🏢 PREMIUM PARK RESIDENCE — INTERACTIVE 2D FLOOR PLAN & APARTMENT MAP VIEWER
 // ============================================================================
 
 (function () {
@@ -130,7 +130,7 @@
     // Update Header / Subtitle
     const titleEl = document.getElementById('fp-title');
     const subtitleEl = document.getElementById('fp-subtitle');
-    if (titleEl) titleEl.textContent = `MARNEULI RESIDENCE — ${floorData.title.toUpperCase()}`;
+    if (titleEl) titleEl.textContent = `PREMIUM PARK RESIDENCE — ${floorData.title.toUpperCase()}`;
     if (subtitleEl) subtitleEl.textContent = `${floorData.subtitle} • Sahələr və mənzil eskizləri`;
 
     // Update Blueprint Image
@@ -255,7 +255,7 @@
 
     if (drawerNum) drawerNum.textContent = `MƏNZİL № ${apt.number}`;
 
-    const waText = encodeURIComponent(`Salam, Marneuli Residence layihəsində ${floorData.title}, ${apt.number}-ci mənzil haqqında ətraflı məlumat almaq istəyirəm.`);
+    const waText = encodeURIComponent(`Salam, Premium Park Residence layihəsində ${floorData.title}, ${apt.number}-ci mənzil haqqında ətraflı məlumat almaq istəyirəm.`);
     const waUrl = `https://wa.me/?text=${waText}`;
 
     drawerBody.innerHTML = `
