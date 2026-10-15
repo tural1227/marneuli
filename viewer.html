@@ -488,17 +488,7 @@
       ontouchstart="startNavAction('right')" ontouchend="stopNavAction()">Sağa ↻</button>
   </div>
 
-  <div class="dock-divider"></div>
 
-  <!-- 3. Kamera Rejimləri (Orbit & Gəzinti) -->
-  <div class="dock-group">
-    <button class="dock-btn dock-mode-btn active" id="btn-dock-orbit" onclick="setMode('orbit')" title="Orbit Kamera İdarəetməsi">
-      🔄 Orbit
-    </button>
-    <button class="dock-btn dock-mode-btn" id="btn-dock-walk" onclick="setMode('walk')" title="Sərbəst Gəzinti (WASD və ya Ox düymələri)">
-      🚶 Gəzinti
-    </button>
-  </div>
 
   <div class="dock-divider"></div>
 
@@ -1838,8 +1828,9 @@ window.setMode = (mode) => {
     document.getElementById('controls-help').innerHTML =
       '<span>Sol klik + Sürüşdür</span> — Kameranı fırlat<br>' +
       '<span>Sağ klik + Sürüşdür</span> — Səhnəni sürüşdür (Pan)<br>' +
+      '<span>Mərtəbənin üzərinə gəl</span> — Mərtəbəni seç &amp; işıqlandır<br>' +
       '<span>Təkər (Scroll)</span> — Zoom yaxınlaş / uzaqlaş<br>' +
-      '<span>F</span> — Tam ekran &nbsp;|&nbsp; <span>W A S D</span> — Birinci şəxs gəzinti';
+      '<span>M / P</span> — 2D Eskiz Planı &nbsp;|&nbsp; <span>F</span> — Tam ekran';
   }
 };
 
