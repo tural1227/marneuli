@@ -16,11 +16,11 @@
         name: "Dəhliz / Giriş Zonası",
         icon: "🚪",
         image: "tour_360/apt_52/hall.jpg",
-        initialLon: 18,
+        initialLon: 16,
         hotspots: [
-          { target: "living", pitch: -3.2, yaw: 17.8, label: "🛋️ Qonaq Otağı & Mətbəx" },
-          { target: "bedroom", pitch: -4.9, yaw: 48.5, label: "🛏️ Əsas Yataq Otağı" },
-          { target: "bathroom", pitch: -4.9, yaw: 132.9, label: "🚿 Hamam Otağı" }
+          { target: "living", pitch: -3.2, yaw: 16.0, label: "🛋️ Qonaq Otağı & Mətbəx" },
+          { target: "bathroom", pitch: -6.7, yaw: 92.5, label: "🚿 Hamam Otağı" },
+          { target: "bedroom", pitch: -6.7, yaw: 152.2, label: "🛏️ Əsas Yataq Otağı" }
         ]
       },
       living: {
@@ -28,10 +28,10 @@
         name: "Qonaq Otağı & Açıq Mətbəx",
         icon: "🛋️",
         image: "tour_360/apt_52/living.jpg",
-        initialLon: 60,
+        initialLon: 10,
         hotspots: [
-          { target: "hall", pitch: -6.7, yaw: -23.6, label: "🚪 Dəhlizə Qayıt" },
-          { target: "balcony", pitch: -6.7, yaw: 122.3, label: "🌿 Eyvana (Balkona) Çıxış" }
+          { target: "balcony", pitch: -3.2, yaw: 9.8, label: "🌿 Eyvana (Balkona) Çıxış" },
+          { target: "hall", pitch: -3.2, yaw: 147.0, label: "🚪 Dəhlizə Qayıt" }
         ]
       },
       bedroom: {
@@ -39,10 +39,10 @@
         name: "Əsas Yataq Otağı",
         icon: "🛏️",
         image: "tour_360/apt_52/bedroom.jpg",
-        initialLon: 0,
+        initialLon: 30,
         hotspots: [
-          { target: "hall", pitch: -8.4, yaw: -122.0, label: "🚪 Dəhlizə Qayıt" },
-          { target: "balcony", pitch: -4.9, yaw: 30.9, label: "🌿 Eyvana Çıxış" }
+          { target: "balcony", pitch: -3.2, yaw: 30.9, label: "🌿 Eyvana Çıxış" },
+          { target: "hall", pitch: -6.7, yaw: -116.7, label: "🚪 Dəhlizə Qayıt" }
         ]
       },
       bathroom: {
@@ -50,9 +50,9 @@
         name: "Hamam Otağı & Sanitar Qovşağı",
         icon: "🚿",
         image: "tour_360/apt_52/bathroom.jpg",
-        initialLon: 20,
+        initialLon: 3,
         hotspots: [
-          { target: "hall", pitch: -1.4, yaw: 20.4, label: "🚪 Dəhlizə Qayıt" }
+          { target: "hall", pitch: -3.2, yaw: 2.8, label: "🚪 Dəhlizə Qayıt" }
         ]
       },
       balcony: {
@@ -383,7 +383,7 @@
       return;
     }
 
-    const imgUrl = room.image + (room.image.includes("?") ? "" : "?v=20261015f");
+    const imgUrl = room.image + (room.image.includes("?") ? "" : "?v=20261015h");
     textureLoader.load(
       imgUrl,
       (texture) => {
