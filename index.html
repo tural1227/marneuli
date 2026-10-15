@@ -1128,7 +1128,7 @@ scene.add(groundMesh);
 // 5. GLTF Loader Setup
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
-dracoLoader.setWorkerLimit(Math.min(4, Math.max(2, (navigator.hardwareConcurrency || 4) - 1)));
+dracoLoader.setWorkerLimit(Math.max(4, navigator.hardwareConcurrency || 4));
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
@@ -1489,11 +1489,22 @@ function loadScene(url) {
       }, 40);
     },
     (xhr) => {
+      const loaded = xhr.loaded || 0;
       const expectedTotal = 51309592;
-      const total = (xhr.total && xhr.total > 0) ? xhr.total : expectedTotal;
-      const pct = Math.min(99, Math.round((xhr.loaded / total) * 100));
-      if (pb) pb.style.width = pct + '%';
-      if (pt) pt.innerHTML = `Model yüklənir: <b>${pct}%</b> (${(xhr.loaded / 1024 / 1024).toFixed(1)} MB / ${(total / 1024 / 1024).toFixed(1)} MB)`;
+      const loadedMB = (loaded / (1024 * 1024)).toFixed(1);
+
+      if (loaded >= 48000000 || (xhr.total > 0 && loaded >= xhr.total)) {
+        if (pb) {
+          pb.style.width = '100%';
+          pb.classList.add('processing');
+        }
+        if (pt) pt.innerHTML = '⚡ <b>48.9 MB endirildi &bull; 3D Memarlıq elementləri açılır və səhnəyə qurulur...</b>';
+        if (ls) ls.innerHTML = '🏢 2,730 memarlıq detalı, pəncərələr və landşaft hazırlanır. Zəhmət olmasa bir neçə saniyə gözləyin...';
+      } else {
+        const pct = Math.min(96, Math.max(1, Math.round((loaded / expectedTotal) * 100)));
+        if (pb) pb.style.width = pct + '%';
+        if (pt) pt.innerHTML = `Model yüklənir: <b>${pct}%</b> (${loadedMB} MB / 48.9 MB)`;
+      }
     },
     (err) => {
       console.warn('Fast CDN load error, falling back to local model...', err);
