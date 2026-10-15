@@ -912,7 +912,7 @@
 
         <!-- Mode 1: Single Apartment Room Blueprint with Live Radar Cone -->
         <div id="tour-minimap-room-wrap" class="tour-minimap-blueprint-wrap">
-          <img class="tour-minimap-img" src="tour_360/apt52_blueprint_minimap.png" alt="Mənzil Çertyoj Planı" />
+          <img class="tour-minimap-img" id="tour-minimap-img" src="tour_360/apt_52/blueprint.png" alt="Mənzil Çertyoj Planı" />
           <div class="minimap-overlay">
             <div id="map-room-hall" class="minimap-zone" style="left: 45%; top: 6%; width: 26%; height: 26%;" onclick="window.switchRoom('hall')" title="Dəhliz"></div>
             <div id="map-room-bathroom" class="minimap-zone" style="left: 72%; top: 6%; width: 25%; height: 26%;" onclick="window.switchRoom('bathroom')" title="Sanitar qovşaq"></div>
@@ -1668,6 +1668,12 @@
     const mmInfo = document.getElementById("tour-minimap-apt-info");
     if (mmInfo) {
       mmInfo.innerHTML = `№ ${aptConfig.number} &bull; ${aptConfig.netArea}`;
+    }
+
+    // Update Apartment Individual Architectural Blueprint in Minimap
+    const mmImg = document.getElementById("tour-minimap-img");
+    if (mmImg) {
+      mmImg.src = `tour_360/apt_${num}/blueprint.png${CACHE_BUST}`;
     }
 
     // Update Floor Blueprint active pin

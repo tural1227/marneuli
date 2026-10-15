@@ -1,27 +1,34 @@
-# 🏢 MARNEULI RESIDENCE — 5-Cİ MƏRTƏBƏ (17 MƏNZİL) 360° RENDER PROMPTLARI
-Bu bələdçi 5-ci mərtəbədəki bütün 17 mənzilin (**№ 52-dən № 68-ə qədər**) hər bir otağı üçün xüsusi hazırlanmış dəqiq Gemini 360° Equirectangular promptlarını təqdim edir.
+# 🏢 MARNEULI RESIDENCE — 5-Cİ MƏRTƏBƏ (17 MƏNZİL) 360° MASTER BƏLƏDÇİ
+Bu bələdçi 5-ci mərtəbədəki bütün 17 mənzilin (**№ 52-dən № 68-ə qədər**) hər birinin **öz rəsmi memarlıq çertyojuna (2D blueprint planına)** 1:1 uyğunlaşdırılmış eksklüziv Gemini 360° Equirectangular promptlarını təqdim edir.
 
 > [!IMPORTANT]
-> **QIZIL QAYDALAR (Bütün promptlara daxil edilmişdir):**
-> 1. **Format:** True 360-degree equirectangular panorama format (2:1 aspect ratio, 360x180 view). Vertikal xətlər mütləq düz olmalıdır, çəllək və ya quyu əyilməsi qətiyyən yoxdur.
-> 2. **Pəncərələr:** Bütün pəncərələr tavan-döşəmə tam örtən ağ tül pərdələrlə örtülüdür. Çölə açıq şüşə, kənar binalar, dağ-dərə, kənd evləri QƏTİYYƏN YOXDUR. Yalnız yumşaq gün işığı süzülür.
-> 3. **Eyvan:** Balkon şüşəsinin arxasında təkcə realistik mavi səma və zərif ağ buludlar görünür. Heç bir kənar bina, qonşu blok və ya dam YOXDUR.
-> 4. **Sıfır Yazı:** Qapılarda, divarlarda, lövhələrdə heç bir yazı, nömrə ('APT 52' və s.) və ya hərf YOXDUR.
-> 5. **Fayl Adı:** Şəkli saxlayarkən qeyd olunan qovluğa (`tour_360/apt_XX/`) dəqiq eyni fayl adı ilə (`hall.jpg`, `living.jpg`, `bedroom.jpg`, `bathroom.jpg`, `balcony.jpg`) qeyd edin.
+> **5 QIZIL QAYDA (Bütün promptlara mütləq şəkildə inteqrasiya olunub):**
+> 1. **Dəqiq Çertyoj Uyğunluğu:** Hər mənzilin otaq düzülüşü, qapıları, mətbəx və balkon yerləşməsi məhz həmin mənzilin 2D çertyojundakı kimi təsvir olunub.
+> 2. **360° Equirectangular (2:1 nisbəti):** True 360-degree equirectangular panorama format (2:1 aspect ratio, 360x180 view). Vertikal divar və qapı xətləri tam şaquli və düzdür, çəllək/quyu əyilməsi YOXDUR.
+> 3. **Pəncərələrdə Tül Pərdələr:** Bütün pəncərələr və şüşə qapılar tavan-döşəmə tam örtən ağ tül pərdələrlə örtülüdür. Çölə açıq şüşə, kənar binalar, dağ-dərə, kənd evləri QƏTİYYƏN YOXDUR. Yalnız yumşaq gün işığı süzülür.
+> 4. **Eyvanda Təkcə Səma:** Eyvandan baxarkən kənarda heç bir qonşu bina, blok, kənd evi və ya dam YOXDUR. Təkcə realistik mavi səma və zərif buludlar görünür.
+> 5. **Sıfır Yazı:** Qapılarda, divarlarda, lövhələrdə heç bir yazı, nömrə ('APT 52' və s.) və ya hərf QƏTİYYƏN YOXDUR.
 
 ---
 
-## 🚪 Mənzil № 52 • 68.6 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** Modern İtalyan Qozu & Krem Calacatta (Italian Walnut & Warm Calacatta)
-**Qovluq:** `tour_360/apt_52/`
+## 🚪 Mənzil № 52 • 68.6 m² (Gross: 73.1 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Cənub-Şərq Qanadı (South-East Wing, next to elevator lobby)
+- **Eyvan Sahəsi:** 4.5 m² (Cənub-şərq künc eyvanı)
+- **Memarlıq Üslubu:** Modern İtalyan Qozu & Krem Calacatta Mərmər (Italian Walnut & Warm Calacatta)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_52/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_52/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Entrance door on the top-left from the elevator foyer leading into central entrance hall. Bathroom immediately on the top-right. Open wide portal on the left leads into the spacious 31.7 m² living room with integrated open-concept kitchen. Master bedroom (18.2 m²) is located on the right. Both living room and bedroom have glass doors opening onto the 4.5 m² outdoor balcony at the bottom.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_52/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 52).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Entrance door on the top-left from the elevator foyer leading into central entrance hall. Bathroom immediately on the top-right. Open wide portal on the left leads into the spacious 31.7 m² living room with integrated open-concept kitchen. Master bedroom (18.2 m²) is located on the right. Both living room and bedroom have glass doors opening onto the 4.5 m² outdoor balcony at the bottom.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -37,7 +44,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 52).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: warm Italian dark walnut paneling, curved light grey boucle sectional sofa, round Calacatta gold marble coffee table, natural oak chevron parquet flooring, warm 3000K cove ceiling lighting.
+Architectural blueprint layout: Entrance door on the top-left from the elevator foyer leading into central entrance hall. Bathroom immediately on the top-right. Open wide portal on the left leads into the spacious 31.7 m² living room with integrated open-concept kitchen. Master bedroom (18.2 m²) is located on the right. Both living room and bedroom have glass doors opening onto the 4.5 m² outdoor balcony at the bottom.
+Interior design style: Modern İtalyan Qozu & Krem Calacatta Mərmər (Italian Walnut & Warm Calacatta).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -54,7 +62,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 52).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: king bed with padded sand-beige fabric headboard, floating dark walnut nightstands with brushed brass pendant lamps, smoked glass wardrobe with integrated LED vertical profiles, natural oak chevron flooring.
+Architectural blueprint layout: Master bedroom of Apartment 52. Entrance door on the top-left from the elevator foyer leading into central entrance hall. Bathroom immediately on the top-right. Open wide portal on the left leads into the spacious 31.7 m² living room with integrated open-concept kitchen. Master bedroom (18.2 m²) is located on the right. Both living room and bedroom have glass doors opening onto the 4.5 m² outdoor balcony at the bottom.
+Interior design style: Modern İtalyan Qozu & Krem Calacatta Mərmər (Italian Walnut & Warm Calacatta).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -71,7 +80,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 52).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: large format Calacatta marble wall and floor tiles, floating dark walnut double vanity with integrated white Corian basin, single circular backlit LED mirror, frameless glass walk-in shower, wall-hung rimless toilet.
+Interior design style: Modern İtalyan Qozu & Krem Calacatta Mərmər (Italian Walnut & Warm Calacatta).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -88,7 +97,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_52/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 52).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 52).
+Architectural balcony layout: 4.5 m² (Cənub-şərq künc eyvanı) of Apartment 52.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -109,17 +119,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 53 • 64.8 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** Skandinaviya Açıq Palıd & Minimalizm (Nordic Pale Oak & Boucle)
-**Qovluq:** `tour_360/apt_53/`
+## 🚪 Mənzil № 53 • 64.8 m² (Gross: 69.4 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Cənub-Şərq Qanadı (South-East Wing)
+- **Eyvan Sahəsi:** 4.6 m²
+- **Memarlıq Üslubu:** Skandinaviya Açıq Palıd & Ağ Buxle Tekstil (Nordic Pale Oak & Bouclé)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_53/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_53/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Entrance from central corridor into linear foyer. Bathroom on right. Straight ahead opens into the rectangular 28.5 m² living room with linear kitchen along right wall. Left interior door leads to the 17.5 m² master bedroom. Large sliding glass doors open onto the exterior 4.6 m² balcony.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_53/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 53).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Entrance from central corridor into linear foyer. Bathroom on right. Straight ahead opens into the rectangular 28.5 m² living room with linear kitchen along right wall. Left interior door leads to the 17.5 m² master bedroom. Large sliding glass doors open onto the exterior 4.6 m² balcony.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -135,7 +152,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 53).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: pale Scandinavian white oak plank flooring, cloud-white boucle curved sofa, sculptural travertine low coffee table, minimalist open-concept white kitchen with fluted white oak island, airy bright warm daylight ambience.
+Architectural blueprint layout: Entrance from central corridor into linear foyer. Bathroom on right. Straight ahead opens into the rectangular 28.5 m² living room with linear kitchen along right wall. Left interior door leads to the 17.5 m² master bedroom. Large sliding glass doors open onto the exterior 4.6 m² balcony.
+Interior design style: Skandinaviya Açıq Palıd & Ağ Buxle Tekstil (Nordic Pale Oak & Bouclé).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -152,7 +170,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 53).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: minimalist light oak platform king bed with crisp white washed linen sheets, light beige fluted wood accent headboard wall, pale oak nightstands, built-in matte off-white closets.
+Architectural blueprint layout: Master bedroom of Apartment 53. Entrance from central corridor into linear foyer. Bathroom on right. Straight ahead opens into the rectangular 28.5 m² living room with linear kitchen along right wall. Left interior door leads to the 17.5 m² master bedroom. Large sliding glass doors open onto the exterior 4.6 m² balcony.
+Interior design style: Skandinaviya Açıq Palıd & Ağ Buxle Tekstil (Nordic Pale Oak & Bouclé).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -169,7 +188,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 53).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: matte white limestone and beige terrazzo tiles, floating natural light oak vanity with white ceramic vessel sink, frameless round backlit mirror, minimalist black matte shower fixtures.
+Interior design style: Skandinaviya Açıq Palıd & Ağ Buxle Tekstil (Nordic Pale Oak & Bouclé).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -186,7 +205,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_53/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 53).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 53).
+Architectural balcony layout: 4.6 m² of Apartment 53.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -207,17 +227,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 54 • 76.8 m² (2-3 Otaqlı (Ailəvi Mənzil))
-**Memarlıq Üslubu:** Dumanlı Palıd & Müasir Antrasit (Smoked Oak & Charcoal Contemporary)
-**Qovluq:** `tour_360/apt_54/`
+## 🚪 Mənzil № 54 • 76.8 m² (Gross: 81.8 m²) (2-3 Otaqlı Ailəvi Mənzil (Geniş künc zal + 2 Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Şərq Künc Qanadı (East Corner Grand Wing, next to east stairs)
+- **Eyvan Sahəsi:** 5.0 m² (Künc panoramik eyvan)
+- **Memarlıq Üslubu:** Müasir Dumanlı Palıd & Antrasit Metal (Smoked Oak & Charcoal Modern)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_54/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_54/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Entrance from top corridor into spacious foyer. Bathroom and utility on upper-left. Kitchen and dining along top wall. Center opens into expansive dual-aspect corner living room. Hallway branches to Master Bedroom (left) and Secondary Bedroom / Study (right). Exterior wall features sliding glass doors to 5.0 m² corner balcony.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_54/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 54).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Entrance from top corridor into spacious foyer. Bathroom and utility on upper-left. Kitchen and dining along top wall. Center opens into expansive dual-aspect corner living room. Hallway branches to Master Bedroom (left) and Secondary Bedroom / Study (right). Exterior wall features sliding glass doors to 5.0 m² corner balcony.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -233,7 +260,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 54).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: rich smoked grey-brown oak chevron parquet, deep charcoal and warm greige modular sectional sofa, Nero Marquina black marble coffee table with brass base, contemporary anthracite kitchen cabinetry with warm bronze under-cabinet illumination.
+Architectural blueprint layout: Entrance from top corridor into spacious foyer. Bathroom and utility on upper-left. Kitchen and dining along top wall. Center opens into expansive dual-aspect corner living room. Hallway branches to Master Bedroom (left) and Secondary Bedroom / Study (right). Exterior wall features sliding glass doors to 5.0 m² corner balcony.
+Interior design style: Müasir Dumanlı Palıd & Antrasit Metal (Smoked Oak & Charcoal Modern).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -250,7 +278,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 54).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: master bedroom with charcoal upholstered king bed, dark smoked wood slatted headboard wall, bronze bedside lamps, expansive tinted mirror wardrobe.
+Architectural blueprint layout: Master bedroom of Apartment 54. Entrance from top corridor into spacious foyer. Bathroom and utility on upper-left. Kitchen and dining along top wall. Center opens into expansive dual-aspect corner living room. Hallway branches to Master Bedroom (left) and Secondary Bedroom / Study (right). Exterior wall features sliding glass doors to 5.0 m² corner balcony.
+Interior design style: Müasir Dumanlı Palıd & Antrasit Metal (Smoked Oak & Charcoal Modern).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -267,7 +296,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a secondary bedroom / family guest room (Marneuli Residence, Apartment 54).
 Camera placed at eye-level (1.5m height) in the center of the room.
-Interior style: second bedroom / child-guest room with twin contemporary upholstered beds in warm taupe fabric, built-in light oak study desk with ergonomic chair, minimalist floating wall shelving with warm downlights, smoked oak parquet.
+Architectural blueprint layout: Second bedroom of 3-room Apartment 54. Entrance from top corridor into spacious foyer. Bathroom and utility on upper-left. Kitchen and dining along top wall. Center opens into expansive dual-aspect corner living room. Hallway branches to Master Bedroom (left) and Secondary Bedroom / Study (right). Exterior wall features sliding glass doors to 5.0 m² corner balcony.
 Key Features:
 - Large bedroom window fully covered with floor-to-ceiling sheer white drapes with diffused soft daylight (NO outside objects visible).
 - Flush modern interior door leading to the hallway.
@@ -278,7 +307,7 @@ Key Features:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 54).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: dark Pietra Grey marble tiles combined with light greige porcelain, floating matte charcoal vanity with dual under-mount sinks, illuminated architectural wall niche, walk-in glass shower.
+Interior design style: Müasir Dumanlı Palıd & Antrasit Metal (Smoked Oak & Charcoal Modern).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -295,7 +324,8 @@ Technical Constraints:
 
 ### 6. Mənzərəli Eyvan (`tour_360/apt_54/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 54).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 54).
+Architectural balcony layout: 5.0 m² (Künc panoramik eyvan) of Apartment 54.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -316,17 +346,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 55 • 57.9 m² (1-2 Otaqlı (Studio / 1 Yataq))
-**Memarlıq Üslubu:** Japandi Sakitlik & Taxta Bölmələr (Japandi Warm Minimalist Studio)
-**Qovluq:** `tour_360/apt_55/`
+## 🚪 Mənzil № 55 • 57.9 m² (Gross: 62.5 m²) (1-2 Otaqlı Studio / 1 Yataq)
+- **Mərtəbədəki Yeri:** Şərq-Şimal Qanadı (East-North Wing)
+- **Eyvan Sahəsi:** 4.6 m²
+- **Memarlıq Üslubu:** Japandi Sakitlik & Təbii Taxta Bölmələr (Japandi Warm Minimalist)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_55/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_55/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Compact luxury studio layout. Entrance foyer with built-in coat closet and bathroom on left. Open-plan multi-functional living and kitchen zone (26 m²). Dedicated private bedroom alcove separated by modern timber acoustic partitions. Exterior glass doors to balcony.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_55/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 55).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Compact luxury studio layout. Entrance foyer with built-in coat closet and bathroom on left. Open-plan multi-functional living and kitchen zone (26 m²). Dedicated private bedroom alcove separated by modern timber acoustic partitions. Exterior glass doors to balcony.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -342,7 +379,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 55).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: Japandi open-plan living and studio kitchen, pale natural ash wood flooring, low-profile oatmeal fabric sofa, round solid ash coffee table, slatted vertical timber partition screen separating zones, paper pendant light.
+Architectural blueprint layout: Compact luxury studio layout. Entrance foyer with built-in coat closet and bathroom on left. Open-plan multi-functional living and kitchen zone (26 m²). Dedicated private bedroom alcove separated by modern timber acoustic partitions. Exterior glass doors to balcony.
+Interior design style: Japandi Sakitlik & Təbii Taxta Bölmələr (Japandi Warm Minimalist).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -359,7 +397,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 55).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: low Japanese-inspired ash platform bed with organic unbleached linen bedding, washi-paper inspired headboard panel with soft diffused backlight, minimalist floating wooden bedside ledges.
+Architectural blueprint layout: Master bedroom of Apartment 55. Compact luxury studio layout. Entrance foyer with built-in coat closet and bathroom on left. Open-plan multi-functional living and kitchen zone (26 m²). Dedicated private bedroom alcove separated by modern timber acoustic partitions. Exterior glass doors to balcony.
+Interior design style: Japandi Sakitlik & Təbii Taxta Bölmələr (Japandi Warm Minimalist).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -376,7 +415,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 55).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: sandstone beige textured ceramic tiles, minimalist floating bamboo/ash vanity with round stone basin, circular backlit mirror, frameless walk-in shower.
+Interior design style: Japandi Sakitlik & Təbii Taxta Bölmələr (Japandi Warm Minimalist).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -393,7 +432,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_55/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 55).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 55).
+Architectural balcony layout: 4.6 m² of Apartment 55.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -414,17 +454,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 56 • 60.5 m² (1-2 Otaqlı (Studio / 1 Yataq))
-**Memarlıq Üslubu:** Müasir Qrej & İsti Mikrosement (Warm Greige & Microcement Studio)
-**Qovluq:** `tour_360/apt_56/`
+## 🚪 Mənzil № 56 • 60.5 m² (Gross: 65.2 m²) (1-2 Otaqlı Studio / 1 Yataq)
+- **Mərtəbədəki Yeri:** Şimal-Şərq Qanadı (North-East Wing)
+- **Eyvan Sahəsi:** 4.7 m²
+- **Memarlıq Üslubu:** İsti Mikrosement & Kaşmir Qreige (Warm Greige & Microcement)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_56/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_56/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Open studio-plus design. Entrance hall with bathroom on right. Large combined living and dining space with bespoke linear kitchen. Glass-partitioned cozy master bedroom. Full-height sliding doors to balcony.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_56/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 56).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Open studio-plus design. Entrance hall with bathroom on right. Large combined living and dining space with bespoke linear kitchen. Glass-partitioned cozy master bedroom. Full-height sliding doors to balcony.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -440,7 +487,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 56).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: smooth warm beige microcement flooring with subtle natural reflection, curved tailored greige sofa, travertine block coffee table, seamless handle-less greige kitchen cabinetry with warm LED channels.
+Architectural blueprint layout: Open studio-plus design. Entrance hall with bathroom on right. Large combined living and dining space with bespoke linear kitchen. Glass-partitioned cozy master bedroom. Full-height sliding doors to balcony.
+Interior design style: İsti Mikrosement & Kaşmir Qreige (Warm Greige & Microcement).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -457,7 +505,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 56).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: upholstered bed in warm taupe bouclé fabric, textured limewash accent wall, floating minimalist greige nightstands, recessed ceiling spotlights and soft perimeter cove glow.
+Architectural blueprint layout: Master bedroom of Apartment 56. Open studio-plus design. Entrance hall with bathroom on right. Large combined living and dining space with bespoke linear kitchen. Glass-partitioned cozy master bedroom. Full-height sliding doors to balcony.
+Interior design style: İsti Mikrosement & Kaşmir Qreige (Warm Greige & Microcement).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -474,7 +523,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 56).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: seamless warm grey microcement walls and floor, custom integrated microcement vanity sink, minimalist black matte concealed fixtures, frameless round backlit mirror.
+Interior design style: İsti Mikrosement & Kaşmir Qreige (Warm Greige & Microcement).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -491,7 +540,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_56/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 56).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 56).
+Architectural balcony layout: 4.7 m² of Apartment 56.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -512,17 +562,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 57 • 64.4 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** Parisian Modern Chic & Fransız Şevronu (Parisian Chic & White Marble)
-**Qovluq:** `tour_360/apt_57/`
+## 🚪 Mənzil № 57 • 64.4 m² (Gross: 69.4 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Şimal Qanadı (North Wing)
+- **Eyvan Sahəsi:** 5.0 m²
+- **Memarlıq Üslubu:** Parisian Chic & Fransız Şevron Palıdı (French Chevron & White Marble)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_57/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_57/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Entrance from corridor into entryway with bathroom on right. Spacious rectangular living room with open-concept kitchen island. Private master bedroom on adjacent side. Exterior glass facade with balcony access.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_57/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 57).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Entrance from corridor into entryway with bathroom on right. Spacious rectangular living room with open-concept kitchen island. Private master bedroom on adjacent side. Exterior glass facade with balcony access.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -538,7 +595,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 57).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: classic honey-toned French chevron oak parquet, elegant contemporary off-white curved sofa, sculptural Arabescato marble coffee table, subtle modern wall moldings with warm architectural picture lights.
+Architectural blueprint layout: Entrance from corridor into entryway with bathroom on right. Spacious rectangular living room with open-concept kitchen island. Private master bedroom on adjacent side. Exterior glass facade with balcony access.
+Interior design style: Parisian Chic & Fransız Şevron Palıdı (French Chevron & White Marble).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -555,7 +613,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 57).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: luxurious king bed with tufted ivory velvet headboard, subtle modern panel molding behind bed, honey oak parquet, brushed gold designer bedside lamps.
+Architectural blueprint layout: Master bedroom of Apartment 57. Entrance from corridor into entryway with bathroom on right. Spacious rectangular living room with open-concept kitchen island. Private master bedroom on adjacent side. Exterior glass facade with balcony access.
+Interior design style: Parisian Chic & Fransız Şevron Palıdı (French Chevron & White Marble).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -572,7 +631,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 57).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: Arabescato white marble with dramatic grey veins, floating white vanity with polished brass faucets, large circular halo-lit mirror, frameless glass shower.
+Interior design style: Parisian Chic & Fransız Şevron Palıdı (French Chevron & White Marble).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -589,7 +648,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_57/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 57).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 57).
+Architectural balcony layout: 5.0 m² of Apartment 57.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -610,17 +670,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 58 • 64.4 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** Təbii Travertin & Qum Tonları (Earthy Travertine & Desert Sand)
-**Qovluq:** `tour_360/apt_58/`
+## 🚪 Mənzil № 58 • 64.4 m² (Gross: 69.4 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Şimal Qanadı (North Wing)
+- **Eyvan Sahəsi:** 5.0 m²
+- **Memarlıq Üslubu:** Təbii Travertin Daşı & Qum Tonları (Earthy Travertine & Desert Sand)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_58/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_58/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Symmetric north-facing apartment. Entrance hall with guest-accessible modern bathroom. Wide living room with dining area and open kitchen. Master bedroom with wardrobe zone. Balcony along exterior perimeter.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_58/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 58).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Symmetric north-facing apartment. Entrance hall with guest-accessible modern bathroom. Wide living room with dining area and open kitchen. Master bedroom with wardrobe zone. Balcony along exterior perimeter.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -636,7 +703,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 58).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: large honed Roman travertine floor tiles, sand-colored linen sectional sofa, raw travertine pedestal coffee table, warm clay plaster wall finishes, minimalist walnut accents.
+Architectural blueprint layout: Symmetric north-facing apartment. Entrance hall with guest-accessible modern bathroom. Wide living room with dining area and open kitchen. Master bedroom with wardrobe zone. Balcony along exterior perimeter.
+Interior design style: Təbii Travertin Daşı & Qum Tonları (Earthy Travertine & Desert Sand).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -653,7 +721,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 58).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: relaxed luxury king bed with desert sand textured linen headboard, soft lime-wash plaster wall, floating dark wood nightstands, floor-to-ceiling sand drapes.
+Architectural blueprint layout: Master bedroom of Apartment 58. Symmetric north-facing apartment. Entrance hall with guest-accessible modern bathroom. Wide living room with dining area and open kitchen. Master bedroom with wardrobe zone. Balcony along exterior perimeter.
+Interior design style: Təbii Travertin Daşı & Qum Tonları (Earthy Travertine & Desert Sand).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -670,7 +739,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 58).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: full Roman travertine stone walls and floor, monolithic carved travertine stone sink basin, brushed bronze fixtures, warm indirect LED wash.
+Interior design style: Təbii Travertin Daşı & Qum Tonları (Earthy Travertine & Desert Sand).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -687,7 +756,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_58/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 58).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 58).
+Architectural balcony layout: 5.0 m² of Apartment 58.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -708,17 +778,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 59 • 68.7 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** İcraçı Qoz Ağacı & Qızılı Aksentlər (Executive Dark Walnut & Gold Accents)
-**Qovluq:** `tour_360/apt_59/`
+## 🚪 Mənzil № 59 • 68.7 m² (Gross: 71.0 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Şimal-Qərb Qanadı (North-West Wing)
+- **Eyvan Sahəsi:** 5.0 m²
+- **Memarlıq Üslubu:** Tünd İcraçı Qoz Ağacı & Bürünc Aksentlər (Executive Dark Walnut & Gold)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_59/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_59/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Entrance from corridor into foyer. Bathroom on right. Expansive living room with integrated executive bar/kitchen. Master bedroom with acoustic wood paneling. Balcony overlooking northwest panorama.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_59/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 59).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Entrance from corridor into foyer. Bathroom on right. Expansive living room with integrated executive bar/kitchen. Master bedroom with acoustic wood paneling. Balcony overlooking northwest panorama.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -734,7 +811,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 59).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: rich dark walnut herringbone flooring, olive-tinted charcoal velvet sofa, round bronze glass and brass coffee table, bespoke dark walnut media wall with warm vertical LED slat accents.
+Architectural blueprint layout: Entrance from corridor into foyer. Bathroom on right. Expansive living room with integrated executive bar/kitchen. Master bedroom with acoustic wood paneling. Balcony overlooking northwest panorama.
+Interior design style: Tünd İcraçı Qoz Ağacı & Bürünc Aksentlər (Executive Dark Walnut & Gold).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -751,7 +829,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 59).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: executive king bed with deep mocha velvet headboard, vertical fluted walnut wall with integrated warm brass sconces, dark walnut plank flooring.
+Architectural blueprint layout: Master bedroom of Apartment 59. Entrance from corridor into foyer. Bathroom on right. Expansive living room with integrated executive bar/kitchen. Master bedroom with acoustic wood paneling. Balcony overlooking northwest panorama.
+Interior design style: Tünd İcraçı Qoz Ağacı & Bürünc Aksentlər (Executive Dark Walnut & Gold).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -768,7 +847,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 59).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: deep emerald-green and Calacatta gold marble tile combination, floating dark walnut vanity with gold hardware, circular backlit mirror, walk-in rain shower.
+Interior design style: Tünd İcraçı Qoz Ağacı & Bürünc Aksentlər (Executive Dark Walnut & Gold).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -785,7 +864,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_59/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 59).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 59).
+Architectural balcony layout: 5.0 m² of Apartment 59.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -806,17 +886,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 60 • 68.7 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** Kaşmir Bej & Məxmər Rahatlığı (Cashmere & Soft Velvet Contemporary)
-**Qovluq:** `tour_360/apt_60/`
+## 🚪 Mənzil № 60 • 68.7 m² (Gross: 71.0 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Şimal-Qərb Qanadı (North-West Wing)
+- **Eyvan Sahəsi:** 5.0 m²
+- **Memarlıq Üslubu:** Kaşmir Bej & Məxmər Rahatlığı (Cashmere & Soft Velvet Contemporary)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_60/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_60/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Mirrored layout to Apt 59. Entrance hallway with bathroom on right. Main living room with comfortable lounge and dining suite. Elegant master bedroom. Exterior sliding patio doors to 5.0 m² balcony.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_60/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 60).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Mirrored layout to Apt 59. Entrance hallway with bathroom on right. Main living room with comfortable lounge and dining suite. Elegant master bedroom. Exterior sliding patio doors to 5.0 m² balcony.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -832,7 +919,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 60).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: warm cashmere-beige walls, natural blonde oak parquet flooring, plush ivory curved sofa, fluted ceramic coffee table, minimalist warm beige lacquer kitchen with quartz countertop.
+Architectural blueprint layout: Mirrored layout to Apt 59. Entrance hallway with bathroom on right. Main living room with comfortable lounge and dining suite. Elegant master bedroom. Exterior sliding patio doors to 5.0 m² balcony.
+Interior design style: Kaşmir Bej & Məxmər Rahatlığı (Cashmere & Soft Velvet Contemporary).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -849,7 +937,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 60).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: king bed with soft cashmere-padded headboard, natural blonde oak floor, minimalist bedside pedestals with spherical opal glass lamps, warm ambient cove lighting.
+Architectural blueprint layout: Master bedroom of Apartment 60. Mirrored layout to Apt 59. Entrance hallway with bathroom on right. Main living room with comfortable lounge and dining suite. Elegant master bedroom. Exterior sliding patio doors to 5.0 m² balcony.
+Interior design style: Kaşmir Bej & Məxmər Rahatlığı (Cashmere & Soft Velvet Contemporary).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -866,7 +955,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 60).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: light cream terrazzo with subtle warm aggregate chips, floating blonde oak vanity, frameless circular backlit mirror, matte white fixtures.
+Interior design style: Kaşmir Bej & Məxmər Rahatlığı (Cashmere & Soft Velvet Contemporary).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -883,7 +972,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_60/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 60).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 60).
+Architectural balcony layout: 5.0 m² of Apartment 60.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -904,17 +994,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 61 • 64.4 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** Müasir Qrej & Şampan Bürünc (Modern Greige & Champagne Bronze)
-**Qovluq:** `tour_360/apt_61/`
+## 🚪 Mənzil № 61 • 64.4 m² (Gross: 69.4 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Şimal-Qərb Qanadı (North-West Wing, between Apt 60 and 62)
+- **Eyvan Sahəsi:** 5.0 m² (Balcony Area: 5.0m² on blueprint)
+- **Memarlıq Üslubu:** Müasir Qreige & Şampan Bürünc (Modern Greige & Champagne Bronze)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_61/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_61/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Entrance door on bottom-right from the corridor. Bathroom (4.4 m²) immediately on the right of the entrance corridor. Foyer leads directly forward into the rectangular 29.4 m² living room with linear kitchen along inner wall. Interior door to the right leads into the 17.4 m² master bedroom. The entire top exterior wall consists of floor-to-ceiling glass sliding doors opening onto the 5.0 m² balcony.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_61/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 61).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Entrance door on bottom-right from the corridor. Bathroom (4.4 m²) immediately on the right of the entrance corridor. Foyer leads directly forward into the rectangular 29.4 m² living room with linear kitchen along inner wall. Interior door to the right leads into the 17.4 m² master bedroom. The entire top exterior wall consists of floor-to-ceiling glass sliding doors opening onto the 5.0 m² balcony.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -930,7 +1027,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 61).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: contemporary cool-warm greige interior palette, smoked grey-oak chevron parquet, expansive greige modular sofa, champagne-bronze framed coffee table with glass top, modern open kitchen with matte greige cabinets and quartz waterfall island.
+Architectural blueprint layout: Entrance door on bottom-right from the corridor. Bathroom (4.4 m²) immediately on the right of the entrance corridor. Foyer leads directly forward into the rectangular 29.4 m² living room with linear kitchen along inner wall. Interior door to the right leads into the 17.4 m² master bedroom. The entire top exterior wall consists of floor-to-ceiling glass sliding doors opening onto the 5.0 m² balcony.
+Interior design style: Müasir Qreige & Şampan Bürünc (Modern Greige & Champagne Bronze).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -947,7 +1045,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 61).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: king bed with tailored charcoal-grey linen headboard, acoustic wood slat accent wall in muted walnut, champagne-bronze bedside reading lights, smoked grey-oak parquet.
+Architectural blueprint layout: Master bedroom of Apartment 61. Entrance door on bottom-right from the corridor. Bathroom (4.4 m²) immediately on the right of the entrance corridor. Foyer leads directly forward into the rectangular 29.4 m² living room with linear kitchen along inner wall. Interior door to the right leads into the 17.4 m² master bedroom. The entire top exterior wall consists of floor-to-ceiling glass sliding doors opening onto the 5.0 m² balcony.
+Interior design style: Müasir Qreige & Şampan Bürünc (Modern Greige & Champagne Bronze).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -964,7 +1063,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 61).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: large format Statuario marble tiles, floating dark walnut double-drawer vanity with white seamless Corian top, circular halo-lit mirror, frameless glass walk-in shower enclosure, wall-hung toilet.
+Interior design style: Müasir Qreige & Şampan Bürünc (Modern Greige & Champagne Bronze).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -981,7 +1080,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_61/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 61).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 61).
+Architectural balcony layout: 5.0 m² (Balcony Area: 5.0m² on blueprint) of Apartment 61.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -1002,17 +1102,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 62 • 64.4 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** Təbii Qarağac & Ağ Terratszo (Light Elm Wood & Venetian Terrazzo)
-**Qovluq:** `tour_360/apt_62/`
+## 🚪 Mənzil № 62 • 64.4 m² (Gross: 69.4 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Qərb Qanadı (West Wing)
+- **Eyvan Sahəsi:** 5.0 m²
+- **Memarlıq Üslubu:** Təbii Qarağac Ağacı & Ağ Terratszo (Light Elm Wood & Venetian Terrazzo)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_62/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_62/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Entrance corridor with bathroom on right. Clean rectangular living room layout with open kitchen. Master bedroom suite. Panoramic exterior balcony.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_62/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 62).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Entrance corridor with bathroom on right. Clean rectangular living room layout with open kitchen. Master bedroom suite. Panoramic exterior balcony.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -1028,7 +1135,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 62).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: polished white Venetian terrazzo flooring with soft natural reflections, light elm wood wall accents, caramel leather accent armchairs paired with off-white modular sofa, round marble coffee table.
+Architectural blueprint layout: Entrance corridor with bathroom on right. Clean rectangular living room layout with open kitchen. Master bedroom suite. Panoramic exterior balcony.
+Interior design style: Təbii Qarağac Ağacı & Ağ Terratszo (Light Elm Wood & Venetian Terrazzo).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -1045,7 +1153,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 62).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: light elm wood platform bed with cream woven headboard, terrazzo floor with a plush soft wool area rug, warm 3000K recessed ceiling lights.
+Architectural blueprint layout: Master bedroom of Apartment 62. Entrance corridor with bathroom on right. Clean rectangular living room layout with open kitchen. Master bedroom suite. Panoramic exterior balcony.
+Interior design style: Təbii Qarağac Ağacı & Ağ Terratszo (Light Elm Wood & Venetian Terrazzo).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -1062,7 +1171,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 62).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: white Venetian terrazzo tiles on floor and shower walls, floating light elm wood vanity with integrated basin, matte black minimalist faucets, circular backlit mirror.
+Interior design style: Təbii Qarağac Ağacı & Ağ Terratszo (Light Elm Wood & Venetian Terrazzo).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -1079,7 +1188,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_62/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 62).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 62).
+Architectural balcony layout: 5.0 m² of Apartment 62.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -1100,17 +1210,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 63 • 96.2 m² (3 Otaqlı (Böyük Ailəvi Rezidensiya))
-**Memarlıq Üslubu:** Böyük Lüks Rezidensiya & Zümrüd Mərmər (Grand Luxury Residence & Emerald Green)
-**Qovluq:** `tour_360/apt_63/`
+## 🚪 Mənzil № 63 • 96.2 m² (Gross: 104.5 m²) (3 Otaqlı Böyük Ailəvi Rezidensiya (Geniş künc zal + 2 Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Qərb Böyük Künc Qanadı (West Corner Grand Family Wing)
+- **Eyvan Sahəsi:** 6.8 m² (Geniş künc terras eyvan)
+- **Memarlıq Üslubu:** Böyük Lüks Rezidensiya & Zümrüd Mərmər (Grand Luxury Residence & Emerald Green)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_63/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_63/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*The largest apartment on Floor 5. Entrance from corridor into grand reception foyer. Guest bathroom on left. Expansive 42 m² corner living room with grand dining table for 6 and luxury island kitchen. Master bedroom suite with walk-in wardrobe. Second bedroom for children or guests. Dual balcony exits to large corner terrace.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_63/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 63).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: The largest apartment on Floor 5. Entrance from corridor into grand reception foyer. Guest bathroom on left. Expansive 42 m² corner living room with grand dining table for 6 and luxury island kitchen. Master bedroom suite with walk-in wardrobe. Second bedroom for children or guests. Dual balcony exits to large corner terrace.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -1126,7 +1243,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 63).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: expansive 96 m² grand corner living room with natural French oak parquet, deep olive and taupe sectional sofa suite, oversized circular Calacatta marble dining table seating 6, luxury island kitchen with fluted walnut cabinetry.
+Architectural blueprint layout: The largest apartment on Floor 5. Entrance from corridor into grand reception foyer. Guest bathroom on left. Expansive 42 m² corner living room with grand dining table for 6 and luxury island kitchen. Master bedroom suite with walk-in wardrobe. Second bedroom for children or guests. Dual balcony exits to large corner terrace.
+Interior design style: Böyük Lüks Rezidensiya & Zümrüd Mərmər (Grand Luxury Residence & Emerald Green).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -1143,7 +1261,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 63).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: master bedroom with grand king bed, emerald-green velvet accent pillows, walk-in dressing wardrobe area with smoked glass sliding panels, French oak parquet.
+Architectural blueprint layout: Master bedroom of Apartment 63. The largest apartment on Floor 5. Entrance from corridor into grand reception foyer. Guest bathroom on left. Expansive 42 m² corner living room with grand dining table for 6 and luxury island kitchen. Master bedroom suite with walk-in wardrobe. Second bedroom for children or guests. Dual balcony exits to large corner terrace.
+Interior design style: Böyük Lüks Rezidensiya & Zümrüd Mərmər (Grand Luxury Residence & Emerald Green).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -1160,7 +1279,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a secondary bedroom / family guest room (Marneuli Residence, Apartment 63).
 Camera placed at eye-level (1.5m height) in the center of the room.
-Interior style: second bedroom / twin room with two tailored single beds in neutral beige linen, built-in study desk with bookshelves, warm wooden flooring, diffused ceiling cove lighting.
+Architectural blueprint layout: Second bedroom of 3-room Apartment 63. The largest apartment on Floor 5. Entrance from corridor into grand reception foyer. Guest bathroom on left. Expansive 42 m² corner living room with grand dining table for 6 and luxury island kitchen. Master bedroom suite with walk-in wardrobe. Second bedroom for children or guests. Dual balcony exits to large corner terrace.
 Key Features:
 - Large bedroom window fully covered with floor-to-ceiling sheer white drapes with diffused soft daylight (NO outside objects visible).
 - Flush modern interior door leading to the hallway.
@@ -1171,7 +1290,7 @@ Key Features:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 63).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: luxury Verde Guatemala green marble feature wall with white Calacatta floor tiles, double-sink floating vanity in dark walnut, walk-in rain shower with frameless glass.
+Interior design style: Böyük Lüks Rezidensiya & Zümrüd Mərmər (Grand Luxury Residence & Emerald Green).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -1188,7 +1307,8 @@ Technical Constraints:
 
 ### 6. Mənzərəli Eyvan (`tour_360/apt_63/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 63).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 63).
+Architectural balcony layout: 6.8 m² (Geniş künc terras eyvan) of Apartment 63.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -1209,17 +1329,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 64 • 79.2 m² (2-3 Otaqlı (Ailəvi Mənzil))
-**Memarlıq Üslubu:** Memarlıq Monoliti & Dumanlı Şüşə (Architectural Monolith & Smoked Glass)
-**Qovluq:** `tour_360/apt_64/`
+## 🚪 Mənzil № 64 • 79.2 m² (Gross: 85.0 m²) (2-3 Otaqlı Ailəvi Mənzil (Geniş zal + 2 Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Cənub-Qərb Qanadı (South-West Wing)
+- **Eyvan Sahəsi:** 5.5 m²
+- **Memarlıq Üslubu:** Memarlıq Monoliti & Dumanlı Şüşə (Architectural Monolith & Smoked Glass)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_64/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_64/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Architectural 3-room layout. Entrance foyer with bathroom. Corner living room with wraparound windows. Master bedroom and second bedroom. Terrace balcony access.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_64/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 64).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Architectural 3-room layout. Entrance foyer with bathroom. Corner living room with wraparound windows. Master bedroom and second bedroom. Terrace balcony access.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -1235,7 +1362,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 64).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: architectural corner living room with wide plank smoked grey oak flooring, structured greige fabric corner sofa, minimalist black steel and smoked glass coffee table, sleek minimalist kitchen with matte black cabinetry.
+Architectural blueprint layout: Architectural 3-room layout. Entrance foyer with bathroom. Corner living room with wraparound windows. Master bedroom and second bedroom. Terrace balcony access.
+Interior design style: Memarlıq Monoliti & Dumanlı Şüşə (Architectural Monolith & Smoked Glass).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -1252,7 +1380,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 64).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: master bedroom with upholstered platform bed in slate-grey wool, smoked glass floor-to-ceiling wardrobe with vertical LED lighting, smoked oak flooring.
+Architectural blueprint layout: Master bedroom of Apartment 64. Architectural 3-room layout. Entrance foyer with bathroom. Corner living room with wraparound windows. Master bedroom and second bedroom. Terrace balcony access.
+Interior design style: Memarlıq Monoliti & Dumanlı Şüşə (Architectural Monolith & Smoked Glass).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -1269,7 +1398,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a secondary bedroom / family guest room (Marneuli Residence, Apartment 64).
 Camera placed at eye-level (1.5m height) in the center of the room.
-Interior style: second bedroom / guest room with contemporary queen bed, minimalist bedside tables, built-in matte beige wardrobes, soft recessed architectural ceiling lights.
+Architectural blueprint layout: Second bedroom of 3-room Apartment 64. Architectural 3-room layout. Entrance foyer with bathroom. Corner living room with wraparound windows. Master bedroom and second bedroom. Terrace balcony access.
 Key Features:
 - Large bedroom window fully covered with floor-to-ceiling sheer white drapes with diffused soft daylight (NO outside objects visible).
 - Flush modern interior door leading to the hallway.
@@ -1280,7 +1409,7 @@ Key Features:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 64).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: dark slate and light porcelain tile combination, floating matte black vanity with integrated white basin, frameless circular backlit mirror, walk-in glass shower.
+Interior design style: Memarlıq Monoliti & Dumanlı Şüşə (Architectural Monolith & Smoked Glass).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -1297,7 +1426,8 @@ Technical Constraints:
 
 ### 6. Mənzərəli Eyvan (`tour_360/apt_64/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 64).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 64).
+Architectural balcony layout: 5.5 m² of Apartment 64.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -1318,17 +1448,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 65 • 87.7 m² (3 Otaqlı (Ailəvi Lüks Mənzil))
-**Memarlıq Üslubu:** Xüsusi Mərmər & Geniş Penthaus Hissi (Bespoke Marble & Penthouse Luxury)
-**Qovluq:** `tour_360/apt_65/`
+## 🚪 Mənzil № 65 • 87.7 m² (Gross: 94.2 m²) (3 Otaqlı Ailəvi Lüks Mənzil (Geniş zal + 2 Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Cənub Künc Qanadı (South Corner Wing)
+- **Eyvan Sahəsi:** 6.2 m²
+- **Memarlıq Üslubu:** Xüsusi Mərmər & Geniş Penthaus Hissi (Bespoke Marble & Penthouse Luxury)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_65/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_65/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*South-facing penthouse-feel corner residence. Large foyer leading to open living and dining area. Master bedroom suite with private bath and second bedroom. Floor-to-ceiling glass doors onto large balcony.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_65/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 65).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: South-facing penthouse-feel corner residence. Large foyer leading to open living and dining area. Master bedroom suite with private bath and second bedroom. Floor-to-ceiling glass doors onto large balcony.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -1344,7 +1481,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 65).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: spacious corner family living room with light honey oak chevron flooring, elegant curved cream sofa and sculptural armchairs, round marble dining table with modern designer chairs, bespoke open kitchen with marble waterfall island.
+Architectural blueprint layout: South-facing penthouse-feel corner residence. Large foyer leading to open living and dining area. Master bedroom suite with private bath and second bedroom. Floor-to-ceiling glass doors onto large balcony.
+Interior design style: Xüsusi Mərmər & Geniş Penthaus Hissi (Bespoke Marble & Penthouse Luxury).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -1361,7 +1499,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 65).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: grand master bedroom suite with king-size upholstered bed in textured boucle, fluted wood panel accent wall with warm cove backlight, chevron oak flooring.
+Architectural blueprint layout: Master bedroom of Apartment 65. South-facing penthouse-feel corner residence. Large foyer leading to open living and dining area. Master bedroom suite with private bath and second bedroom. Floor-to-ceiling glass doors onto large balcony.
+Interior design style: Xüsusi Mərmər & Geniş Penthaus Hissi (Bespoke Marble & Penthouse Luxury).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -1378,7 +1517,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a secondary bedroom / family guest room (Marneuli Residence, Apartment 65).
 Camera placed at eye-level (1.5m height) in the center of the room.
-Interior style: second bedroom / children's or guest suite with twin upholstered beds, built-in desks, oak chevron flooring, floor-to-ceiling sheer linen curtains with soft daylight glow.
+Architectural blueprint layout: Second bedroom of 3-room Apartment 65. South-facing penthouse-feel corner residence. Large foyer leading to open living and dining area. Master bedroom suite with private bath and second bedroom. Floor-to-ceiling glass doors onto large balcony.
 Key Features:
 - Large bedroom window fully covered with floor-to-ceiling sheer white drapes with diffused soft daylight (NO outside objects visible).
 - Flush modern interior door leading to the hallway.
@@ -1389,7 +1528,7 @@ Key Features:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 65).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: honed Crema Marfil marble walls and floor, floating double vanity in walnut, large frameless circular backlit mirror, walk-in frameless glass shower enclosure.
+Interior design style: Xüsusi Mərmər & Geniş Penthaus Hissi (Bespoke Marble & Penthouse Luxury).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -1406,7 +1545,8 @@ Technical Constraints:
 
 ### 6. Mənzərəli Eyvan (`tour_360/apt_65/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 65).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 65).
+Architectural balcony layout: 6.2 m² of Apartment 65.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -1427,17 +1567,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 66 • 68.7 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** Wabi-Sabi İstiliyi & Teksturalı Kətan (Wabi-Sabi Warmth & Textured Linen)
-**Qovluq:** `tour_360/apt_66/`
+## 🚪 Mənzil № 66 • 68.7 m² (Gross: 73.5 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Cənub Qanadı (South Wing)
+- **Eyvan Sahəsi:** 4.8 m²
+- **Memarlıq Üslubu:** Wabi-Sabi İstiliyi & Teksturalı Kətan (Wabi-Sabi Warmth & Textured Linen)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_66/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_66/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Entrance hallway with bathroom on left. Warm, sunlit living room with natural materials and open kitchen. Master bedroom with linen curtains. Balcony facing south.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_66/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 66).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Entrance hallway with bathroom on left. Warm, sunlit living room with natural materials and open kitchen. Master bedroom with linen curtains. Balcony facing south.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -1453,7 +1600,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 66).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: warm natural oak floor, low-slung neutral linen sofa with raw wood frame, organic carved wooden coffee table, textured plaster walls with gentle earthy tones, minimalist open kitchen with beige stone countertops.
+Architectural blueprint layout: Entrance hallway with bathroom on left. Warm, sunlit living room with natural materials and open kitchen. Master bedroom with linen curtains. Balcony facing south.
+Interior design style: Wabi-Sabi İstiliyi & Teksturalı Kətan (Wabi-Sabi Warmth & Textured Linen).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -1470,7 +1618,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 66).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: low wooden bed with wrinkled natural linen duvet and waffle-knit throw, tactile lime-wash wall, floating oak bedside shelves, warm indirect wall sconces.
+Architectural blueprint layout: Master bedroom of Apartment 66. Entrance hallway with bathroom on left. Warm, sunlit living room with natural materials and open kitchen. Master bedroom with linen curtains. Balcony facing south.
+Interior design style: Wabi-Sabi İstiliyi & Teksturalı Kətan (Wabi-Sabi Warmth & Textured Linen).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -1487,7 +1636,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 66).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: honed beige river stone tiles, monolithic carved stone sink basin on natural timber vanity, brushed bronze tapware, circular backlit mirror.
+Interior design style: Wabi-Sabi İstiliyi & Teksturalı Kətan (Wabi-Sabi Warmth & Textured Linen).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -1504,7 +1653,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_66/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 66).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 66).
+Architectural balcony layout: 4.8 m² of Apartment 66.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -1525,17 +1675,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 67 • 64.9 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** Müasir Zəngin Palıd & Antrasit (Contemporary Oak & Anthracite)
-**Qovluq:** `tour_360/apt_67/`
+## 🚪 Mənzil № 67 • 64.9 m² (Gross: 69.5 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Cənub Qanadı (South Wing)
+- **Eyvan Sahəsi:** 4.6 m²
+- **Memarlıq Üslubu:** Müasir Zəngin Palıd & Antrasit (Contemporary Oak & Anthracite)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_67/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_67/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Entrance from south corridor. Central foyer with bathroom. Living room with modern dining nook and kitchen. Master bedroom. Balcony opening.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_67/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 67).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Entrance from south corridor. Central foyer with bathroom. Living room with modern dining nook and kitchen. Master bedroom. Balcony opening.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -1551,7 +1708,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 67).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: rich natural golden oak parquet, light charcoal modular sofa with mustard accent cushions, white Carrara marble coffee table, open kitchen with matte anthracite cabinetry and warm wood open shelves.
+Architectural blueprint layout: Entrance from south corridor. Central foyer with bathroom. Living room with modern dining nook and kitchen. Master bedroom. Balcony opening.
+Interior design style: Müasir Zəngin Palıd & Antrasit (Contemporary Oak & Anthracite).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -1568,7 +1726,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 67).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: upholstered king bed with tailored charcoal headboard, golden oak parquet flooring, dark wood bedside tables with warm brass lamps, sheer curtains with daylight glow.
+Architectural blueprint layout: Master bedroom of Apartment 67. Entrance from south corridor. Central foyer with bathroom. Living room with modern dining nook and kitchen. Master bedroom. Balcony opening.
+Interior design style: Müasir Zəngin Palıd & Antrasit (Contemporary Oak & Anthracite).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -1585,7 +1744,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 67).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: white Carrara marble tiles with delicate grey veining, floating golden oak vanity with white basin, matte black fixtures, circular backlit mirror.
+Interior design style: Müasir Zəngin Palıd & Antrasit (Contemporary Oak & Anthracite).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -1602,7 +1761,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_67/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 67).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 67).
+Architectural balcony layout: 4.6 m² of Apartment 67.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.
@@ -1623,17 +1783,24 @@ Technical Constraints:
 
 ---
 
-## 🚪 Mənzil № 68 • 69.4 m² (2 Otaqlı (Geniş qonaq + Yataq))
-**Memarlıq Üslubu:** Panoramik Şəhər Rezidensiyası & Fil Dişi (Horizon Suite & Ivory Bouclé)
-**Qovluq:** `tour_360/apt_68/`
+## 🚪 Mənzil № 68 • 69.4 m² (Gross: 74.0 m²) (2 Otaqlı (Zal + Yataq + Eyvan))
+- **Mərtəbədəki Yeri:** Cənub-Mərkəz Qanadı (South-Central Wing, facing inner court)
+- **Eyvan Sahəsi:** 4.8 m²
+- **Memarlıq Üslubu:** Panoramik Şəhər Rezidensiyası & Fil Dişi (Horizon Suite & Ivory Bouclé)
+- **Rəsmi 2D Çertyoj Faylı:** `tour_360/apt_68/blueprint.png`
+- **Otaqların Saxlanma Qovluğu:** `tour_360/apt_68/`
+
+**Mənzilin Faktiki Çertyoj Sxemi:**
+*Entrance foyer opposite elevator core. Bathroom on right. Open-concept living room with curved modern furniture and dining counter. Master bedroom suite. Sliding doors to balcony.*
 
 ### 1. Dəhliz & Giriş Zonası (`tour_360/apt_68/hall.jpg`)
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury apartment entrance hall and foyer (Marneuli Residence, Apartment 68).
 Camera placed at eye-level (1.5m height) in the center of the hall.
+Architectural blueprint layout: Entrance foyer opposite elevator core. Bathroom on right. Open-concept living room with curved modern furniture and dining counter. Master bedroom suite. Sliding doors to balcony.
 Features:
-- Wide open portal looking directly into the bright living room.
-- Through the doorway, the distant living room window is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
+- Open wide doorway looking into the bright living room.
+- Distant living room window visible through doorway is fully covered with elegant floor-to-ceiling sheer white translucent curtains with soft daylight diffusion (ABSOLUTELY NO open glass, NO outside buildings or trees visible).
 - Flush modern interior doors seamlessly integrated into the walls, leading to bedroom and bathroom.
 - Clean apartment front entrance door on the rear wall.
 - Polished large-format light marble floor tiles with subtle natural reflections.
@@ -1649,7 +1816,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a high-end luxury living room and open-concept kitchen (Marneuli Residence, Apartment 68).
 Camera placed at eye-level (1.5m height) in the center of the living area.
-Interior style: refined natural oak chevron flooring, expansive curved ivory bouclé sofa, sculptural travertine coffee table, warm architectural ceiling cove lighting, open kitchen with cashmere-toned cabinets and white quartz island.
+Architectural blueprint layout: Entrance foyer opposite elevator core. Bathroom on right. Open-concept living room with curved modern furniture and dining counter. Master bedroom suite. Sliding doors to balcony.
+Interior design style: Panoramik Şəhər Rezidensiyası & Fil Dişi (Horizon Suite & Ivory Bouclé).
 Key Features:
 - Large floor-to-ceiling panoramic windows and patio sliding doors.
 - MANDATORY WINDOW RULE: Every single window and glass door is FULLY covered with elegant floor-to-ceiling sheer white translucent linen curtains/drapes with bright, soft daylight diffusing through the fabric. ABSOLUTELY NO open glass, NO outside buildings, NO village houses, NO roofs, NO mountains/trees visible.
@@ -1666,7 +1834,8 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury master bedroom (Marneuli Residence, Apartment 68).
 Camera placed at eye-level (1.5m height) in the center of the bedroom.
-Interior style: master bedroom with king bed upholstered in ivory woven fabric, light oak chevron parquet, vertical wood slat wall accent with soft indirect LED glow.
+Architectural blueprint layout: Master bedroom of Apartment 68. Entrance foyer opposite elevator core. Bathroom on right. Open-concept living room with curved modern furniture and dining counter. Master bedroom suite. Sliding doors to balcony.
+Interior design style: Panoramik Şəhər Rezidensiyası & Fil Dişi (Horizon Suite & Ivory Bouclé).
 Key Features:
 - Large panoramic bedroom window.
 - MANDATORY WINDOW RULE: The entire panoramic window is FULLY covered with elegant floor-to-ceiling sheer white linen curtains/drapes with soft, bright daylight filtering through. ABSOLUTELY NO open transparent glass, NO outside buildings, NO mountains/trees.
@@ -1683,7 +1852,7 @@ Technical Constraints:
 ```text
 A full 360-degree equirectangular panoramic interior photograph of a modern luxury bathroom (Marneuli Residence, Apartment 68).
 Camera placed at eye-level in the center of the bathroom.
-Interior style: large format Calacatta gold porcelain tiles, floating light oak vanity with dual drawers and white integrated sink, circular backlit mirror, frameless walk-in shower.
+Interior design style: Panoramik Şəhər Rezidensiyası & Fil Dişi (Horizon Suite & Ivory Bouclé).
 Key Features:
 - Large-format polished marble/porcelain tiles.
 - Sleek floating vanity with integrated white basin countertop.
@@ -1700,7 +1869,8 @@ Technical Constraints:
 
 ### 5. Mənzərəli Eyvan (`tour_360/apt_68/balcony.jpg`)
 ```text
-A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor curved balcony on the 5th floor (Marneuli Residence, Apartment 68).
+A full 360-degree equirectangular panoramic photograph of a modern apartment outdoor balcony on the 5th floor (Marneuli Residence, Apartment 68).
+Architectural balcony layout: 4.8 m² of Apartment 68.
 Camera placed at eye-level in the center of the balcony.
 Balcony details:
 - Smooth light grey architectural concrete / porcelain pavers.

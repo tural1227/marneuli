@@ -71,6 +71,67 @@
     .view-btn:hover { color: #dfc882; background: rgba(223,200,130,0.15); }
     .view-btn.active { color: #12141a; background: #dfc882; font-weight: 600; }
 
+    /* Day / Night Control Bar */
+    .day-night-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(18, 22, 30, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(223, 200, 130, 0.35);
+      border-radius: 30px;
+      padding: 3px;
+      gap: 3px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+    }
+    .dn-btn {
+      background: transparent;
+      border: none;
+      color: #a4abb8;
+      padding: 6px 13px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.76rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+    .dn-btn:hover { color: #fff; }
+    .dn-btn.active[data-mode="day"] {
+      background: linear-gradient(135deg, #f59e0b, #eab308);
+      color: #12141a;
+      box-shadow: 0 2px 12px rgba(245, 158, 11, 0.45);
+    }
+    .dn-btn.active[data-mode="night"] {
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      color: #fff;
+      box-shadow: 0 2px 14px rgba(37, 99, 235, 0.55);
+    }
+    .btn-360-spin {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(37, 99, 235, 0.3)) !important;
+      border: 1px solid rgba(56, 189, 248, 0.5) !important;
+      color: #38bdf8 !important;
+    }
+    .btn-360-spin:hover {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(37, 99, 235, 0.5)) !important;
+      color: #fff !important;
+      transform: translateY(-1px);
+    }
+    .btn-360-spin.active {
+      background: linear-gradient(135deg, #38bdf8, #2563eb) !important;
+      color: #fff !important;
+      font-weight: 700 !important;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.6) !important;
+      animation: pulse-spin-glow 2s infinite alternate;
+    }
+    @keyframes pulse-spin-glow {
+      0% { box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+      100% { box-shadow: 0 0 22px rgba(56, 189, 248, 0.85); }
+    }
+
     #btn-panel {
       position: fixed; top: 20px; right: 24px;
       display: flex; flex-direction: column; gap: 8px; z-index: 10;
@@ -379,14 +440,21 @@
 <div id="views-bar">
   <button class="view-btn active" data-view="facade" onclick="setView('facade')">🏢 Fasad (Əsas Görünüş)</button>
   <button class="view-btn" data-view="courtyard" onclick="setView('courtyard')">🌳 Həyət &amp; Park</button>
-  <button class="view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı (Top View)</button>
+  <button class="view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı</button>
   <button class="view-btn" data-view="street" onclick="setView('street')">🚗 Giriş &amp; Küçə</button>
-  <button class="view-btn btn-cinematic-glow" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic Görünüş</button>
+  <div class="day-night-bar" title="Gündüz və Gecə rejimi">
+    <button class="dn-btn active" id="dn-btn-day" data-mode="day" onclick="setDayNight('day')">☀️ Gündüz</button>
+    <button class="dn-btn" id="dn-btn-night" data-mode="night" onclick="setDayNight('night')">🌙 Gecə</button>
+  </div>
+  <button class="view-btn btn-360-spin" id="btn-spin-360" onclick="toggle360CinematicOrbit()" title="Binanı 360° Kinematik Fırlat">🔄 360° Fırlat</button>
+  <button class="view-btn btn-cinematic-glow" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic 360</button>
   <button class="view-btn" style="background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; font-weight: 700; border: none; box-shadow: 0 0 16px rgba(219, 39, 119, 0.6); animation: pulse-btn-glow 2s infinite alternate;" onclick="open360Tour(52)">🔮 Mənzilin İçi (360° Tur)</button>
 </div>
 
 <div id="btn-panel">
-  <button class="btn btn-cinematic" id="btn-cinematic" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic Görünüş</button>
+  <button class="btn" id="btn-daynight-toggle" onclick="toggleDayNight()" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(37, 99, 235, 0.2)); border-color: #f59e0b;">☀️ Gündüz / 🌙 Gecə</button>
+  <button class="btn btn-360-spin" id="btn-360-toggle" onclick="toggle360CinematicOrbit()">🔄 360° Kinematik Fırlat</button>
+  <button class="btn btn-cinematic" id="btn-cinematic" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic 360</button>
   <button class="btn active" id="btn-orbit" onclick="setMode('orbit')">🔄 Orbit Kamera</button>
   <button class="btn" id="btn-walk"  onclick="setMode('walk')">🚶 Gəzinti (WASD)</button>
   <button class="btn" id="btn-floorplan" onclick="openFloorPlanModal()">🗺️ 2D Mərtəbə Planı</button>
@@ -475,10 +543,22 @@
 
   <div class="dock-divider"></div>
 
+  <!-- 2b. Day / Night & 360 Cinematic Orbit -->
+  <div class="dock-group">
+    <button class="dock-btn" id="btn-dock-daynight" onclick="toggleDayNight()" title="Gündüz və Gecə rejimini dəyiş">
+      ☀️ / 🌙 Gündüz-Gecə
+    </button>
+    <button class="dock-btn btn-360-spin" id="btn-dock-spin" onclick="toggle360CinematicOrbit()" title="360° Kinematik Dairəvi Baxış">
+      🔄 360° Fırlat
+    </button>
+  </div>
+
+  <div class="dock-divider"></div>
+
   <!-- 3. Auto Rotation -->
   <div class="dock-group">
     <button class="dock-btn" id="btn-autorotate" onclick="toggleAutoRotate()" title="Binanı Avtomatik Fırlat">
-      🔄 Binanı Fırlat
+      🔄 Avto-Dönüş
     </button>
   </div>
 
@@ -621,28 +701,91 @@ controls.target.set(22, 10, -5);
 controls.maxPolarAngle      = Math.PI / 2 - 0.03; // Never dip below ground plane
 controls.minPolarAngle      = 0.12; // Never flip over zenith
 
-// 1. Procedural Architectural Studio Environment (Differentiates beautifully from the building)
-function createSkyEnvironment() {
+// 1. Photorealistic Procedural Sky Environments (Day & Night)
+function createDaySky() {
   const canvas = document.createElement('canvas');
   canvas.width = 1024;
   canvas.height = 512;
   const ctx = canvas.getContext('2d');
 
-  // Sophisticated architectural dark studio gradient: deep charcoal to atmospheric soft horizon
+  // Realistic sky gradient matching the reference image:
   const grad = ctx.createLinearGradient(0, 0, 0, 512);
-  grad.addColorStop(0.0, '#1c202a'); // Zenith deep charcoal slate
-  grad.addColorStop(0.38, '#2a313e'); // Mid atmosphere
-  grad.addColorStop(0.54, '#3e4858'); // Soft illuminated horizon
-  grad.addColorStop(0.60, '#2d3340'); // Soft ground contact
-  grad.addColorStop(1.0, '#1c2028'); // Floor tone below
+  grad.addColorStop(0.00, '#1d5ec9'); // Deep Mediterranean blue zenith
+  grad.addColorStop(0.32, '#4f94e6'); // Rich sky blue
+  grad.addColorStop(0.50, '#9ec5ee'); // Soft atmospheric blue
+  grad.addColorStop(0.53, '#e2edfa'); // Bright horizon glow
+  grad.addColorStop(0.57, '#6b7280'); // Ground transition
+  grad.addColorStop(1.00, '#2d333e'); // Ground below
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, 1024, 512);
 
-  // Soft subtle architectural studio glow / rim light
-  const glow = ctx.createRadialGradient(512, 270, 30, 512, 270, 440);
-  glow.addColorStop(0, 'rgba(230, 238, 255, 0.14)');
-  glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = glow;
+  // Warm sun flare on horizon
+  const sun = ctx.createRadialGradient(280, 230, 10, 280, 230, 290);
+  sun.addColorStop(0, 'rgba(255, 250, 235, 0.95)');
+  sun.addColorStop(0.15, 'rgba(255, 235, 190, 0.45)');
+  sun.addColorStop(0.5, 'rgba(210, 230, 255, 0.15)');
+  sun.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = sun;
+  ctx.fillRect(0, 0, 1024, 512);
+
+  // Soft atmospheric clouds
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+  for (let i = 0; i < 30; i++) {
+    const cx = (i * 37) % 1024;
+    const cy = 180 + Math.sin(i * 1.7) * 45;
+    const rx = 60 + (i * 11) % 45;
+    const ry = 15 + (i * 7) % 12;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+function createNightSky() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  // Deep twilight to midnight gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, 512);
+  grad.addColorStop(0.00, '#040711'); // Midnight deep dark
+  grad.addColorStop(0.35, '#0a1226'); // Indigo twilight
+  grad.addColorStop(0.52, '#151f38'); // City horizon haze
+  grad.addColorStop(0.56, '#0f1422'); // Horizon ground line
+  grad.addColorStop(1.00, '#05070c'); // Ground tone
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1024, 512);
+
+  // Star field
+  let seed = 12345;
+  function rnd() {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  }
+  for (let i = 0; i < 350; i++) {
+    const x = rnd() * 1024;
+    const y = rnd() * 260;
+    const r = rnd() * 1.2 + 0.4;
+    const alpha = rnd() * 0.7 + 0.3;
+    ctx.fillStyle = `rgba(240, 245, 255, ${alpha})`;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Soft moon glow
+  const moon = ctx.createRadialGradient(720, 120, 5, 720, 120, 160);
+  moon.addColorStop(0, 'rgba(235, 242, 255, 0.85)');
+  moon.addColorStop(0.1, 'rgba(200, 225, 255, 0.35)');
+  moon.addColorStop(0.4, 'rgba(120, 160, 230, 0.08)');
+  moon.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = moon;
   ctx.fillRect(0, 0, 1024, 512);
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -651,26 +794,66 @@ function createSkyEnvironment() {
   return texture;
 }
 
-const envMap = createSkyEnvironment();
-scene.background = envMap;
-// Soft atmospheric depth fog that seamlessly blends the ground boundary into the horizon
-scene.fog = new THREE.FogExp2(0x232832, 0.0032);
+const daySkyEnvMap = createDaySky();
+const nightSkyEnvMap = createNightSky();
+let currentEnvMap = daySkyEnvMap;
+const envMap = daySkyEnvMap;
 
-// 2. Architectural Sun & Studio Lighting (matching 3ds Max shadows and highlights)
-const sunLight = new THREE.DirectionalLight(0xfff7ea, 2.7);
-sunLight.position.set(120, 200, -120);
+scene.background = daySkyEnvMap;
+scene.environment = daySkyEnvMap;
+scene.fog = new THREE.FogExp2(0xa8c4dc, 0.0011);
+
+// 2. Architectural Lighting Pipeline (Day Sun, Sky & Fill)
+const sunLight = new THREE.DirectionalLight(0xfff5e4, 3.2);
+sunLight.position.set(115, 190, -115);
 scene.add(sunLight);
 
-const skyLight = new THREE.HemisphereLight(0xced8e6, 0x2d323c, 1.2);
+const skyLight = new THREE.HemisphereLight(0xb5d4f6, 0x453b30, 1.2);
 skyLight.position.set(20, 100, 0);
 scene.add(skyLight);
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.40);
 scene.add(ambientLight);
 
-const fillLight = new THREE.DirectionalLight(0x9cb5d0, 0.85);
+const fillLight = new THREE.DirectionalLight(0x8ab8e6, 0.80);
 fillLight.position.set(-90, 70, 90);
 scene.add(fillLight);
+
+// 2b. Night Architectural Facade & Street Lights Group
+const nightLightsGroup = new THREE.Group();
+nightLightsGroup.visible = false;
+scene.add(nightLightsGroup);
+
+// Entrance Arch Warm Illumination
+const entranceLight = new THREE.PointLight(0xffb74d, 5.5, 35, 1.2);
+entranceLight.position.set(22, 4.5, -12);
+nightLightsGroup.add(entranceLight);
+
+// Central Grand Rotunda Interior Chandelier Light (illuminates glass cylinder from within!)
+const rotundaInteriorLight = new THREE.PointLight(0xffc866, 6.0, 45, 1.1);
+rotundaInteriorLight.position.set(22, 25, -6);
+nightLightsGroup.add(rotundaInteriorLight);
+
+// Facade Architectural Uplights (Corners and plinth)
+const uplightCoords = [
+  [0, 5, -12], [44, 5, -12], [22, 5, 18], [0, 5, 18],
+  [12, 14, -12], [32, 14, -12], [22, 44, -6] // Dome & Upper Cornice Wash
+];
+uplightCoords.forEach(([x, y, z]) => {
+  const pLight = new THREE.PointLight(0xffa733, 4.5, 28, 1.4);
+  pLight.position.set(x, y, z);
+  nightLightsGroup.add(pLight);
+});
+
+// Streetlight warm ground illumination
+const streetLightCoords = [
+  [10, 6, -25], [25, 6, -25], [40, 6, -25], [-5, 6, -25]
+];
+streetLightCoords.forEach(([x, y, z]) => {
+  const sLight = new THREE.PointLight(0xffbe6b, 3.8, 22, 1.6);
+  sLight.position.set(x, y, z);
+  nightLightsGroup.add(sLight);
+});
 
 // 3. Texture Loading
 const texLoader = new THREE.TextureLoader();
@@ -761,6 +944,19 @@ const matWindowGlass = new THREE.MeshStandardMaterial({
   opacity: 0.60,
   side: THREE.DoubleSide
 });
+window.matWindowGlass = matWindowGlass;
+
+// Grand Rotunda Central Curved Glass Cylinder (Illuminated Tower)
+const matRotundaGlass = new THREE.MeshStandardMaterial({
+  envMap: envMap,
+  color: 0x4f8ba6,
+  roughness: 0.03,
+  metalness: 0.25,
+  transparent: true,
+  opacity: 0.65,
+  side: THREE.DoubleSide
+});
+window.matRotundaGlass = matRotundaGlass;
 
 // Window Frames & Mullions: Dark Architectural Bronze / Charcoal Metal
 const matWindowFrame = new THREE.MeshStandardMaterial({
@@ -1106,9 +1302,13 @@ function assignHighFidelityMaterial(child) {
     return;
   }
 
-  // 3. Windows Glazing: Reflective Sky Blue (Object1746174* and PhysicalMaterial_70 / 80)
+  // 3. Windows Glazing & Rotunda Tower Glass
   if (matNum === 70 || matNum === 80 || ((fullName.includes('window') || fullName.includes('glaz') || fullName.includes('1746174')) && (fullName.includes('glass') || size.z < 0.12 || size.x < 0.12))) {
-    child.material = matWindowGlass;
+    if (fullName.includes('rotunda') || fullName.includes('cylinder') || fullName.includes('curved') || (center.x > 16 && center.x < 28 && center.z > -12 && center.z < 2 && size.y > 15)) {
+      child.material = matRotundaGlass;
+    } else {
+      child.material = matWindowGlass;
+    }
     return;
   }
 
@@ -1254,6 +1454,7 @@ function loadScene(url) {
     (gltf) => {
       if (loadedModel) scene.remove(loadedModel);
       loadedModel = gltf.scene;
+      window.loadedModel = loadedModel;
 
       loadedModel.traverse(child => {
         if (child.isMesh) {
@@ -1474,6 +1675,158 @@ window.addEventListener('click', (e) => {
     selectFloor(currentHoveredFloorId);
   }
 });
+
+// ==========================================
+// ☀️ / 🌙 DAY & NIGHT ARCHITECTURAL ENGINE
+// ==========================================
+
+let currentDayNightMode = 'day';
+
+window.setDayNight = (mode) => {
+  currentDayNightMode = mode;
+
+  // Update Top Bar buttons
+  const btnDay = document.getElementById('dn-btn-day');
+  const btnNight = document.getElementById('dn-btn-night');
+  if (btnDay && btnNight) {
+    if (mode === 'day') {
+      btnDay.classList.add('active');
+      btnNight.classList.remove('active');
+    } else {
+      btnDay.classList.remove('active');
+      btnNight.classList.add('active');
+    }
+  }
+
+  // Update Right Panel button
+  const btnToggle = document.getElementById('btn-daynight-toggle');
+  if (btnToggle) {
+    btnToggle.textContent = mode === 'day' ? '☀️ Gündüz Rejimi' : '🌙 Gecə Rejimi';
+    if (mode === 'night') btnToggle.classList.add('active');
+    else btnToggle.classList.remove('active');
+  }
+
+  // Update Bottom Dock button
+  const btnDock = document.getElementById('btn-dock-daynight');
+  if (btnDock) {
+    btnDock.innerHTML = mode === 'day' ? '☀️ Gündüz' : '🌙 Gecə';
+    if (mode === 'night') btnDock.classList.add('active');
+    else btnDock.classList.remove('active');
+  }
+
+  if (mode === 'day') {
+    scene.background = daySkyEnvMap;
+    scene.environment = daySkyEnvMap;
+    scene.fog.color.setHex(0xa8c4dc);
+    scene.fog.density = 0.0011;
+
+    sunLight.color.setHex(0xfff5e4);
+    sunLight.intensity = 3.2;
+    sunLight.position.set(115, 190, -115);
+
+    skyLight.color.setHex(0xb5d4f6);
+    skyLight.groundColor.setHex(0x453b30);
+    skyLight.intensity = 1.2;
+
+    ambientLight.color.setHex(0xffffff);
+    ambientLight.intensity = 0.40;
+
+    fillLight.color.setHex(0x8ab8e6);
+    fillLight.intensity = 0.80;
+
+    nightLightsGroup.visible = false;
+
+    // Daytime reflective windows
+    matWindowGlass.color.setHex(0x3d748d);
+    matWindowGlass.emissive.setHex(0x000000);
+    matWindowGlass.emissiveIntensity = 0.0;
+    matWindowGlass.opacity = 0.60;
+
+    if (window.matRotundaGlass) {
+      window.matRotundaGlass.color.setHex(0x4f8ba6);
+      window.matRotundaGlass.emissive.setHex(0x000000);
+      window.matRotundaGlass.emissiveIntensity = 0.0;
+      window.matRotundaGlass.opacity = 0.65;
+    }
+
+    matUpperFacade.color.setHex(0xd6cebe);
+    renderer.toneMappingExposure = 1.25;
+  } else {
+    scene.background = nightSkyEnvMap;
+    scene.environment = nightSkyEnvMap;
+    scene.fog.color.setHex(0x060913);
+    scene.fog.density = 0.0018;
+
+    // Soft cool moonlight
+    sunLight.color.setHex(0x5c7ea8);
+    sunLight.intensity = 0.40;
+    sunLight.position.set(-80, 140, 80);
+
+    skyLight.color.setHex(0x18243e);
+    skyLight.groundColor.setHex(0x080c14);
+    skyLight.intensity = 0.45;
+
+    ambientLight.color.setHex(0x1a2238);
+    ambientLight.intensity = 0.35;
+
+    fillLight.color.setHex(0x283854);
+    fillLight.intensity = 0.20;
+
+    nightLightsGroup.visible = true;
+
+    // Night illuminated windows with golden warmth!
+    matWindowGlass.color.setHex(0x22170c);
+    matWindowGlass.emissive.setHex(0xffaa44);
+    matWindowGlass.emissiveIntensity = 1.55;
+    matWindowGlass.opacity = 0.95;
+
+    if (window.matRotundaGlass) {
+      window.matRotundaGlass.color.setHex(0x332211);
+      window.matRotundaGlass.emissive.setHex(0xffc266);
+      window.matRotundaGlass.emissiveIntensity = 2.0;
+      window.matRotundaGlass.opacity = 0.92;
+    }
+
+    matUpperFacade.color.setHex(0x6e6860);
+    renderer.toneMappingExposure = 1.35;
+  }
+};
+
+window.toggleDayNight = () => {
+  const nextMode = currentDayNightMode === 'day' ? 'night' : 'day';
+  setDayNight(nextMode);
+};
+
+// ==========================================
+// 🔄 360° KİNEMATİK DAİRƏVİ FIRLANMA
+// ==========================================
+
+let cinematicOrbitActive = false;
+let cinematicOrbitAngle = 0;
+const CINEMATIC_DISTANCE = 98;
+const CINEMATIC_HEIGHT = 48;
+const CINEMATIC_CENTER = new THREE.Vector3(22, 10, -5);
+
+window.toggle360CinematicOrbit = () => {
+  cinematicOrbitActive = !cinematicOrbitActive;
+  
+  const b1 = document.getElementById('btn-spin-360');
+  const b2 = document.getElementById('btn-360-toggle');
+  const b3 = document.getElementById('btn-dock-spin');
+
+  [b1, b2, b3].forEach(b => {
+    if (b) {
+      if (cinematicOrbitActive) b.classList.add('active');
+      else b.classList.remove('active');
+    }
+  });
+
+  if (cinematicOrbitActive) {
+    if (autoRotateActive) toggleAutoRotate();
+    const curOffset = new THREE.Vector3().subVectors(camera.position, CINEMATIC_CENTER);
+    cinematicOrbitAngle = Math.atan2(curOffset.z, curOffset.x);
+  }
+};
 
 // Preset Architectural Views (Hero Perspectives calibrated to reference a5d249b0.jpg)
 window.setView = (view) => {
@@ -1720,6 +2073,14 @@ function animate() {
     if (keys['KeyS'] || keys['ArrowDown'])  camera.position.addScaledVector(walkDir, -speed);
     if (keys['KeyA'] || keys['ArrowLeft'])  camera.position.addScaledVector(walkRight, -speed);
     if (keys['KeyD'] || keys['ArrowRight']) camera.position.addScaledVector(walkRight, speed);
+  } else if (cinematicOrbitActive) {
+    cinematicOrbitAngle += 0.005; // Smooth cinematic 360 rotation speed
+    camera.position.x = CINEMATIC_CENTER.x + Math.cos(cinematicOrbitAngle) * CINEMATIC_DISTANCE;
+    camera.position.z = CINEMATIC_CENTER.z + Math.sin(cinematicOrbitAngle) * CINEMATIC_DISTANCE;
+    camera.position.y = CINEMATIC_HEIGHT;
+    controls.target.copy(CINEMATIC_CENTER);
+    camera.lookAt(CINEMATIC_CENTER);
+    controls.update();
   } else {
     controls.update();
   }
