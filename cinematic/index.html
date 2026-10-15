@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Lüks Rezidens — Kinematik 3D Dönüş & Gecə/Gündüz</title>
+  <title>PREMIUM PARK RESIDENCE — Kinematik Dron Görünüşü</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --time-ratio: 0.0;
-      --glass-bg: rgba(10, 15, 29, 0.82);
+      --glass-bg: rgba(10, 15, 29, 0.78);
       --glass-border: rgba(255, 255, 255, 0.16);
       --glass-blur: 24px;
       --accent-cyan: #38bdf8;
       --accent-gold: #f59e0b;
+      --accent-blue: #2563eb;
     }
 
     * {
@@ -37,123 +37,70 @@
       touch-action: none;
     }
 
-    /* 3D CANVAS VIEWPORT */
+    /* Video Viewport */
     #viewport-container {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
-      cursor: grab;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #02050e;
+      background: #000;
+      cursor: ew-resize;
     }
 
-    #viewport-container:active {
-      cursor: grabbing;
-    }
-
-    #orbitCanvas {
+    .drone-video {
       position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       pointer-events: none;
-      will-change: transform;
+      transition: opacity 0.45s ease-in-out, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
       transform-origin: center center;
     }
 
-    /* Subtle Cinematic Vignette */
+    #videoDay {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    #videoNight {
+      opacity: 0;
+      z-index: 2;
+    }
+
+    /* Cinematic Vignette */
     .vignette-overlay {
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 65%, rgba(2,5,14,0.55) 100%);
-      z-index: 2;
+      background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 65%, rgba(2,5,14,0.65) 100%);
+      z-index: 5;
     }
 
-    /* Loading Screen */
-    #loading-screen {
+    /* Top Left Header & Back */
+    .top-left-panel {
       position: absolute;
-      inset: 0;
-      background: #02050e;
-      z-index: 100;
+      top: 20px;
+      left: 24px;
+      z-index: 20;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
-    }
-
-    .loader-ring {
-      width: 48px;
-      height: 48px;
-      border: 3px solid rgba(255, 255, 255, 0.08);
-      border-top-color: #f59e0b;
-      border-right-color: #38bdf8;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .loader-text {
-      font-size: 14px;
-      font-weight: 500;
-      color: #94a3b8;
-      letter-spacing: 0.5px;
-    }
-
-    .loader-progress {
-      font-size: 12px;
-      color: #38bdf8;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* UI Overlay */
-    .ui-layer {
-      position: absolute;
-      inset: 0;
-      z-index: 10;
-      pointer-events: none;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 24px;
-    }
-
-    /* Top Left Brand Title */
-    .brand-subtle {
-      position: absolute;
-      top: 24px;
-      left: 28px;
-      pointer-events: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(var(--glass-blur));
-      -webkit-backdrop-filter: blur(var(--glass-blur));
-      padding: 10px 16px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      gap: 8px;
     }
 
     .btn-back-main {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 16px;
+      padding: 9px 18px;
       border-radius: 30px;
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(56, 189, 248, 0.55));
-      border: 1px solid rgba(56, 189, 248, 0.65);
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.4), rgba(56, 189, 248, 0.6));
+      border: 1px solid rgba(56, 189, 248, 0.7);
       color: #fff;
       font-size: 13px;
       font-weight: 700;
@@ -161,636 +108,541 @@
       cursor: pointer;
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 14px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(56, 189, 248, 0.35);
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      margin-bottom: 4px;
     }
 
     .btn-back-main:hover {
       background: linear-gradient(135deg, #2563eb, #38bdf8);
-      color: #ffffff;
       transform: translateX(-3px) scale(1.02);
-      box-shadow: 0 6px 24px rgba(56, 189, 248, 0.6);
+      box-shadow: 0 8px 26px rgba(56, 189, 248, 0.6);
       border-color: #fff;
     }
 
-    .brand-title {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.2px;
-      color: #f8fafc;
+    .brand-subtle {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      padding: 8px 14px;
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #f8fafc;
+      text-transform: uppercase;
     }
 
     .brand-badge {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 10px;
+      padding: 3px 8px;
+      border-radius: 8px;
       background: linear-gradient(135deg, #f59e0b, #ef4444);
       color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.5px;
     }
 
-    .brand-angle-badge {
-      font-size: 12px;
-      color: #38bdf8;
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* TOP CENTER: DAY / NIGHT TIME CONTROL BAR */
+    /* Top Center Day / Night Switch */
     .top-center-bar {
-      display: flex;
-      justify-content: center;
-      width: 100%;
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
     }
 
-    .minimal-time-dock {
-      pointer-events: auto;
+    .day-night-switch {
+      display: flex;
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       backdrop-filter: blur(var(--glass-blur));
       -webkit-backdrop-filter: blur(var(--glass-blur));
       border-radius: 40px;
-      padding: 8px 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.15);
-      transition: all 0.3s ease;
+      padding: 4px;
+      gap: 4px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15);
     }
 
-    .minimal-time-dock:hover {
-      border-color: rgba(255, 255, 255, 0.28);
-      box-shadow: 0 24px 48px -8px rgba(0, 0, 0, 0.85);
-    }
-
-    .scale-icon {
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.25s ease;
-    }
-
-    .scale-icon:hover {
-      transform: scale(1.15);
-      background: rgba(255, 255, 255, 0.16);
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .scale-slider-wrap {
-      width: 200px;
-      display: flex;
-      align-items: center;
-    }
-
-    .scale-slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      height: 8px;
-      border-radius: 6px;
-      background: linear-gradient(90deg, 
-        #f59e0b 0%, 
-        #ef4444 35%, 
-        #8b5cf6 65%, 
-        #38bdf8 85%, 
-        #1e1b4b 100%
-      );
-      outline: none;
-      cursor: pointer;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    .scale-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #ffffff;
-      cursor: grab;
-      border: 2px solid #0f172a;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 12px rgba(255, 255, 255, 0.9);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .scale-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.22);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 255, 255, 1);
-    }
-
-    .time-badge {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #f1f5f9;
-      letter-spacing: 0.3px;
-      min-width: 110px;
-    }
-
-    .time-clock {
-      font-variant-numeric: tabular-nums;
-      color: #38bdf8;
-      font-weight: 700;
-    }
-
-    .time-phase {
-      font-size: 12px;
-      color: #94a3b8;
-      font-weight: 400;
-    }
-
-    .btn-play-cycle {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #e2e8f0;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 12px;
-      transition: all 0.2s ease;
-    }
-
-    .btn-play-cycle:hover {
-      background: rgba(56, 189, 248, 0.2);
-      border-color: rgba(56, 189, 248, 0.4);
-      color: #38bdf8;
-      transform: scale(1.1);
-    }
-
-    .btn-play-cycle.active {
-      background: rgba(56, 189, 248, 0.25);
-      border-color: rgba(56, 189, 248, 0.6);
-      color: #38bdf8;
-    }
-
-    /* GENTLE INTERACTIVE HINT */
-    .drag-hint {
-      position: absolute;
-      bottom: 96px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(10, 16, 30, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      padding: 9px 22px;
-      border-radius: 30px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #ffffff;
-      pointer-events: none;
-      animation: pulseHint 2.8s infinite;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-      white-space: nowrap;
+    .switch-btn {
       display: flex;
       align-items: center;
       gap: 8px;
+      padding: 8px 20px;
+      border-radius: 30px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.25s ease;
     }
 
-    @keyframes pulseHint {
-      0%, 100% { opacity: 0.95; transform: translateX(-50%) translateY(0); }
-      50% { opacity: 0.45; transform: translateX(-50%) translateY(-3px); }
+    .switch-btn:hover {
+      color: #fff;
     }
 
-    /* BOTTOM NAVIGATION DOCK */
-    .bottom-center-bar {
+    .switch-btn.active.day-active {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.35), rgba(234, 88, 12, 0.45));
+      border-color: rgba(245, 158, 11, 0.7);
+      color: #fef08a;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.45);
+    }
+
+    .switch-btn.active.night-active {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.4), rgba(139, 92, 246, 0.5));
+      border-color: rgba(56, 189, 248, 0.7);
+      color: #7dd3fc;
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.45);
+    }
+
+    /* Interactive Drag Hint */
+    .drag-hint-pill {
+      position: absolute;
+      top: 86px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 15;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+      pointer-events: none;
       display: flex;
-      justify-content: center;
-      width: 100%;
+      align-items: center;
+      gap: 6px;
+      animation: pulse-hint 2s infinite ease-in-out;
+      transition: opacity 0.4s ease;
     }
 
-    .nav-control-dock {
-      pointer-events: auto;
+    @keyframes pulse-hint {
+      0%, 100% { opacity: 0.85; transform: translateX(-50%) scale(1); }
+      50% { opacity: 0.45; transform: translateX(-50%) scale(0.98); }
+    }
+
+    /* Bottom Control Dock */
+    .bottom-dock-wrap {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      width: min(94vw, 840px);
+    }
+
+    .bottom-dock {
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       backdrop-filter: blur(var(--glass-blur));
       -webkit-backdrop-filter: blur(var(--glass-blur));
-      border-radius: 36px;
-      padding: 8px 18px;
+      border-radius: 24px;
+      padding: 12px 20px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.12);
-      transition: all 0.3s ease;
+      gap: 14px;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.15);
     }
 
-    .nav-control-dock:hover {
-      border-color: rgba(255, 255, 255, 0.26);
-    }
-
-    .nav-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #f1f5f9;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 8px 15px;
-      border-radius: 20px;
-      cursor: pointer;
-      display: inline-flex;
+    .btn-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      display: flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.18s ease;
-      user-select: none;
+      justify-content: center;
+      font-size: 15px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
     }
 
-    .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.28);
-      color: #ffffff;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    }
-
-    .nav-btn:active {
-      transform: translateY(1px);
+    .btn-circle:hover {
       background: rgba(56, 189, 248, 0.25);
       border-color: rgba(56, 189, 248, 0.6);
+      transform: scale(1.08);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Timeline Scrubber */
+    .scrubber-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .scrubber-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    .scrubber-meta .current-time {
       color: #38bdf8;
+      font-variant-numeric: tabular-nums;
     }
 
-    .nav-btn.active {
-      background: rgba(56, 189, 248, 0.22);
-      border-color: rgba(56, 189, 248, 0.55);
-      color: #38bdf8;
-    }
-
-    .dock-sep {
-      width: 1px;
-      height: 22px;
-      background: rgba(255, 255, 255, 0.12);
-      margin: 0 2px;
-    }
-
-    /* DIRECT TURNTABLE ANGLE SCRUBBER */
-    .angle-slider-wrap {
+    .slider-track-wrap {
+      position: relative;
+      width: 100%;
+      height: 14px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 0 6px;
-    }
-
-    .angle-label-side {
-      font-size: 11px;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
       cursor: pointer;
-      user-select: none;
-      transition: color 0.2s ease;
     }
 
-    .angle-label-side:hover {
-      color: #38bdf8;
-    }
-
-    .angle-slider {
+    .video-slider {
       -webkit-appearance: none;
       appearance: none;
-      width: 140px;
+      width: 100%;
       height: 6px;
       border-radius: 4px;
-      background: rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.16);
       outline: none;
       cursor: pointer;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+      position: relative;
+      transition: height 0.15s ease;
     }
 
-    .angle-slider::-webkit-slider-thumb {
+    .slider-track-wrap:hover .video-slider {
+      height: 8px;
+    }
+
+    .video-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: #38bdf8;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(56, 189, 248, 0.8);
       cursor: grab;
-      border: 2px solid #0f172a;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
       transition: transform 0.15s ease, background 0.15s ease;
     }
 
-    .angle-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.25);
-      background: #7dd3fc;
+    .video-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.3);
+      background: #0284c7;
     }
 
-    @media (max-width: 768px) {
-      .ui-layer {
-        padding: 12px;
+    .dock-divider {
+      width: 1px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.12);
+      flex-shrink: 0;
+    }
+
+    .speed-btn {
+      padding: 5px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .speed-btn:hover, .speed-btn.active {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: rgba(56, 189, 248, 0.6);
+      color: #fff;
+    }
+
+    @media (max-width: 640px) {
+      .top-left-panel {
+        top: 14px;
+        left: 14px;
       }
       .brand-subtle {
         display: none;
       }
-      .scale-slider-wrap {
-        width: 120px;
+      .top-center-bar {
+        top: 14px;
+        left: auto;
+        right: 14px;
+        transform: none;
       }
-      .angle-slider {
-        width: 90px;
+      .bottom-dock-wrap {
+        bottom: 16px;
+        width: 96vw;
       }
-      .time-badge {
-        font-size: 11px;
-        min-width: 75px;
+      .bottom-dock {
+        padding: 8px 12px;
+        gap: 8px;
       }
-      .nav-control-dock {
-        padding: 6px 12px;
-        gap: 6px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      .nav-btn {
-        padding: 6px 10px;
-        font-size: 11px;
+      .speed-btn {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Loading Screen -->
-  <div id="loading-screen">
-    <div class="loader-ring"></div>
-    <div class="loader-text">Dron Kadrları Hazırlanır...</div>
-    <div class="loader-progress" id="loadProgress">0%</div>
-  </div>
-
-  <!-- INTERACTIVE 360 CANVAS VIEWPORT -->
+  <!-- Fullscreen Video Viewport -->
   <div id="viewport-container">
-    <canvas id="orbitCanvas" width="1920" height="1080"></canvas>
+    <video id="videoDay" class="drone-video" src="gunduzyeni.mp4" playsinline muted loop autoplay preload="auto"></video>
+    <video id="videoNight" class="drone-video" src="geceyeni.mp4" playsinline muted loop preload="auto"></video>
     <div class="vignette-overlay"></div>
   </div>
 
-  <!-- UI Layer -->
-  <div class="ui-layer">
+  <!-- Interactive Drag Scrubbing Hint -->
+  <div id="dragHint" class="drag-hint-pill">
+    <span>↔️</span>
+    <span>Dronu 360° döndürmək üçün ekranı sağa/sola sürüşdürün</span>
+  </div>
 
-    <!-- Top Left Title & Angle Compass -->
+  <!-- Top Left: Return to Main 3D System & Brand -->
+  <div class="top-left-panel">
+    <button class="btn-back-main" onclick="returnToMainSystem()" title="Əsas 3D İnteraktiv Sistemə Qayıt">
+      <span>⬅️</span>
+      <span>3D Sistemə Qayıt</span>
+    </button>
     <div class="brand-subtle">
-      <button id="btnBackToMain" class="btn-back-main" onclick="returnToMainSystem()" title="Əsas DIGIWYZE Sisteminə Qayıt (ESC)">
-        <span>⬅️</span>
-        <span>Əsas Sistemə Qayıt</span>
+      <span class="brand-title">PREMIUM PARK RESIDENCE</span>
+      <span class="brand-badge">4K DRON</span>
+    </div>
+  </div>
+
+  <!-- Top Center: Day / Night Switch -->
+  <div class="top-center-bar">
+    <div class="day-night-switch">
+      <button id="btnDay" class="switch-btn active day-active" onclick="setMode('day')" title="Gündüz Dron Baxışı">
+        <span>☀️</span>
+        <span>Gündüz</span>
       </button>
-      <div class="brand-title">
-        <span>DIGIWYZE RESIDENCE</span>
-        <span class="brand-badge" style="background: linear-gradient(135deg, #2563eb, #38bdf8);">CİNEMATİC</span>
-      </div>
-      <div class="brand-angle-badge" id="angleBadge">🧭 Ön Rotunda Fasadı</div>
+      <button id="btnNight" class="switch-btn" onclick="setMode('night')" title="Gecə Dron Baxışı & Fasad İşıqları">
+        <span>🌙</span>
+        <span>Gecə</span>
+      </button>
     </div>
+  </div>
 
-    <!-- TOP CENTER: DAY / NIGHT BLEND SCALE -->
-    <div class="top-center-bar">
-      <div class="minimal-time-dock">
-        <div id="btnDay" class="scale-icon" title="Gündüz rejiminə keç">☀️</div>
+  <!-- Bottom Floating Control Dock -->
+  <div class="bottom-dock-wrap">
+    <div class="bottom-dock">
+      <!-- Play / Pause -->
+      <button id="btnPlayPause" class="btn-circle" onclick="togglePlayPause()" title="Oynat / Fasilə (Space)">
+        <span id="playIcon">⏸</span>
+      </button>
 
-        <div class="scale-slider-wrap">
-          <input 
-            type="range" 
-            id="timeSlider" 
-            class="scale-slider" 
-            min="0" 
-            max="1000" 
-            value="0" 
-            step="1"
-            title="Günəş və Ay arasında sürüşdürərək gecə/gündüzü dəyişin"
-          />
+      <!-- Scrubber -->
+      <div class="scrubber-container">
+        <div class="scrubber-meta">
+          <span id="currentTimeText" class="current-time">00:00</span>
+          <span id="durationText">00:10</span>
         </div>
-
-        <div id="btnNight" class="scale-icon" title="Gecə rejiminə keç">🌙</div>
-
-        <div class="time-badge">
-          <span id="clockText" class="time-clock">14:00</span>
-          <span id="phaseText" class="time-phase">Gündüz</span>
+        <div class="slider-track-wrap">
+          <input type="range" id="videoScrubber" class="video-slider" min="0" max="1000" value="0" step="1" title="Dron Çəkilişini İrəli/Geri Çəkin">
         </div>
-
-        <button id="btnPlayCycle" class="btn-play-cycle" title="Gündüz/Gecə Avtomatik Keçid">
-          <span id="playIcon">▶</span>
-        </button>
       </div>
+
+      <div class="dock-divider"></div>
+
+      <!-- Playback Speed -->
+      <button id="btnSpeed" class="speed-btn" onclick="cycleSpeed()" title="Oynatma Sürəti">1.0x</button>
+
+      <!-- Zoom In / Out -->
+      <button class="btn-circle" onclick="adjustZoom(0.2)" title="Yaxınlaşdır">➕</button>
+      <button class="btn-circle" onclick="adjustZoom(-0.2)" title="Uzaqlaşdır">➖</button>
+
+      <div class="dock-divider"></div>
+
+      <!-- Fullscreen -->
+      <button id="btnFullscreen" class="btn-circle" onclick="toggleFullscreen()" title="Tam Ekran (F)">
+        <span id="fsIcon">⛶</span>
+      </button>
     </div>
-
-    <!-- Interactive Hint -->
-    <div class="drag-hint" id="dragHint">
-      <span>👆 Siçanla sağa-sola çəkərək və ya altdakı xətlə binanı fırladın</span>
-    </div>
-
-    <!-- BOTTOM CENTER: NAVIGATION & 360 DOCK -->
-    <div class="bottom-center-bar">
-      <div class="nav-control-dock">
-        <button id="btnSpinFront" class="nav-btn" title="Ön fasada keç">
-          <span>🏛️ Ön Fasad</span>
-        </button>
-
-        <div class="angle-slider-wrap">
-          <span class="angle-label-side" id="labelFront" title="Ön Fasad">Ön</span>
-          <input type="range" id="angleSlider" class="angle-slider" min="0" max="1000" value="0" step="1" title="Dönüş Bucağı">
-          <span class="angle-label-side" id="labelSide" title="Yan Fasad">Yan</span>
-        </div>
-
-        <button id="btnSpinSide" class="nav-btn" title="Yan fasada keç">
-          <span>🏢 Yan Fasad</span>
-        </button>
-
-        <div class="dock-sep"></div>
-
-        <button id="btnAutoRotate" class="nav-btn" title="Avtomatik baxış süzülməsi">
-          <span id="autoRotateIcon">🔄</span>
-          <span>Avto</span>
-        </button>
-
-        <div class="dock-sep"></div>
-
-        <button id="btnZoomIn" class="nav-btn" title="Yaxınlaşdır">
-          <span>➕</span>
-        </button>
-
-        <button id="btnZoomOut" class="nav-btn" title="Uzaqlaşdır">
-          <span>➖</span>
-        </button>
-
-        <div class="dock-sep"></div>
-
-        <button id="btnFullscreen" class="nav-btn" title="Tam Ekran (F və ya İkiqat Klik)">
-          <span id="fsIcon">⛶</span>
-        </button>
-      </div>
-    </div>
-
   </div>
 
   <script>
-    /* =========================================================================
-       GEOMETRICALLY-LOCKED SYNCHRONIZED DAY & NIGHT TURNTABLE ENGINE
-       ========================================================================= */
-
+    const videoDay = document.getElementById('videoDay');
+    const videoNight = document.getElementById('videoNight');
     const viewport = document.getElementById('viewport-container');
-    const canvas = document.getElementById('orbitCanvas');
-    const ctx = canvas.getContext('2d');
-    const loadingScreen = document.getElementById('loading-screen');
-    const loadProgress = document.getElementById('loadProgress');
-    const angleBadge = document.getElementById('angleBadge');
-    const dragHint = document.getElementById('dragHint');
-
-    const timeSlider = document.getElementById('timeSlider');
-    const clockText = document.getElementById('clockText');
-    const phaseText = document.getElementById('phaseText');
     const btnDay = document.getElementById('btnDay');
     const btnNight = document.getElementById('btnNight');
-    const btnPlayCycle = document.getElementById('btnPlayCycle');
+    const btnPlayPause = document.getElementById('btnPlayPause');
     const playIcon = document.getElementById('playIcon');
-
-    const angleSlider = document.getElementById('angleSlider');
-    const labelFront = document.getElementById('labelFront');
-    const labelSide = document.getElementById('labelSide');
-    const btnSpinFront = document.getElementById('btnSpinFront');
-    const btnSpinSide = document.getElementById('btnSpinSide');
-    const btnAutoRotate = document.getElementById('btnAutoRotate');
-    const autoRotateIcon = document.getElementById('autoRotateIcon');
-    const btnZoomIn = document.getElementById('btnZoomIn');
-    const btnZoomOut = document.getElementById('btnZoomOut');
+    const videoScrubber = document.getElementById('videoScrubber');
+    const currentTimeText = document.getElementById('currentTimeText');
+    const durationText = document.getElementById('durationText');
+    const btnSpeed = document.getElementById('btnSpeed');
     const btnFullscreen = document.getElementById('btnFullscreen');
     const fsIcon = document.getElementById('fsIcon');
+    const dragHint = document.getElementById('dragHint');
 
-    // Number of available frames
-    // Day video pans from 0° (Front) to ~45° (Side) across 103 frames
-    // Night video pans from 0° (Front) to ~45° across the first 50 frames
-    const DAY_FRAMES_COUNT = 103;
-    const NIGHT_MATCH_FRAMES = 50;
+    let currentMode = 'day'; // 'day' or 'night'
+    let isPlaying = true;
+    let isUserScrubbing = false;
+    let currentSpeed = 1.0;
+    let currentZoom = 1.0;
 
-    const dayImages = new Array(DAY_FRAMES_COUNT);
-    const nightImages = new Array(NIGHT_MATCH_FRAMES);
-    let loadedCount = 0;
-    const totalToLoad = DAY_FRAMES_COUNT + NIGHT_MATCH_FRAMES;
-    let isReady = false;
-
-    // Preload Day frames
-    for (let i = 1; i <= DAY_FRAMES_COUNT; i++) {
-      const idx = i - 1;
-      const num = String(i).padStart(3, '0');
-      const img = new Image();
-      img.src = `frames_day/f_${num}.jpg`;
-      img.onload = onAssetLoaded;
-      dayImages[idx] = img;
+    function getActiveVideo() {
+      return currentMode === 'day' ? videoDay : videoNight;
     }
 
-    // Preload Night matching frames (frames 1 to 50 match Day frames 1 to 103 geometrically 1:1)
-    for (let i = 1; i <= NIGHT_MATCH_FRAMES; i++) {
-      const idx = i - 1;
-      const num = String(i).padStart(3, '0');
-      const img = new Image();
-      img.src = `frames_night/f_${num}.jpg`;
-      img.onload = onAssetLoaded;
-      nightImages[idx] = img;
+    function getInactiveVideo() {
+      return currentMode === 'day' ? videoNight : videoDay;
     }
 
-    function onAssetLoaded() {
-      loadedCount++;
-      const pct = Math.round((loadedCount / totalToLoad) * 100);
-      loadProgress.textContent = `${pct}%`;
-
-      if (loadedCount >= 15 && !isReady) {
-        isReady = true;
-        loadingScreen.style.opacity = '0';
-        setTimeout(() => { loadingScreen.style.visibility = 'hidden'; }, 400);
-        renderCurrentState();
-      }
+    // Format seconds to mm:ss
+    function formatTime(sec) {
+      if (!sec || isNaN(sec)) return "00:00";
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = Math.floor(sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
     }
 
-    /* =========================================================================
-       SMOOTH TURNTABLE STATE & 1:1 GEOMETRIC CORRESPONDENCE
-       ========================================================================= */
+    // Mode Switch (Day / Night)
+    window.setMode = function(mode) {
+      if (mode === currentMode) return;
+      currentMode = mode;
 
-    // rotationProgress: 0.0 = Ön Rotunda View, 1.0 = Sağ Fasad View
-    let rotationProgress = 0.0;
-    let rotationVelocity = 0.0;
-    let isAutoRotating = false; // OFF by default so user is in full control!
-    let autoSweepSpeed = 0.22; // Smooth ping-pong sweep speed
-    let sweepDir = 1; // 1 = towards side, -1 = towards front
+      const active = getActiveVideo();
+      const inactive = getInactiveVideo();
 
-    let timeRatio = 0.0; // 0.0 = Day, 1.0 = Night
-    let zoomScale = 1.0;
-    let targetZoom = 1.0;
-
-    function renderCurrentState() {
-      // Clamp rotationProgress between 0.0 and 1.0 (no abrupt cuts or jumping!)
-      const t = Math.min(Math.max(rotationProgress, 0.0), 1.0);
-
-      // Exact 1:1 geometric angle mapping:
-      // Day frame index: 0 to DAY_FRAMES_COUNT - 1
-      const dayIdx = Math.min(Math.floor(t * (DAY_FRAMES_COUNT - 1)), DAY_FRAMES_COUNT - 1);
-      // Night frame index: 0 to NIGHT_MATCH_FRAMES - 1
-      const nightIdx = Math.min(Math.floor(t * (NIGHT_MATCH_FRAMES - 1)), NIGHT_MATCH_FRAMES - 1);
-
-      const dayImg = dayImages[dayIdx];
-      const nightImg = nightImages[nightIdx];
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw Day Image
-      if (dayImg && dayImg.complete && dayImg.naturalWidth > 0) {
-        ctx.globalAlpha = 1.0;
-        ctx.drawImage(dayImg, 0, 0, canvas.width, canvas.height);
+      // Synchronize playback position proportionally
+      if (inactive.duration && active.duration) {
+        const ratio = inactive.currentTime / inactive.duration;
+        active.currentTime = ratio * active.duration;
       }
 
-      // Draw Matching Night Image (100% Geometrically Aligned!)
-      if (timeRatio > 0.001 && nightImg && nightImg.complete && nightImg.naturalWidth > 0) {
-        ctx.globalAlpha = timeRatio;
-        ctx.drawImage(nightImg, 0, 0, canvas.width, canvas.height);
-        ctx.globalAlpha = 1.0;
+      if (mode === 'day') {
+        btnDay.classList.add('active', 'day-active');
+        btnNight.classList.remove('active', 'night-active');
+        videoDay.style.opacity = '1';
+        videoNight.style.opacity = '0';
+      } else {
+        btnNight.classList.add('active', 'night-active');
+        btnDay.classList.remove('active', 'day-active');
+        videoNight.style.opacity = '1';
+        videoDay.style.opacity = '0';
       }
 
-      // Update Angle Badge
-      const anglePercent = Math.round(t * 100);
-      let sectorName = "🏛️ Ön Rotunda";
-      if (anglePercent > 65) {
-        sectorName = "🏢 Sağ Fasad";
-      } else if (anglePercent > 30) {
-        sectorName = "📐 Üçbucaq Perspektiv";
+      if (isPlaying) {
+        active.play().catch(() => {});
+        inactive.play().catch(() => {});
       }
-      angleBadge.textContent = `${sectorName} • ${anglePercent}%`;
+    };
 
-      // Keep bottom angle slider in sync (when not dragging slider directly)
-      if (!isSliderActive && angleSlider) {
-        angleSlider.value = Math.round(t * 1000);
+    // Play / Pause
+    window.togglePlayPause = function() {
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        videoDay.play().catch(() => {});
+        videoNight.play().catch(() => {});
+        playIcon.textContent = '⏸';
+      } else {
+        videoDay.pause();
+        videoNight.pause();
+        playIcon.textContent = '▶';
       }
+    };
+
+    // Scrubber update
+    function updateProgressUI() {
+      if (isUserScrubbing) return;
+      const v = getActiveVideo();
+      if (!v || !v.duration) return;
+
+      const progress = (v.currentTime / v.duration) * 1000;
+      videoScrubber.value = Math.round(progress);
+      currentTimeText.textContent = formatTime(v.currentTime);
+      durationText.textContent = formatTime(v.duration);
     }
 
-    /* =========================================================================
-       DRAG & TOUCH SWEEP WITH NATURAL 3D ORBIT PHYSICS
-       ========================================================================= */
+    videoDay.addEventListener('timeupdate', updateProgressUI);
+    videoNight.addEventListener('timeupdate', updateProgressUI);
 
+    videoDay.addEventListener('loadedmetadata', () => {
+      if (currentMode === 'day') durationText.textContent = formatTime(videoDay.duration);
+    });
+    videoNight.addEventListener('loadedmetadata', () => {
+      if (currentMode === 'night') durationText.textContent = formatTime(videoNight.duration);
+    });
+
+    // Scrubber interaction
+    videoScrubber.addEventListener('mousedown', () => { isUserScrubbing = true; });
+    videoScrubber.addEventListener('touchstart', () => { isUserScrubbing = true; }, { passive: true });
+    window.addEventListener('mouseup', () => { isUserScrubbing = false; });
+    window.addEventListener('touchend', () => { isUserScrubbing = false; });
+
+    videoScrubber.addEventListener('input', (e) => {
+      const ratio = parseFloat(e.target.value) / 1000;
+      const v = getActiveVideo();
+      if (v.duration) {
+        v.currentTime = ratio * v.duration;
+        currentTimeText.textContent = formatTime(v.currentTime);
+      }
+      const other = getInactiveVideo();
+      if (other.duration) {
+        other.currentTime = ratio * other.duration;
+      }
+    });
+
+    // Speed Cycling
+    const speeds = [1.0, 1.5, 2.0, 0.5];
+    window.cycleSpeed = function() {
+      const idx = speeds.indexOf(currentSpeed);
+      currentSpeed = speeds[(idx + 1) % speeds.length];
+      videoDay.playbackRate = currentSpeed;
+      videoNight.playbackRate = currentSpeed;
+      btnSpeed.textContent = `${currentSpeed}x`;
+    };
+
+    // Zoom
+    window.adjustZoom = function(delta) {
+      currentZoom = Math.min(Math.max(currentZoom + delta, 1.0), 2.2);
+      videoDay.style.transform = `scale(${currentZoom.toFixed(2)})`;
+      videoNight.style.transform = `scale(${currentZoom.toFixed(2)})`;
+    };
+
+    // Fullscreen
+    window.toggleFullscreen = function() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    };
+
+    document.addEventListener('fullscreenchange', () => {
+      const isFs = !!document.fullscreenElement;
+      if (fsIcon) fsIcon.textContent = isFs ? '🗗' : '⛶';
+    });
+
+    viewport.addEventListener('dblclick', toggleFullscreen);
+
+    // Drag-to-scrub on viewport (Interactive Orbit feeling)
     let isDragging = false;
-    let isSliderActive = false;
-    let lastX = 0;
-    let lastTime = 0;
+    let startX = 0;
+    let startTime = 0;
 
     function onPointerDown(e) {
       isDragging = true;
-      const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX) || 0;
-      lastX = clientX;
-      lastTime = performance.now();
-      rotationVelocity = 0.0;
-
-      if (isAutoRotating) {
-        toggleAutoRotate(false);
-      }
+      startX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX) || 0;
+      const v = getActiveVideo();
+      startTime = v.currentTime || 0;
 
       if (dragHint) {
         dragHint.style.opacity = '0';
@@ -801,29 +653,18 @@
     function onPointerMove(e) {
       if (!isDragging) return;
       const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX) || 0;
-      const deltaX = clientX - lastX;
-      const now = performance.now();
-      const dt = Math.max((now - lastTime) / 1000, 0.001);
+      const deltaX = clientX - startX;
+      const v = getActiveVideo();
+      if (!v || !v.duration) return;
 
-      lastX = clientX;
-      lastTime = now;
+      // 400px swipe scrubs full video duration
+      const deltaSec = (deltaX / 400) * v.duration;
+      let newTime = (startTime + deltaSec) % v.duration;
+      if (newTime < 0) newTime += v.duration;
 
-      // Sensitivity: ~400px swipe smoothly sweeps across the 45-degree angle
-      const sensitivity = 1.0 / (Math.max(window.innerWidth, 800) * 0.40);
-
-      // NATURAL 3D ROTATION PHYSICS:
-      // Dragging to the RIGHT moves the building face to the RIGHT (progress decreases towards 0.0 = Ön Fasad)
-      // Dragging to the LEFT moves the building face to the LEFT (progress increases towards 1.0 = Yan Fasad)
-      rotationProgress -= deltaX * sensitivity;
-
-      // Clamp between 0.0 (Ön) and 1.0 (Yan)
-      rotationProgress = Math.min(Math.max(rotationProgress, 0.0), 1.0);
-
-      // Responsive inertia velocity
-      rotationVelocity = (-deltaX * sensitivity) / dt * 0.006;
-      rotationVelocity = Math.min(Math.max(rotationVelocity, -0.02), 0.02);
-
-      renderCurrentState();
+      v.currentTime = newTime;
+      const other = getInactiveVideo();
+      if (other.duration) other.currentTime = (newTime / v.duration) * other.duration;
     }
 
     function onPointerUp() {
@@ -838,259 +679,65 @@
     window.addEventListener('touchmove', onPointerMove, { passive: true });
     window.addEventListener('touchend', onPointerUp);
 
-    // Zoom via mouse wheel
+    // Wheel zoom
     viewport.addEventListener('wheel', (e) => {
       e.preventDefault();
-      const delta = e.deltaY * -0.0015;
-      targetZoom = Math.min(Math.max(targetZoom + delta, 1.0), 2.2);
+      adjustZoom(e.deltaY * -0.001);
     }, { passive: false });
 
-    /* =========================================================================
-       NAVIGATION BUTTONS & ANGLE SCRUBBER
-       ========================================================================= */
-
-    // Angle Slider Live Scrub
-    angleSlider.addEventListener('mousedown', () => { isSliderActive = true; });
-    angleSlider.addEventListener('touchstart', () => { isSliderActive = true; }, { passive: true });
-    window.addEventListener('mouseup', () => { isSliderActive = false; });
-    window.addEventListener('touchend', () => { isSliderActive = false; });
-
-    angleSlider.addEventListener('input', (e) => {
-      if (isAutoRotating) toggleAutoRotate(false);
-      rotationProgress = parseFloat(e.target.value) / 1000;
-      rotationVelocity = 0.0;
-      renderCurrentState();
-    });
-
-    // Smooth Glide to Target View
-    function animateProgressTo(targetVal) {
-      if (isAutoRotating) toggleAutoRotate(false);
-      const startVal = rotationProgress;
-      const diff = targetVal - startVal;
-      const duration = 360;
-      const startTime = performance.now();
-
-      function step(now) {
-        const p = Math.min((now - startTime) / duration, 1);
-        const ease = 0.5 - Math.cos(p * Math.PI) / 2;
-        rotationProgress = startVal + diff * ease;
-        renderCurrentState();
-        if (p < 1) requestAnimationFrame(step);
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        returnToMainSystem();
+        return;
       }
-      requestAnimationFrame(step);
-    }
-
-    btnSpinFront.addEventListener('click', () => animateProgressTo(0.0));
-    labelFront.addEventListener('click', () => animateProgressTo(0.0));
-
-    btnSpinSide.addEventListener('click', () => animateProgressTo(1.0));
-    labelSide.addEventListener('click', () => animateProgressTo(1.0));
-
-    function toggleAutoRotate(start) {
-      isAutoRotating = start;
-      btnAutoRotate.classList.toggle('active', isAutoRotating);
-      autoRotateIcon.textContent = isAutoRotating ? '⏸' : '🔄';
-    }
-
-    btnAutoRotate.addEventListener('click', () => {
-      toggleAutoRotate(!isAutoRotating);
-    });
-
-    btnZoomIn.addEventListener('click', () => {
-      targetZoom = Math.min(targetZoom + 0.25, 2.2);
-    });
-
-    btnZoomOut.addEventListener('click', () => {
-      targetZoom = Math.max(targetZoom - 0.25, 1.0);
-    });
-
-    /* =========================================================================
-       DAY / NIGHT BLEND SYSTEM (100% ALIGNED)
-       ========================================================================= */
-
-    let isAutoCycling = false;
-    let cycleDir = 1;
-
-    function updateTimeSystem(val, updateInput = false) {
-      timeRatio = val / 1000;
-      if (updateInput) timeSlider.value = val;
-
-      let timeStr = "";
-      let phaseStr = "";
-
-      if (timeRatio < 0.25) {
-        timeStr = "14:00";
-        phaseStr = "Gündüz";
-      } else if (timeRatio < 0.55) {
-        const m = Math.floor(18 * 60 + ((timeRatio - 0.25) / 0.30) * 80);
-        timeStr = `${Math.floor(m / 60).toString().padStart(2, '0')}:${(m % 60).toString().padStart(2, '0')}`;
-        phaseStr = "Qürub";
-      } else if (timeRatio < 0.85) {
-        const m = Math.floor(19 * 60 + 50 + ((timeRatio - 0.55) / 0.30) * 70);
-        timeStr = `${Math.floor(m / 60).toString().padStart(2, '0')}:${(m % 60).toString().padStart(2, '0')}`;
-        phaseStr = "Alatoran";
-      } else {
-        timeStr = "23:45";
-        phaseStr = "Gecə / Fasad İşıqları";
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        togglePlayPause();
       }
-
-      clockText.textContent = timeStr;
-      phaseText.textContent = phaseStr;
-
-      renderCurrentState();
-    }
-
-    timeSlider.addEventListener('input', (e) => {
-      if (isAutoCycling) toggleAutoCycle(false);
-      updateTimeSystem(parseFloat(e.target.value));
-    });
-
-    btnDay.addEventListener('click', () => {
-      if (isAutoCycling) toggleAutoCycle(false);
-      animateSliderTo(0);
-    });
-
-    btnNight.addEventListener('click', () => {
-      if (isAutoCycling) toggleAutoCycle(false);
-      animateSliderTo(1000);
-    });
-
-    btnPlayCycle.addEventListener('click', () => {
-      toggleAutoCycle(!isAutoCycling);
-    });
-
-    function toggleAutoCycle(start) {
-      isAutoCycling = start;
-      btnPlayCycle.classList.toggle('active', isAutoCycling);
-      playIcon.textContent = isAutoCycling ? '⏸' : '▶';
-    }
-
-    function animateSliderTo(targetVal) {
-      const currentVal = parseFloat(timeSlider.value);
-      const diff = targetVal - currentVal;
-      const duration = 400;
-      const startTime = performance.now();
-
-      function step(now) {
-        const p = Math.min((now - startTime) / duration, 1);
-        const ease = 0.5 - Math.cos(p * Math.PI) / 2;
-        updateTimeSystem(currentVal + diff * ease, true);
-        if (p < 1) requestAnimationFrame(step);
+      if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
       }
-      requestAnimationFrame(step);
-    }
-
-    /* =========================================================================
-       FULLSCREEN SUPPORT
-       ========================================================================= */
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else {
-        document.exitFullscreen().catch(() => {});
+      if (e.key === 'd' || e.key === 'D') {
+        setMode('day');
       }
-    }
-
-    btnFullscreen.addEventListener('click', toggleFullscreen);
-
-    document.addEventListener('fullscreenchange', () => {
-      const isFs = !!document.fullscreenElement;
-      if (fsIcon) fsIcon.textContent = isFs ? '🗗' : '⛶';
+      if (e.key === 'n' || e.key === 'N') {
+        setMode('night');
+      }
+      if (e.key === 'ArrowLeft') {
+        const v = getActiveVideo();
+        v.currentTime = Math.max(v.currentTime - 0.5, 0);
+      }
+      if (e.key === 'ArrowRight') {
+        const v = getActiveVideo();
+        v.currentTime = Math.min(v.currentTime + 0.5, v.duration);
+      }
     });
 
-    viewport.addEventListener('dblclick', toggleFullscreen);
-
-    /* =========================================================================
-       RETURN TO MAIN DIGIWYZE SYSTEM
-       ========================================================================= */
-
-    function returnToMainSystem() {
+    // Return to Main 3D System
+    window.returnToMainSystem = function() {
       try {
         if (window.parent && window.parent !== window && typeof window.parent.closeCinematicModal === 'function') {
           window.parent.closeCinematicModal();
           return;
         }
       } catch (err) {
-        console.warn('Cross-origin parent access', err);
+        console.warn('Parent access error', err);
       }
       window.location.href = '../index.html';
-    }
+    };
 
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        returnToMainSystem();
-        return;
-      }
-      if (e.key === 'f' || e.key === 'F') toggleFullscreen();
-      if (e.key === 'ArrowLeft') {
-        if (isAutoRotating) toggleAutoRotate(false);
-        rotationProgress = Math.min(rotationProgress + 0.035, 1.0);
-        renderCurrentState();
-      }
-      if (e.key === 'ArrowRight') {
-        if (isAutoRotating) toggleAutoRotate(false);
-        rotationProgress = Math.max(rotationProgress - 0.035, 0.0);
-        renderCurrentState();
-      }
+    // Auto start playback on load
+    window.addEventListener('DOMContentLoaded', () => {
+      videoDay.play().catch(() => {
+        // Autoplay policy fallback: muted video always allowed
+        videoDay.muted = true;
+        videoDay.play().catch(() => {});
+      });
+      videoNight.play().catch(() => {
+        videoNight.muted = true;
+      });
     });
-
-    /* =========================================================================
-       60-144 FPS MAIN RENDER & SWEEP LOOP
-       ========================================================================= */
-
-    let lastLoopTime = performance.now();
-
-    function renderLoop(time) {
-      requestAnimationFrame(renderLoop);
-
-      const dt = Math.min((time - lastLoopTime) / 1000, 0.1);
-      lastLoopTime = time;
-
-      // Inertia & Ping-Pong Auto Sweep
-      if (!isDragging) {
-        if (isAutoRotating) {
-          // Smooth back-and-forth sweep (Front <-> Side)
-          rotationProgress += sweepDir * autoSweepSpeed * dt;
-          if (rotationProgress >= 1.0) {
-            rotationProgress = 1.0;
-            sweepDir = -1;
-          } else if (rotationProgress <= 0.0) {
-            rotationProgress = 0.0;
-            sweepDir = 1;
-          }
-          renderCurrentState();
-        } else if (Math.abs(rotationVelocity) > 0.0001) {
-          rotationProgress += rotationVelocity;
-          rotationProgress = Math.min(Math.max(rotationProgress, 0.0), 1.0);
-          rotationVelocity *= 0.90; // Friction
-          renderCurrentState();
-        }
-      }
-
-      // Smooth Zoom
-      zoomScale += (targetZoom - zoomScale) * 0.14;
-      canvas.style.transform = `scale(${zoomScale.toFixed(3)})`;
-
-      // Auto Day-Night Cycle
-      if (isAutoCycling) {
-        let currentSliderVal = parseFloat(timeSlider.value);
-        currentSliderVal += cycleDir * dt * 140;
-
-        if (currentSliderVal >= 1000) {
-          currentSliderVal = 1000;
-          cycleDir = -1;
-        } else if (currentSliderVal <= 0) {
-          currentSliderVal = 0;
-          cycleDir = 1;
-        }
-        updateTimeSystem(currentSliderVal, true);
-      }
-    }
-
-    updateTimeSystem(0, true);
-    renderLoop(performance.now());
-
   </script>
 </body>
 </html>
