@@ -16,11 +16,11 @@
         name: "Dəhliz / Giriş Zonası",
         icon: "🚪",
         image: "tour_360/apt_52/hall.jpg",
-        initialLon: 16,
+        initialLon: 14.5,
         hotspots: [
-          { target: "living", pitch: -3.2, yaw: 16.0, label: "🛋️ Qonaq Otağı & Mətbəx" },
-          { target: "bathroom", pitch: -6.7, yaw: 92.5, label: "🚿 Hamam Otağı" },
-          { target: "bedroom", pitch: -6.7, yaw: 152.2, label: "🛏️ Əsas Yataq Otağı" }
+          { target: "living", pitch: -3.0, yaw: 14.5, label: "Qonaq Otağı & Mətbəx" },
+          { target: "bathroom", pitch: -6.0, yaw: 92.5, label: "Hamam Otağı" },
+          { target: "bedroom", pitch: -6.0, yaw: 150.0, label: "Əsas Yataq Otağı" }
         ]
       },
       living: {
@@ -28,10 +28,10 @@
         name: "Qonaq Otağı & Açıq Mətbəx",
         icon: "🛋️",
         image: "tour_360/apt_52/living.jpg",
-        initialLon: 10,
+        initialLon: 8.0,
         hotspots: [
-          { target: "balcony", pitch: -3.2, yaw: 9.8, label: "🌿 Eyvana (Balkona) Çıxış" },
-          { target: "hall", pitch: -3.2, yaw: 147.0, label: "🚪 Dəhlizə Qayıt" }
+          { target: "balcony", pitch: -3.0, yaw: 8.0, label: "Eyvana (Balkona) Çıxış" },
+          { target: "hall", pitch: -3.0, yaw: 147.0, label: "Dəhlizə Qayıt" }
         ]
       },
       bedroom: {
@@ -39,10 +39,10 @@
         name: "Əsas Yataq Otağı",
         icon: "🛏️",
         image: "tour_360/apt_52/bedroom.jpg",
-        initialLon: 30,
+        initialLon: 41.5,
         hotspots: [
-          { target: "balcony", pitch: -3.2, yaw: 30.9, label: "🌿 Eyvana Çıxış" },
-          { target: "hall", pitch: -6.7, yaw: -116.7, label: "🚪 Dəhlizə Qayıt" }
+          { target: "balcony", pitch: -3.0, yaw: 41.5, label: "Eyvana Çıxış" },
+          { target: "hall", pitch: -5.0, yaw: -3.2, label: "Dəhlizə Qayıt" }
         ]
       },
       bathroom: {
@@ -50,9 +50,9 @@
         name: "Hamam Otağı & Sanitar Qovşağı",
         icon: "🚿",
         image: "tour_360/apt_52/bathroom.jpg",
-        initialLon: 3,
+        initialLon: -30.0,
         hotspots: [
-          { target: "hall", pitch: -3.2, yaw: 2.8, label: "🚪 Dəhlizə Qayıt" }
+          { target: "hall", pitch: -5.0, yaw: 121.0, label: "Dəhlizə Qayıt" }
         ]
       },
       balcony: {
@@ -60,10 +60,10 @@
         name: "Mənzərəli Eyvan (Balkon - 4.5 m²)",
         icon: "🌿",
         image: "tour_360/apt_52/balcony.jpg",
-        initialLon: -80,
+        initialLon: 80.0,
         hotspots: [
-          { target: "living", pitch: -8.4, yaw: -100.9, label: "🛋️ Qonaq Otağına Keçid" },
-          { target: "bedroom", pitch: -8.4, yaw: -49.9, label: "🛏️ Yataq Otağına Keçid" }
+          { target: "living", pitch: -4.0, yaw: -76.0, label: "Qonaq Otağına Keçid" },
+          { target: "bedroom", pitch: -4.0, yaw: -52.0, label: "Yataq Otağına Keçid" }
         ]
       }
     }
@@ -79,7 +79,7 @@
   let textureLoader = null;
   let activeHotspots = [];
   let isTourInitialized = false;
-  let fov = 75;
+  let fov = 60; // 60° natural architectural human FOV (eliminates circular barrel/well distortion)
   let isWalking = false;
   let roomHistory = [];
 
@@ -308,7 +308,7 @@
 
   function onDocumentMouseWheel(event) {
     event.preventDefault();
-    fov = Math.max(35, Math.min(100, fov + event.deltaY * 0.05));
+    fov = Math.max(42, Math.min(70, fov + event.deltaY * 0.04));
     camera.fov = fov;
     camera.updateProjectionMatrix();
   }
@@ -383,7 +383,7 @@
       return;
     }
 
-    const imgUrl = room.image + (room.image.includes("?") ? "" : "?v=20261015h");
+    const imgUrl = room.image + (room.image.includes("?") ? "" : "?v=20261015_clean360");
     textureLoader.load(
       imgUrl,
       (texture) => {
@@ -533,9 +533,14 @@
     hotspots.forEach(h => {
       const el = document.createElement("div");
       el.className = "tour-hotspot";
+      // Pure minimalist architectural door portal — NO text badges obscuring doors
       el.innerHTML = `
-        <div class="tour-hotspot-pin">🚪</div>
-        <div class="tour-hotspot-label">${h.label}</div>
+        <div class="tour-hotspot-pin" title="${h.label}">
+          <div class="tour-hotspot-ripple"></div>
+          <svg class="tour-hotspot-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
       `;
       el.onclick = (e) => {
         e.stopPropagation();
@@ -614,7 +619,7 @@
 
   window.tourZoom = function (delta) {
     if (!camera) return;
-    fov = Math.max(35, Math.min(100, fov + delta));
+    fov = Math.max(42, Math.min(70, fov + delta));
     camera.fov = fov;
     camera.updateProjectionMatrix();
   };
