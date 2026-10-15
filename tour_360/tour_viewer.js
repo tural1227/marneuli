@@ -132,59 +132,27 @@
         </div>
       </div>
 
-      <!-- Architectural Blueprint Mini-Map with Live View Radar -->
+      <!-- 1-to-1 Architectural Blueprint Mini-Map with Live View Radar -->
       <div class="tour-minimap-box" id="tour-minimap">
         <div class="tour-minimap-header">
           <span>📐 Çertyoj Planı</span>
           <span style="color:#60a5fa; font-weight:800;">№ 52 &bull; 68.6 m²</span>
         </div>
-        <div class="tour-minimap-svg-wrap">
-          <svg class="tour-minimap-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <!-- Exterior boundary walls -->
-            <rect x="2" y="2" width="96" height="96" fill="#0f172a" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" rx="3" />
-
-            <!-- Room Zones strictly matching Apartment 52 Blueprint -->
-            <!-- 1. Hall / Entrance -->
-            <polygon id="map-room-hall" class="minimap-room" points="10,10 45,10 45,35 25,35 25,28 10,28" 
-                     fill="#1e293b" stroke="#475569" stroke-width="1" onclick="window.switchRoom('hall')">
-              <title>Dəhliz (5.8 m²)</title>
-            </polygon>
-            <text x="22" y="22" font-size="5" fill="#94a3b8" text-anchor="middle" pointer-events="none">Dəhliz</text>
-
-            <!-- 2. Bathroom -->
-            <rect id="map-room-bathroom" class="minimap-room" x="48" y="10" width="42" height="25" 
-                  fill="#1e293b" stroke="#475569" stroke-width="1" rx="2" onclick="window.switchRoom('bathroom')">
-              <title>Hamam & Sanitar Qovşaq (4.4 m²)</title>
-            </rect>
-            <text x="69" y="24" font-size="5" fill="#94a3b8" text-anchor="middle" pointer-events="none">Hamam</text>
-
-            <!-- 3. Living Room & Kitchen -->
-            <polygon id="map-room-living" class="minimap-room" points="10,38 52,38 52,80 10,80" 
-                     fill="#1e293b" stroke="#475569" stroke-width="1" onclick="window.switchRoom('living')">
-              <title>Qonaq Otağı & Mətbəx (31.7 m²)</title>
-            </polygon>
-            <text x="31" y="60" font-size="5.5" font-weight="bold" fill="#94a3b8" text-anchor="middle" pointer-events="none">Qonaq & Mətbəx</text>
-
-            <!-- 4. Master Bedroom -->
-            <rect id="map-room-bedroom" class="minimap-room" x="55" y="38" width="35" height="42" 
-                  fill="#1e293b" stroke="#475569" stroke-width="1" rx="2" onclick="window.switchRoom('bedroom')">
-              <title>Əsas Yataq Otağı (18.2 m²)</title>
-            </rect>
-            <text x="72" y="60" font-size="5.5" font-weight="bold" fill="#94a3b8" text-anchor="middle" pointer-events="none">Yataq Otağı</text>
-
-            <!-- 5. Balcony -->
-            <rect id="map-room-balcony" class="minimap-room" x="10" y="83" width="80" height="13" 
-                  fill="#064e3b" stroke="#059669" stroke-width="1" rx="2" onclick="window.switchRoom('balcony')">
-              <title>Eyvan (4.5 m²)</title>
-            </rect>
-            <text x="50" y="91" font-size="5" font-weight="bold" fill="#34d399" text-anchor="middle" pointer-events="none">🌿 Eyvan (4.5 m²)</text>
-
-            <!-- Live User Position Radar with Directional FOV Cone -->
-            <g id="minimap-radar-group" transform="translate(25, 20)">
-              <polygon id="minimap-fov" points="0,0 -12,-22 12,-22" fill="rgba(56, 189, 248, 0.35)" />
-              <circle cx="0" cy="0" r="3.5" fill="#38bdf8" stroke="#ffffff" stroke-width="1.2" />
-            </g>
-          </svg>
+        <div class="tour-minimap-blueprint-wrap">
+          <img class="tour-minimap-img" src="tour_360/apt52_blueprint_minimap.png" alt="Mənzil 52 Çertyoj Planı" />
+          <div class="minimap-overlay">
+            <div id="map-room-hall" class="minimap-zone" style="left: 45%; top: 6%; width: 26%; height: 26%;" onclick="window.switchRoom('hall')" title="Dəhliz (5.8 m²)"></div>
+            <div id="map-room-bathroom" class="minimap-zone" style="left: 72%; top: 6%; width: 25%; height: 26%;" onclick="window.switchRoom('bathroom')" title="Sanitar qovşaq (4.4 m²)"></div>
+            <div id="map-room-living" class="minimap-zone" style="left: 6%; top: 32%; width: 48%; height: 48%;" onclick="window.switchRoom('living')" title="Qonaq otağı & mətbəx (31.7 m²)"></div>
+            <div id="map-room-bedroom" class="minimap-zone" style="left: 55%; top: 32%; width: 42%; height: 48%;" onclick="window.switchRoom('bedroom')" title="Yataq otağı (18.2 m²)"></div>
+            <div id="map-room-balcony" class="minimap-zone" style="left: 6%; top: 81%; width: 91%; height: 16%;" onclick="window.switchRoom('balcony')" title="Eyvan (4.5 m²)"></div>
+            
+            <!-- Live Radar Cone & Position Marker -->
+            <div id="minimap-radar-marker" style="left: 58%; top: 19%;">
+              <div id="minimap-radar-cone"></div>
+              <div id="minimap-radar-dot"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -517,7 +485,7 @@
     if (activeTab) activeTab.classList.add("active");
 
     // Update Blueprint Mini-Map active zone
-    document.querySelectorAll(".minimap-room").forEach(r => r.classList.remove("active"));
+    document.querySelectorAll(".minimap-room, .minimap-zone").forEach(r => r.classList.remove("active"));
     const activeMapRoom = document.getElementById(`map-room-${roomId}`);
     if (activeMapRoom) activeMapRoom.classList.add("active");
 
@@ -771,25 +739,32 @@
 
   // Update Blueprint Mini-Map Live Radar Position & Rotation
   function updateMiniMapRadar() {
-    const radarGroup = document.getElementById("minimap-radar-group");
-    if (!radarGroup) return;
+    const radarMarker = document.getElementById("minimap-radar-marker");
+    const radarCone = document.getElementById("minimap-radar-cone");
+    if (!radarMarker) return;
 
-    // Room center coordinates on the 100x100 SVG blueprint
+    // Room center percentages strictly matching Apartment 52 Blueprint
     const roomPositions = {
-      hall: { x: 26, y: 22 },
-      bathroom: { x: 69, y: 22 },
-      living: { x: 31, y: 58 },
-      bedroom: { x: 72, y: 58 },
-      balcony: { x: 50, y: 89 }
+      hall: { left: 58, top: 19 },
+      bathroom: { left: 84, top: 19 },
+      living: { left: 30, top: 56 },
+      bedroom: { left: 76, top: 56 },
+      balcony: { left: 51, top: 89 }
     };
 
-    const pos = roomPositions[currentRoomId] || { x: 26, y: 22 };
+    const pos = roomPositions[currentRoomId] || { left: 58, top: 19 };
     // Sub-offset within the room based on physical walking
-    const finalX = pos.x + (cameraOffset.x / 95) * 6;
-    const finalY = pos.y + (cameraOffset.z / 95) * 6;
+    const finalLeft = pos.left + (cameraOffset.x / 95) * 6;
+    const finalTop = pos.top + (cameraOffset.z / 95) * 6;
 
-    // Rotate radar cone with camera's lon
-    radarGroup.setAttribute("transform", `translate(${finalX}, ${finalY}) rotate(${lon})`);
+    radarMarker.style.left = `${finalLeft}%`;
+    radarMarker.style.top = `${finalTop}%`;
+
+    // Rotate radar cone with camera horizontal angle (lon)
+    if (radarCone) {
+      const coneAngle = (lon + 180) % 360;
+      radarCone.style.transform = `rotate(${coneAngle}deg)`;
+    }
   }
 
   // Keyboard navigation listeners
