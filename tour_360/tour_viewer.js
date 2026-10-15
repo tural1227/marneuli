@@ -1,80 +1,839 @@
 // ============================================================================
 // 🏢 MARNEULI RESIDENCE — 360° INTERACTIVE APARTMENT VIRTUAL TOUR
 // Silk-Smooth Walking Engine, Exact Blueprint Alignment & Live Radar Mini-Map
+// Multi-Apartment Architecture for Floor 5 (All 17 Apartments: № 52 to 68)
 // ============================================================================
 
 (function () {
-  // Exact Architectural Layout for Apartment 52 (Floor 5, 68.6 m² + 4.5 m² Balcony)
-  const APT_TOUR_CONFIG = {
-    apartment: 52,
-    floor: 5,
-    title: "5-ci Mərtəbə &bull; Mənzil № 52 (68.6 m²)",
-    initialRoom: "hall",
-    rooms: {
-      hall: {
-        id: "hall",
-        name: "Dəhliz & Giriş Zonası",
-        area: "5.8 m²",
-        icon: "🚪",
-        image: "tour_360/apt_52/hall.jpg",
-        initialLon: 15.0,
-        hotspots: [
-          { target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı & Açıq Mətbəx" },
-          { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" },
-          { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }
-        ]
-      },
-      living: {
-        id: "living",
-        name: "Qonaq Otağı & Açıq Mətbəx",
-        area: "31.7 m²",
-        icon: "🛋️",
-        image: "tour_360/apt_52/living.jpg",
-        initialLon: 12.0,
-        hotspots: [
-          { target: "balcony", pitch: -3.0, yaw: 12.0, label: "Mənzərəli Eyvana Çıxış" },
-          { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağına Keçid" },
-          { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }
-        ]
-      },
-      bedroom: {
-        id: "bedroom",
-        name: "Əsas Yataq Otağı",
-        area: "18.2 m²",
-        icon: "🛏️",
-        image: "tour_360/apt_52/bedroom.jpg",
-        initialLon: 38.0,
-        hotspots: [
-          { target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" },
-          { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağına Qayıt" },
-          { target: "hall", pitch: -4.0, yaw: -45.0, label: "Dəhlizə Keçid" }
-        ]
-      },
-      bathroom: {
-        id: "bathroom",
-        name: "Hamam & Sanitar Qovşağı",
-        area: "4.4 m²",
-        icon: "🚿",
-        image: "tour_360/apt_52/bathroom.jpg",
-        initialLon: -30.0,
-        hotspots: [
-          { target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }
-        ]
-      },
-      balcony: {
-        id: "balcony",
-        name: "Mənzərəli Eyvan (Balkon)",
-        area: "4.5 m²",
-        icon: "🌿",
-        image: "tour_360/apt_52/balcony.jpg",
-        initialLon: 80.0,
-        hotspots: [
-          { target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağına Daxil Ol" },
-          { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağına Daxil Ol" }
-        ]
+  // Official Floor 5 Blueprint Database (17 Apartments: № 52 to 68)
+  const FLOOR_5_APARTMENTS = {
+    52: {
+      number: 52,
+      grossArea: "73.1 m²",
+      netArea: "68.6 m²",
+      balconyArea: "4.5 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 58.2,
+      y_pct: 47.05,
+      initialRoom: "hall",
+      rooms: {
+        hall: {
+          id: "hall",
+          name: "Dəhliz & Giriş Zonası",
+          area: "5.8 m²",
+          icon: "🚪",
+          image: "tour_360/apt_52/hall.jpg",
+          initialLon: 15.0,
+          hotspots: [
+            { target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı & Açıq Mətbəx" },
+            { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" },
+            { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }
+          ]
+        },
+        living: {
+          id: "living",
+          name: "Qonaq Otağı & Açıq Mətbəx",
+          area: "31.7 m²",
+          icon: "🛋️",
+          image: "tour_360/apt_52/living.jpg",
+          initialLon: 12.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 12.0, label: "Mənzərəli Eyvana Çıxış" },
+            { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağına Keçid" },
+            { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        bedroom: {
+          id: "bedroom",
+          name: "Əsas Yataq Otağı",
+          area: "18.2 m²",
+          icon: "🛏️",
+          image: "tour_360/apt_52/bedroom.jpg",
+          initialLon: 38.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" },
+            { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağına Qayıt" },
+            { target: "hall", pitch: -4.0, yaw: -45.0, label: "Dəhlizə Keçid" }
+          ]
+        },
+        bathroom: {
+          id: "bathroom",
+          name: "Hamam & Sanitar Qovşağı",
+          area: "4.4 m²",
+          icon: "🚿",
+          image: "tour_360/apt_52/bathroom.jpg",
+          initialLon: -30.0,
+          hotspots: [
+            { target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        balcony: {
+          id: "balcony",
+          name: "Mənzərəli Eyvan",
+          area: "4.5 m²",
+          icon: "🌿",
+          image: "tour_360/apt_52/balcony.jpg",
+          initialLon: 80.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağına Daxil Ol" },
+            { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağına Daxil Ol" }
+          ]
+        }
+      }
+    },
+    53: {
+      number: 53,
+      grossArea: "69.4 m²",
+      netArea: "64.8 m²",
+      balconyArea: "4.6 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 65.47,
+      y_pct: 53.38,
+      initialRoom: "hall",
+      rooms: {
+        hall: {
+          id: "hall",
+          name: "Dəhliz & Giriş Zonası",
+          area: "5.4 m²",
+          icon: "🚪",
+          image: "tour_360/apt_52/hall.jpg",
+          initialLon: 15.0,
+          hotspots: [
+            { target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı & Açıq Mətbəx" },
+            { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" },
+            { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }
+          ]
+        },
+        living: {
+          id: "living",
+          name: "Qonaq Otağı & Açıq Mətbəx",
+          area: "29.8 m²",
+          icon: "🛋️",
+          image: "tour_360/apt_52/living.jpg",
+          initialLon: 12.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 12.0, label: "Mənzərəli Eyvana Çıxış" },
+            { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağına Keçid" },
+            { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        bedroom: {
+          id: "bedroom",
+          name: "Əsas Yataq Otağı",
+          area: "17.4 m²",
+          icon: "🛏️",
+          image: "tour_360/apt_52/bedroom.jpg",
+          initialLon: 38.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" },
+            { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağına Qayıt" },
+            { target: "hall", pitch: -4.0, yaw: -45.0, label: "Dəhlizə Keçid" }
+          ]
+        },
+        bathroom: {
+          id: "bathroom",
+          name: "Hamam & Sanitar Qovşağı",
+          area: "4.3 m²",
+          icon: "🚿",
+          image: "tour_360/apt_52/bathroom.jpg",
+          initialLon: -30.0,
+          hotspots: [
+            { target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        balcony: {
+          id: "balcony",
+          name: "Mənzərəli Eyvan",
+          area: "4.6 m²",
+          icon: "🌿",
+          image: "tour_360/apt_52/balcony.jpg",
+          initialLon: 80.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağına Daxil Ol" },
+            { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağına Daxil Ol" }
+          ]
+        }
+      }
+    },
+    54: {
+      number: 54,
+      grossArea: "81.8 m²",
+      netArea: "76.8 m²",
+      balconyArea: "5.0 m²",
+      roomsDesc: "2-3 Otaqlı (Ailəvi mənzil)",
+      roomsShort: "3 Otaq",
+      type: "tip_c",
+      x_pct: 80.02,
+      y_pct: 64.07,
+      initialRoom: "hall",
+      rooms: {
+        hall: {
+          id: "hall",
+          name: "Dəhliz & Giriş Zonası",
+          area: "6.8 m²",
+          icon: "🚪",
+          image: "tour_360/apt_52/hall.jpg",
+          initialLon: 15.0,
+          hotspots: [
+            { target: "living", pitch: -2.0, yaw: 15.0, label: "Geniş Qonaq Otağı" },
+            { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" },
+            { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }
+          ]
+        },
+        living: {
+          id: "living",
+          name: "Qonaq Otağı & Açıq Mətbəx",
+          area: "33.5 m²",
+          icon: "🛋️",
+          image: "tour_360/apt_52/living.jpg",
+          initialLon: 12.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 12.0, label: "Mənzərəli Eyvan" },
+            { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Master Yataq Otağı" },
+            { target: "bedroom2", pitch: -3.0, yaw: 110.0, label: "İkinci Yataq Otağı" },
+            { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        bedroom: {
+          id: "bedroom",
+          name: "Master Yataq Otağı",
+          area: "18.6 m²",
+          icon: "🛏️",
+          image: "tour_360/apt_52/bedroom.jpg",
+          initialLon: 38.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" },
+            { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağına Qayıt" }
+          ]
+        },
+        bedroom2: {
+          id: "bedroom2",
+          name: "Uşaq / İkinci Yataq Otağı",
+          area: "12.9 m²",
+          icon: "🧸",
+          image: "tour_360/apt_52/bedroom_2.jpg",
+          initialLon: 25.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -15.0, label: "Qonaq Otağına Qayıt" },
+            { target: "hall", pitch: -3.0, yaw: -80.0, label: "Dəhlizə Keçid" }
+          ]
+        },
+        bathroom: {
+          id: "bathroom",
+          name: "Hamam & Sanitar Qovşağı",
+          area: "5.0 m²",
+          icon: "🚿",
+          image: "tour_360/apt_52/bathroom.jpg",
+          initialLon: -30.0,
+          hotspots: [
+            { target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        balcony: {
+          id: "balcony",
+          name: "Mənzərəli Eyvan",
+          area: "5.0 m²",
+          icon: "🌿",
+          image: "tour_360/apt_52/balcony.jpg",
+          initialLon: 80.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağına Daxil Ol" },
+            { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağına Daxil Ol" }
+          ]
+        }
+      }
+    },
+    55: {
+      number: 55,
+      grossArea: "62.5 m²",
+      netArea: "57.9 m²",
+      balconyArea: "4.6 m²",
+      roomsDesc: "1-2 Otaqlı (Studio / 1 Yataq)",
+      roomsShort: "Studio / 2 Otaq",
+      type: "tip_b",
+      x_pct: 86.18,
+      y_pct: 47.05,
+      initialRoom: "hall",
+      rooms: {
+        hall: {
+          id: "hall",
+          name: "Dəhliz & Giriş Zonası",
+          area: "4.5 m²",
+          icon: "🚪",
+          image: "tour_360/apt_52/hall.jpg",
+          initialLon: 15.0,
+          hotspots: [
+            { target: "living", pitch: -2.0, yaw: 15.0, label: "Studio Qonaq Otağı" },
+            { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" },
+            { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Yataq Otağı" }
+          ]
+        },
+        living: {
+          id: "living",
+          name: "Qonaq Otağı & Studio Mətbəx",
+          area: "26.5 m²",
+          icon: "🛋️",
+          image: "tour_360/apt_52/living.jpg",
+          initialLon: 12.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 12.0, label: "Eyvana Çıxış" },
+            { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Zonasına Keçid" },
+            { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        bedroom: {
+          id: "bedroom",
+          name: "Yataq Otağı",
+          area: "14.8 m²",
+          icon: "🛏️",
+          image: "tour_360/apt_52/bedroom.jpg",
+          initialLon: 38.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" },
+            { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağına Qayıt" }
+          ]
+        },
+        bathroom: {
+          id: "bathroom",
+          name: "Hamam & Sanitar Qovşağı",
+          area: "4.1 m²",
+          icon: "🚿",
+          image: "tour_360/apt_52/bathroom.jpg",
+          initialLon: -30.0,
+          hotspots: [
+            { target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        balcony: {
+          id: "balcony",
+          name: "Mənzərəli Eyvan",
+          area: "4.6 m²",
+          icon: "🌿",
+          image: "tour_360/apt_52/balcony.jpg",
+          initialLon: 80.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağına Daxil Ol" }
+          ]
+        }
+      }
+    },
+    56: {
+      number: 56,
+      grossArea: "60.5 m²",
+      netArea: "60.5 m²",
+      balconyArea: "Vitraj",
+      roomsDesc: "1-2 Otaqlı (Studio / 1 Yataq)",
+      roomsShort: "Studio / 2 Otaq",
+      type: "tip_b",
+      x_pct: 79.46,
+      y_pct: 42.3,
+      initialRoom: "hall",
+      rooms: {
+        hall: {
+          id: "hall",
+          name: "Dəhliz & Giriş Zonası",
+          area: "5.0 m²",
+          icon: "🚪",
+          image: "tour_360/apt_52/hall.jpg",
+          initialLon: 15.0,
+          hotspots: [
+            { target: "living", pitch: -2.0, yaw: 15.0, label: "Studio Qonaq Otağı" },
+            { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" },
+            { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Yataq Otağı" }
+          ]
+        },
+        living: {
+          id: "living",
+          name: "Qonaq Otağı & Vitraj Mətbəx",
+          area: "28.5 m²",
+          icon: "🛋️",
+          image: "tour_360/apt_52/living.jpg",
+          initialLon: 12.0,
+          hotspots: [
+            { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Zonasına Keçid" },
+            { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        bedroom: {
+          id: "bedroom",
+          name: "Yataq Otağı",
+          area: "15.8 m²",
+          icon: "🛏️",
+          image: "tour_360/apt_52/bedroom.jpg",
+          initialLon: 38.0,
+          hotspots: [
+            { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağına Qayıt" },
+            { target: "hall", pitch: -4.0, yaw: -45.0, label: "Dəhlizə Keçid" }
+          ]
+        },
+        bathroom: {
+          id: "bathroom",
+          name: "Hamam & Sanitar Qovşağı",
+          area: "4.3 m²",
+          icon: "🚿",
+          image: "tour_360/apt_52/bathroom.jpg",
+          initialLon: -30.0,
+          hotspots: [
+            { target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }
+          ]
+        }
+      }
+    },
+    57: {
+      number: 57,
+      grossArea: "69.4 m²",
+      netArea: "64.4 m²",
+      balconyArea: "5.0 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 71.07,
+      y_pct: 36.76,
+      initialRoom: "hall",
+      rooms: {
+        hall: { id: "hall", name: "Dəhliz & Giriş Zonası", area: "5.2 m²", icon: "🚪", image: "tour_360/apt_52/hall.jpg", initialLon: 15.0, hotspots: [{ target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı" }, { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" }, { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }] },
+        living: { id: "living", name: "Qonaq Otağı & Açıq Mətbəx", area: "29.4 m²", icon: "🛋️", image: "tour_360/apt_52/living.jpg", initialLon: 12.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 12.0, label: "Eyvana Çıxış" }, { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağı" }, { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }] },
+        bedroom: { id: "bedroom", name: "Əsas Yataq Otağı", area: "17.4 m²", icon: "🛏️", image: "tour_360/apt_52/bedroom.jpg", initialLon: 38.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" }, { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağı" }] },
+        bathroom: { id: "bathroom", name: "Hamam & Sanitar Qovşağı", area: "4.4 m²", icon: "🚿", image: "tour_360/apt_52/bathroom.jpg", initialLon: -30.0, hotspots: [{ target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }] },
+        balcony: { id: "balcony", name: "Mənzərəli Eyvan", area: "5.0 m²", icon: "🌿", image: "tour_360/apt_52/balcony.jpg", initialLon: 80.0, hotspots: [{ target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }, { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağı" }] }
+      }
+    },
+    58: {
+      number: 58,
+      grossArea: "69.4 m²",
+      netArea: "64.4 m²",
+      balconyArea: "5.0 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 65.47,
+      y_pct: 30.43,
+      initialRoom: "hall",
+      rooms: {
+        hall: { id: "hall", name: "Dəhliz & Giriş Zonası", area: "5.2 m²", icon: "🚪", image: "tour_360/apt_52/hall.jpg", initialLon: 15.0, hotspots: [{ target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı" }, { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" }, { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }] },
+        living: { id: "living", name: "Qonaq Otağı & Açıq Mətbəx", area: "29.4 m²", icon: "🛋️", image: "tour_360/apt_52/living.jpg", initialLon: 12.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 12.0, label: "Eyvana Çıxış" }, { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağı" }, { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }] },
+        bedroom: { id: "bedroom", name: "Əsas Yataq Otağı", area: "17.4 m²", icon: "🛏️", image: "tour_360/apt_52/bedroom.jpg", initialLon: 38.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" }, { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağı" }] },
+        bathroom: { id: "bathroom", name: "Hamam & Sanitar Qovşağı", area: "4.4 m²", icon: "🚿", image: "tour_360/apt_52/bathroom.jpg", initialLon: -30.0, hotspots: [{ target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }] },
+        balcony: { id: "balcony", name: "Mənzərəli Eyvan", area: "5.0 m²", icon: "🌿", image: "tour_360/apt_52/balcony.jpg", initialLon: 80.0, hotspots: [{ target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }, { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağı" }] }
+      }
+    },
+    59: {
+      number: 59,
+      grossArea: "71.1 m²",
+      netArea: "68.7 m²",
+      balconyArea: "2.4 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 55.96,
+      y_pct: 22.91,
+      initialRoom: "hall",
+      rooms: {
+        hall: { id: "hall", name: "Dəhliz & Giriş Zonası", area: "5.8 m²", icon: "🚪", image: "tour_360/apt_52/hall.jpg", initialLon: 15.0, hotspots: [{ target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı" }, { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" }, { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }] },
+        living: { id: "living", name: "Qonaq Otağı & Açıq Mətbəx", area: "31.8 m²", icon: "🛋️", image: "tour_360/apt_52/living.jpg", initialLon: 12.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 12.0, label: "Eyvana Çıxış" }, { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağı" }, { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }] },
+        bedroom: { id: "bedroom", name: "Əsas Yataq Otağı", area: "18.3 m²", icon: "🛏️", image: "tour_360/apt_52/bedroom.jpg", initialLon: 38.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" }, { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağı" }] },
+        bathroom: { id: "bathroom", name: "Hamam & Sanitar Qovşağı", area: "4.4 m²", icon: "🚿", image: "tour_360/apt_52/bathroom.jpg", initialLon: -30.0, hotspots: [{ target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }] },
+        balcony: { id: "balcony", name: "Mənzərəli Eyvan", area: "2.4 m²", icon: "🌿", image: "tour_360/apt_52/balcony.jpg", initialLon: 80.0, hotspots: [{ target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }] }
+      }
+    },
+    60: {
+      number: 60,
+      grossArea: "71.0 m²",
+      netArea: "68.7 m²",
+      balconyArea: "2.3 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 47.29,
+      y_pct: 22.51,
+      initialRoom: "hall",
+      rooms: {
+        hall: { id: "hall", name: "Dəhliz & Giriş Zonası", area: "5.8 m²", icon: "🚪", image: "tour_360/apt_52/hall.jpg", initialLon: 15.0, hotspots: [{ target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı" }, { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" }, { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }] },
+        living: { id: "living", name: "Qonaq Otağı & Açıq Mətbəx", area: "31.8 m²", icon: "🛋️", image: "tour_360/apt_52/living.jpg", initialLon: 12.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 12.0, label: "Eyvana Çıxış" }, { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağı" }, { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }] },
+        bedroom: { id: "bedroom", name: "Əsas Yataq Otağı", area: "18.3 m²", icon: "🛏️", image: "tour_360/apt_52/bedroom.jpg", initialLon: 38.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" }, { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağı" }] },
+        bathroom: { id: "bathroom", name: "Hamam & Sanitar Qovşağı", area: "4.4 m²", icon: "🚿", image: "tour_360/apt_52/bathroom.jpg", initialLon: -30.0, hotspots: [{ target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }] },
+        balcony: { id: "balcony", name: "Mənzərəli Eyvan", area: "2.3 m²", icon: "🌿", image: "tour_360/apt_52/balcony.jpg", initialLon: 80.0, hotspots: [{ target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }] }
+      }
+    },
+    61: {
+      number: 61,
+      grossArea: "69.4 m²",
+      netArea: "64.4 m²",
+      balconyArea: "5.0 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 39.73,
+      y_pct: 30.82,
+      initialRoom: "hall",
+      rooms: {
+        hall: { id: "hall", name: "Dəhliz & Giriş Zonası", area: "5.2 m²", icon: "🚪", image: "tour_360/apt_52/hall.jpg", initialLon: 15.0, hotspots: [{ target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı" }, { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" }, { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }] },
+        living: { id: "living", name: "Qonaq Otağı & Açıq Mətbəx", area: "29.4 m²", icon: "🛋️", image: "tour_360/apt_52/living.jpg", initialLon: 12.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 12.0, label: "Eyvana Çıxış" }, { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağı" }, { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }] },
+        bedroom: { id: "bedroom", name: "Əsas Yataq Otağı", area: "17.4 m²", icon: "🛏️", image: "tour_360/apt_52/bedroom.jpg", initialLon: 38.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" }, { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağı" }] },
+        bathroom: { id: "bathroom", name: "Hamam & Sanitar Qovşağı", area: "4.4 m²", icon: "🚿", image: "tour_360/apt_52/bathroom.jpg", initialLon: -30.0, hotspots: [{ target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }] },
+        balcony: { id: "balcony", name: "Mənzərəli Eyvan", area: "5.0 m²", icon: "🌿", image: "tour_360/apt_52/balcony.jpg", initialLon: 80.0, hotspots: [{ target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }, { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağı" }] }
+      }
+    },
+    62: {
+      number: 62,
+      grossArea: "69.4 m²",
+      netArea: "64.4 m²",
+      balconyArea: "5.0 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 33.3,
+      y_pct: 35.97,
+      initialRoom: "hall",
+      rooms: {
+        hall: { id: "hall", name: "Dəhliz & Giriş Zonası", area: "5.2 m²", icon: "🚪", image: "tour_360/apt_52/hall.jpg", initialLon: 15.0, hotspots: [{ target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı" }, { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" }, { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }] },
+        living: { id: "living", name: "Qonaq Otağı & Açıq Mətbəx", area: "29.4 m²", icon: "🛋️", image: "tour_360/apt_52/living.jpg", initialLon: 12.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 12.0, label: "Eyvana Çıxış" }, { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağı" }, { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }] },
+        bedroom: { id: "bedroom", name: "Əsas Yataq Otağı", area: "17.4 m²", icon: "🛏️", image: "tour_360/apt_52/bedroom.jpg", initialLon: 38.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" }, { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağı" }] },
+        bathroom: { id: "bathroom", name: "Hamam & Sanitar Qovşağı", area: "4.4 m²", icon: "🚿", image: "tour_360/apt_52/bathroom.jpg", initialLon: -30.0, hotspots: [{ target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }] },
+        balcony: { id: "balcony", name: "Mənzərəli Eyvan", area: "5.0 m²", icon: "🌿", image: "tour_360/apt_52/balcony.jpg", initialLon: 80.0, hotspots: [{ target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }, { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağı" }] }
+      }
+    },
+    63: {
+      number: 63,
+      grossArea: "100.8 m²",
+      netArea: "96.2 m²",
+      balconyArea: "4.6 m²",
+      roomsDesc: "3 Otaqlı (Ailəvi mənzil)",
+      roomsShort: "Lüks 3 Otaq",
+      type: "tip_c",
+      x_pct: 25.18,
+      y_pct: 45.47,
+      initialRoom: "hall",
+      rooms: {
+        hall: {
+          id: "hall",
+          name: "Lüks Giriş Foyesi",
+          area: "8.2 m²",
+          icon: "🚪",
+          image: "tour_360/apt_52/hall.jpg",
+          initialLon: 15.0,
+          hotspots: [
+            { target: "living", pitch: -2.0, yaw: 15.0, label: "Böyük Qonaq Otağı" },
+            { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Lüks Hamam Otağı" },
+            { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Master Yataq Otağı" }
+          ]
+        },
+        living: {
+          id: "living",
+          name: "Böyük Qonaq Otağı & Mətbəx",
+          area: "42.4 m²",
+          icon: "🛋️",
+          image: "tour_360/apt_52/living.jpg",
+          initialLon: 12.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 12.0, label: "Mənzərəli Eyvan" },
+            { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Master Yataq Otağı" },
+            { target: "bedroom2", pitch: -3.0, yaw: 110.0, label: "İkinci Yataq Otağı" },
+            { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        bedroom: {
+          id: "bedroom",
+          name: "Master Yataq Otağı",
+          area: "22.5 m²",
+          icon: "🛏️",
+          image: "tour_360/apt_52/bedroom.jpg",
+          initialLon: 38.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" },
+            { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağına Qayıt" }
+          ]
+        },
+        bedroom2: {
+          id: "bedroom2",
+          name: "Uşaq / Qonaq Otağı",
+          area: "18.5 m²",
+          icon: "🧸",
+          image: "tour_360/apt_52/bedroom_2.jpg",
+          initialLon: 25.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -15.0, label: "Qonaq Otağına Qayıt" },
+            { target: "hall", pitch: -3.0, yaw: -80.0, label: "Dəhlizə Keçid" }
+          ]
+        },
+        bathroom: {
+          id: "bathroom",
+          name: "Lüks Hamam & Sanitar Qovşağı",
+          area: "4.6 m²",
+          icon: "🚿",
+          image: "tour_360/apt_52/bathroom.jpg",
+          initialLon: -30.0,
+          hotspots: [
+            { target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        balcony: {
+          id: "balcony",
+          name: "Mənzərəli Eyvan",
+          area: "4.6 m²",
+          icon: "🌿",
+          image: "tour_360/apt_52/balcony.jpg",
+          initialLon: 80.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" },
+            { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağı" }
+          ]
+        }
+      }
+    },
+    64: {
+      number: 64,
+      grossArea: "84.2 m²",
+      netArea: "79.2 m²",
+      balconyArea: "5.0 m²",
+      roomsDesc: "2-3 Otaqlı (Ailəvi mənzil)",
+      roomsShort: "3 Otaq",
+      type: "tip_c",
+      x_pct: 12.59,
+      y_pct: 56.15,
+      initialRoom: "hall",
+      rooms: {
+        hall: {
+          id: "hall",
+          name: "Dəhliz & Foye",
+          area: "7.0 m²",
+          icon: "🚪",
+          image: "tour_360/apt_52/hall.jpg",
+          initialLon: 15.0,
+          hotspots: [
+            { target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı & Mətbəx" },
+            { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" },
+            { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }
+          ]
+        },
+        living: {
+          id: "living",
+          name: "Qonaq Otağı & Açıq Mətbəx",
+          area: "34.8 m²",
+          icon: "🛋️",
+          image: "tour_360/apt_52/living.jpg",
+          initialLon: 12.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 12.0, label: "Mənzərəli Eyvan" },
+            { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Əsas Yataq Otağı" },
+            { target: "bedroom2", pitch: -3.0, yaw: 110.0, label: "İkinci Yataq Otağı" },
+            { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        bedroom: {
+          id: "bedroom",
+          name: "Əsas Yataq Otağı",
+          area: "19.4 m²",
+          icon: "🛏️",
+          image: "tour_360/apt_52/bedroom.jpg",
+          initialLon: 38.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" },
+            { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağına Qayıt" }
+          ]
+        },
+        bedroom2: {
+          id: "bedroom2",
+          name: "İkinci Yataq Otağı",
+          area: "13.0 m²",
+          icon: "🧸",
+          image: "tour_360/apt_52/bedroom_2.jpg",
+          initialLon: 25.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -15.0, label: "Qonaq Otağı" }
+          ]
+        },
+        bathroom: {
+          id: "bathroom",
+          name: "Hamam & Sanitar Qovşağı",
+          area: "5.0 m²",
+          icon: "🚿",
+          image: "tour_360/apt_52/bathroom.jpg",
+          initialLon: -30.0,
+          hotspots: [
+            { target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        balcony: {
+          id: "balcony",
+          name: "Mənzərəli Eyvan",
+          area: "5.0 m²",
+          icon: "🌿",
+          image: "tour_360/apt_52/balcony.jpg",
+          initialLon: 80.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }
+          ]
+        }
+      }
+    },
+    65: {
+      number: 65,
+      grossArea: "92.7 m²",
+      netArea: "87.7 m²",
+      balconyArea: "5.0 m²",
+      roomsDesc: "3 Otaqlı (Ailəvi mənzil)",
+      roomsShort: "Lüks 3 Otaq",
+      type: "tip_c",
+      x_pct: 19.59,
+      y_pct: 73.96,
+      initialRoom: "hall",
+      rooms: {
+        hall: {
+          id: "hall",
+          name: "Dəhliz & Giriş Zonası",
+          area: "7.5 m²",
+          icon: "🚪",
+          image: "tour_360/apt_52/hall.jpg",
+          initialLon: 15.0,
+          hotspots: [
+            { target: "living", pitch: -2.0, yaw: 15.0, label: "Geniş Qonaq Otağı" },
+            { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" },
+            { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }
+          ]
+        },
+        living: {
+          id: "living",
+          name: "Qonaq Otağı & Açıq Mətbəx",
+          area: "38.2 m²",
+          icon: "🛋️",
+          image: "tour_360/apt_52/living.jpg",
+          initialLon: 12.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 12.0, label: "Mənzərəli Eyvan" },
+            { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Master Yataq Otağı" },
+            { target: "bedroom2", pitch: -3.0, yaw: 110.0, label: "İkinci Yataq Otağı" },
+            { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        bedroom: {
+          id: "bedroom",
+          name: "Master Yataq Otağı",
+          area: "21.0 m²",
+          icon: "🛏️",
+          image: "tour_360/apt_52/bedroom.jpg",
+          initialLon: 38.0,
+          hotspots: [
+            { target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" },
+            { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağı" }
+          ]
+        },
+        bedroom2: {
+          id: "bedroom2",
+          name: "İkinci Yataq Otağı",
+          area: "16.0 m²",
+          icon: "🧸",
+          image: "tour_360/apt_52/bedroom_2.jpg",
+          initialLon: 25.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -15.0, label: "Qonaq Otağı" }
+          ]
+        },
+        bathroom: {
+          id: "bathroom",
+          name: "Hamam & Sanitar Qovşağı",
+          area: "5.0 m²",
+          icon: "🚿",
+          image: "tour_360/apt_52/bathroom.jpg",
+          initialLon: -30.0,
+          hotspots: [
+            { target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }
+          ]
+        },
+        balcony: {
+          id: "balcony",
+          name: "Mənzərəli Eyvan",
+          area: "5.0 m²",
+          icon: "🌿",
+          image: "tour_360/apt_52/balcony.jpg",
+          initialLon: 80.0,
+          hotspots: [
+            { target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }
+          ]
+        }
+      }
+    },
+    66: {
+      number: 66,
+      grossArea: "73.3 m²",
+      netArea: "68.7 m²",
+      balconyArea: "4.6 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 26.86,
+      y_pct: 65.65,
+      initialRoom: "hall",
+      rooms: {
+        hall: { id: "hall", name: "Dəhliz & Giriş Zonası", area: "5.8 m²", icon: "🚪", image: "tour_360/apt_52/hall.jpg", initialLon: 15.0, hotspots: [{ target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı" }, { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" }, { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }] },
+        living: { id: "living", name: "Qonaq Otağı & Açıq Mətbəx", area: "31.8 m²", icon: "🛋️", image: "tour_360/apt_52/living.jpg", initialLon: 12.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 12.0, label: "Eyvana Çıxış" }, { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağı" }, { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }] },
+        bedroom: { id: "bedroom", name: "Əsas Yataq Otağı", area: "18.3 m²", icon: "🛏️", image: "tour_360/apt_52/bedroom.jpg", initialLon: 38.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" }, { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağı" }] },
+        bathroom: { id: "bathroom", name: "Hamam & Sanitar Qovşağı", area: "4.4 m²", icon: "🚿", image: "tour_360/apt_52/bathroom.jpg", initialLon: -30.0, hotspots: [{ target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }] },
+        balcony: { id: "balcony", name: "Mənzərəli Eyvan", area: "4.6 m²", icon: "🌿", image: "tour_360/apt_52/balcony.jpg", initialLon: 80.0, hotspots: [{ target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }, { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağı" }] }
+      }
+    },
+    67: {
+      number: 67,
+      grossArea: "69.9 m²",
+      netArea: "64.9 m²",
+      balconyArea: "5.0 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 38.61,
+      y_pct: 56.15,
+      initialRoom: "hall",
+      rooms: {
+        hall: { id: "hall", name: "Dəhliz & Giriş Zonası", area: "5.3 m²", icon: "🚪", image: "tour_360/apt_52/hall.jpg", initialLon: 15.0, hotspots: [{ target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı" }, { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" }, { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }] },
+        living: { id: "living", name: "Qonaq Otağı & Açıq Mətbəx", area: "29.8 m²", icon: "🛋️", image: "tour_360/apt_52/living.jpg", initialLon: 12.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 12.0, label: "Eyvana Çıxış" }, { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağı" }, { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }] },
+        bedroom: { id: "bedroom", name: "Əsas Yataq Otağı", area: "17.6 m²", icon: "🛏️", image: "tour_360/apt_52/bedroom.jpg", initialLon: 38.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" }, { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağı" }] },
+        bathroom: { id: "bathroom", name: "Hamam & Sanitar Qovşağı", area: "4.4 m²", icon: "🚿", image: "tour_360/apt_52/bathroom.jpg", initialLon: -30.0, hotspots: [{ target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }] },
+        balcony: { id: "balcony", name: "Mənzərəli Eyvan", area: "5.0 m²", icon: "🌿", image: "tour_360/apt_52/balcony.jpg", initialLon: 80.0, hotspots: [{ target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }, { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağı" }] }
+      }
+    },
+    68: {
+      number: 68,
+      grossArea: "73.8 m²",
+      netArea: "69.4 m²",
+      balconyArea: "4.4 m²",
+      roomsDesc: "2 Otaqlı (Geniş qonaq + Yataq)",
+      roomsShort: "2 Otaq",
+      type: "tip_a",
+      x_pct: 46.45,
+      y_pct: 49.03,
+      initialRoom: "hall",
+      rooms: {
+        hall: { id: "hall", name: "Dəhliz & Giriş Zonası", area: "5.9 m²", icon: "🚪", image: "tour_360/apt_52/hall.jpg", initialLon: 15.0, hotspots: [{ target: "living", pitch: -2.0, yaw: 15.0, label: "Qonaq Otağı" }, { target: "bathroom", pitch: -4.0, yaw: 88.0, label: "Hamam Otağı" }, { target: "bedroom", pitch: -4.0, yaw: 145.0, label: "Əsas Yataq Otağı" }] },
+        living: { id: "living", name: "Qonaq Otağı & Açıq Mətbəx", area: "32.2 m²", icon: "🛋️", image: "tour_360/apt_52/living.jpg", initialLon: 12.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 12.0, label: "Eyvana Çıxış" }, { target: "bedroom", pitch: -3.0, yaw: 82.0, label: "Yataq Otağı" }, { target: "hall", pitch: -2.0, yaw: 155.0, label: "Dəhlizə Qayıt" }] },
+        bedroom: { id: "bedroom", name: "Əsas Yataq Otağı", area: "18.5 m²", icon: "🛏️", image: "tour_360/apt_52/bedroom.jpg", initialLon: 38.0, hotspots: [{ target: "balcony", pitch: -3.0, yaw: 38.0, label: "Eyvana Çıxış" }, { target: "living", pitch: -4.0, yaw: -5.0, label: "Qonaq Otağı" }] },
+        bathroom: { id: "bathroom", name: "Hamam & Sanitar Qovşağı", area: "4.4 m²", icon: "🚿", image: "tour_360/apt_52/bathroom.jpg", initialLon: -30.0, hotspots: [{ target: "hall", pitch: -3.0, yaw: 118.0, label: "Dəhlizə Qayıt" }] },
+        balcony: { id: "balcony", name: "Mənzərəli Eyvan", area: "4.4 m²", icon: "🌿", image: "tour_360/apt_52/balcony.jpg", initialLon: 80.0, hotspots: [{ target: "living", pitch: -3.0, yaw: -76.0, label: "Qonaq Otağı" }, { target: "bedroom", pitch: -3.0, yaw: -48.0, label: "Yataq Otağı" }] }
       }
     }
   };
+
+  let currentAptNum = 52;
+  let miniMapMode = "room"; // "room" or "floor"
+
+  // Active Apartment Configuration Getter
+  function getCurrentAptConfig() {
+    return FLOOR_5_APARTMENTS[currentAptNum] || FLOOR_5_APARTMENTS[52];
+  }
+
+  // Backward compatible Proxy object
+  const APT_TOUR_CONFIG = new Proxy({}, {
+    get(target, prop) {
+      const cfg = getCurrentAptConfig();
+      if (prop === "title") {
+        return `5-ci Mərtəbə &bull; Mənzil № ${cfg.number} (${cfg.netArea})`;
+      }
+      return cfg[prop];
+    }
+  });
 
   let scene, camera, renderer, sphereMesh;
   let currentRoomId = "hall";
@@ -90,7 +849,7 @@
   let isWalking = false;
   let roomHistory = [];
 
-  // GPU Memory Preload Cache
+  // GPU Memory Preload Cache (keyed by image URL)
   const textureCache = {};
 
   // Walking Physics State
@@ -117,8 +876,16 @@
         <div class="tour-badge-box">
           <div class="tour-title">
             <span class="dot"></span>
-            MARNEULI RESIDENCE &bull; 360° VİRTUAL TUR
+            <span>MARNEULI RESIDENCE &bull; 360° VİRTUAL TUR</span>
           </div>
+          
+          <div class="tour-apt-select-row">
+            <span class="tour-apt-badge">5-Cİ MƏRTƏBƏ:</span>
+            <select id="tour-apt-select" class="tour-apt-select" onchange="window.switchApartment(this.value)" title="Mənzil Seç">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
           <div class="tour-room-name" id="tour-room-title">Yüklənir...</div>
         </div>
 
@@ -132,26 +899,39 @@
         </div>
       </div>
 
-      <!-- 1-to-1 Architectural Blueprint Mini-Map with Live View Radar -->
+      <!-- 1-to-1 Architectural Blueprint Mini-Map with Live View Radar & Floor Plan Toggle -->
       <div class="tour-minimap-box" id="tour-minimap">
         <div class="tour-minimap-header">
-          <span>📐 Çertyoj Planı</span>
-          <span style="color:#60a5fa; font-weight:800;">№ 52 &bull; 68.6 m²</span>
+          <div class="tour-minimap-tabs">
+            <button id="mm-tab-room" class="mm-tab active" onclick="window.setMiniMapMode('room')">🏠 Otaq</button>
+            <button id="mm-tab-floor" class="mm-tab" onclick="window.setMiniMapMode('floor')">📐 5-ci Mərtəbə</button>
+          </div>
+          <span id="tour-minimap-apt-info" style="color:#60a5fa; font-weight:800; font-size:11px;">№ 52 &bull; 68.6 m²</span>
         </div>
-        <div class="tour-minimap-blueprint-wrap">
-          <img class="tour-minimap-img" src="tour_360/apt52_blueprint_minimap.png" alt="Mənzil 52 Çertyoj Planı" />
+
+        <!-- Mode 1: Single Apartment Room Blueprint with Live Radar Cone -->
+        <div id="tour-minimap-room-wrap" class="tour-minimap-blueprint-wrap">
+          <img class="tour-minimap-img" src="tour_360/apt52_blueprint_minimap.png" alt="Mənzil Çertyoj Planı" />
           <div class="minimap-overlay">
-            <div id="map-room-hall" class="minimap-zone" style="left: 45%; top: 6%; width: 26%; height: 26%;" onclick="window.switchRoom('hall')" title="Dəhliz (5.8 m²)"></div>
-            <div id="map-room-bathroom" class="minimap-zone" style="left: 72%; top: 6%; width: 25%; height: 26%;" onclick="window.switchRoom('bathroom')" title="Sanitar qovşaq (4.4 m²)"></div>
-            <div id="map-room-living" class="minimap-zone" style="left: 6%; top: 32%; width: 48%; height: 48%;" onclick="window.switchRoom('living')" title="Qonaq otağı & mətbəx (31.7 m²)"></div>
-            <div id="map-room-bedroom" class="minimap-zone" style="left: 55%; top: 32%; width: 42%; height: 48%;" onclick="window.switchRoom('bedroom')" title="Yataq otağı (18.2 m²)"></div>
-            <div id="map-room-balcony" class="minimap-zone" style="left: 6%; top: 81%; width: 91%; height: 16%;" onclick="window.switchRoom('balcony')" title="Eyvan (4.5 m²)"></div>
+            <div id="map-room-hall" class="minimap-zone" style="left: 45%; top: 6%; width: 26%; height: 26%;" onclick="window.switchRoom('hall')" title="Dəhliz"></div>
+            <div id="map-room-bathroom" class="minimap-zone" style="left: 72%; top: 6%; width: 25%; height: 26%;" onclick="window.switchRoom('bathroom')" title="Sanitar qovşaq"></div>
+            <div id="map-room-living" class="minimap-zone" style="left: 6%; top: 32%; width: 48%; height: 48%;" onclick="window.switchRoom('living')" title="Qonaq otağı & mətbəx"></div>
+            <div id="map-room-bedroom" class="minimap-zone" style="left: 55%; top: 32%; width: 42%; height: 48%;" onclick="window.switchRoom('bedroom')" title="Yataq otağı"></div>
+            <div id="map-room-balcony" class="minimap-zone" style="left: 6%; top: 81%; width: 91%; height: 16%;" onclick="window.switchRoom('balcony')" title="Eyvan"></div>
             
             <!-- Live Radar Cone & Position Marker -->
             <div id="minimap-radar-marker" style="left: 58%; top: 19%;">
               <div id="minimap-radar-cone"></div>
               <div id="minimap-radar-dot"></div>
             </div>
+          </div>
+        </div>
+
+        <!-- Mode 2: Full Floor 5 Architectural Blueprint with all 17 apartment pins -->
+        <div id="tour-minimap-floor-wrap" class="tour-minimap-blueprint-wrap" style="display:none; background:#0f172a;">
+          <img class="tour-minimap-img" src="floorplans/floor_5.webp" onerror="this.src='floorplans/floor_5.png'" alt="5-ci Mərtəbə Çertyoju" style="object-fit:cover; width:100%; height:100%; opacity:0.92;" />
+          <div class="minimap-overlay" id="floor-pins-overlay">
+            <!-- 17 interactive apartment pins injected here -->
           </div>
         </div>
       </div>
@@ -244,16 +1024,14 @@
 
     document.body.appendChild(modal);
 
+    // Populate Apartment Dropdown
+    populateAptSelect();
+
+    // Populate Floor Blueprint Pins
+    renderFloorPins();
+
     // Build bottom room tabs
-    const tabsContainer = document.getElementById("tour-room-tabs");
-    Object.values(APT_TOUR_CONFIG.rooms).forEach(r => {
-      const tab = document.createElement("button");
-      tab.className = `tour-room-tab ${r.id === currentRoomId ? 'active' : ''}`;
-      tab.id = `tour-tab-${r.id}`;
-      tab.innerHTML = `<span>${r.icon}</span> <span>${r.name}</span> <small style="opacity:0.65;font-size:11px;">(${r.area})</small>`;
-      tab.onclick = () => switchRoom(r.id);
-      tabsContainer.appendChild(tab);
-    });
+    buildRoomTabs();
 
     const savedKey = localStorage.getItem("BLOCKADE_API_KEY");
     if (savedKey) {
@@ -262,17 +1040,67 @@
     }
   }
 
-  // Preload all 5 room textures into memory to eliminate all lag
+  function populateAptSelect() {
+    const sel = document.getElementById("tour-apt-select");
+    if (!sel) return;
+    sel.innerHTML = "";
+    Object.values(FLOOR_5_APARTMENTS).forEach(apt => {
+      const opt = document.createElement("option");
+      opt.value = String(apt.number);
+      opt.textContent = `Mənzil № ${apt.number} • ${apt.netArea} (${apt.roomsShort || apt.roomsDesc})`;
+      if (apt.number === currentAptNum) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  function renderFloorPins() {
+    const overlay = document.getElementById("floor-pins-overlay");
+    if (!overlay) return;
+    overlay.innerHTML = "";
+
+    Object.values(FLOOR_5_APARTMENTS).forEach(apt => {
+      const pin = document.createElement("div");
+      pin.className = `floor-apt-pin ${apt.number === currentAptNum ? 'active' : ''}`;
+      pin.setAttribute("data-apt", String(apt.number));
+      pin.style.left = `${apt.x_pct}%`;
+      pin.style.top = `${apt.y_pct}%`;
+      pin.innerHTML = `<span>№ ${apt.number}</span>`;
+      pin.title = `№ ${apt.number} • ${apt.netArea} • ${apt.roomsDesc}`;
+      pin.onclick = (e) => {
+        e.stopPropagation();
+        window.switchApartment(apt.number);
+      };
+      overlay.appendChild(pin);
+    });
+  }
+
+  function buildRoomTabs() {
+    const tabsContainer = document.getElementById("tour-room-tabs");
+    if (!tabsContainer) return;
+    tabsContainer.innerHTML = "";
+    const config = getCurrentAptConfig();
+    Object.values(config.rooms).forEach(r => {
+      const tab = document.createElement("button");
+      tab.className = `tour-room-tab ${r.id === currentRoomId ? 'active' : ''}`;
+      tab.id = `tour-tab-${r.id}`;
+      tab.innerHTML = `<span>${r.icon}</span> <span>${r.name}</span> <small style="opacity:0.65;font-size:11px;">(${r.area})</small>`;
+      tab.onclick = () => switchRoom(r.id);
+      tabsContainer.appendChild(tab);
+    });
+  }
+
+  // Preload room textures into memory to eliminate lag
   function preloadAllTextures() {
     if (!textureLoader) return;
-    Object.values(APT_TOUR_CONFIG.rooms).forEach(room => {
-      if (!textureCache[room.id]) {
+    const config = getCurrentAptConfig();
+    Object.values(config.rooms).forEach(room => {
+      if (!textureCache[room.image]) {
         textureLoader.load(room.image, (tex) => {
           tex.mapping = window.THREE.UVMapping;
           tex.colorSpace = window.THREE.SRGBColorSpace;
           tex.minFilter = window.THREE.LinearFilter;
           tex.magFilter = window.THREE.LinearFilter;
-          textureCache[room.id] = tex;
+          textureCache[room.image] = tex;
         });
       }
     });
@@ -451,7 +1279,8 @@
 
   // Check if walking steps brought user through a doorway
   function checkDoorwayApproach() {
-    const room = APT_TOUR_CONFIG.rooms[currentRoomId];
+    const config = getCurrentAptConfig();
+    const room = config.rooms[currentRoomId];
     if (!room || !room.hotspots) return;
 
     room.hotspots.forEach(h => {
@@ -468,7 +1297,8 @@
 
   // Switch Active Room
   function switchRoom(roomId, targetYaw = null, resetView = true) {
-    const room = APT_TOUR_CONFIG.rooms[roomId];
+    const config = getCurrentAptConfig();
+    const room = config.rooms[roomId];
     if (!room) return;
 
     currentRoomId = roomId;
@@ -476,7 +1306,7 @@
     // Update Room Title
     const titleEl = document.getElementById("tour-room-title");
     if (titleEl) {
-      titleEl.innerHTML = `<strong>${APT_TOUR_CONFIG.title}</strong> &bull; <span style="color:#60a5fa;">${room.name}</span> <span style="color:#94a3b8;font-size:12px;">(${room.area})</span>`;
+      titleEl.innerHTML = `<strong>5-ci Mərtəbə &bull; Mənzil № ${config.number}</strong> &bull; <span style="color:#60a5fa;">${room.name}</span> <span style="color:#94a3b8;font-size:12px;">(${room.area})</span>`;
     }
 
     // Update bottom tabs
@@ -505,8 +1335,8 @@
     }
 
     // Instant texture swap from cache
-    if (textureCache[roomId] && sphereMesh && sphereMesh.material) {
-      sphereMesh.material.map = textureCache[roomId];
+    if (textureCache[room.image] && sphereMesh && sphereMesh.material) {
+      sphereMesh.material.map = textureCache[room.image];
       sphereMesh.material.needsUpdate = true;
       renderHotspots(room.hotspots);
       return;
@@ -527,7 +1357,7 @@
         texture.colorSpace = window.THREE.SRGBColorSpace;
         texture.minFilter = window.THREE.LinearFilter;
         texture.magFilter = window.THREE.LinearFilter;
-        textureCache[roomId] = texture;
+        textureCache[room.image] = texture;
 
         if (sphereMesh && sphereMesh.material) {
           sphereMesh.material.map = texture;
@@ -551,7 +1381,8 @@
       return;
     }
 
-    const targetRoom = APT_TOUR_CONFIG.rooms[targetRoomId];
+    const config = getCurrentAptConfig();
+    const targetRoom = config.rooms[targetRoomId];
     if (!targetRoom) return;
 
     isWalking = true;
@@ -624,7 +1455,8 @@
 
   // Walk forward button action — advances inside room OR walks into facing door
   function walkForward() {
-    const room = APT_TOUR_CONFIG.rooms[currentRoomId];
+    const config = getCurrentAptConfig();
+    const room = config.rooms[currentRoomId];
     if (!room) return;
 
     // Check if facing a doorway
@@ -743,35 +1575,28 @@
     const radarCone = document.getElementById("minimap-radar-cone");
     if (!radarMarker) return;
 
-    // Room center percentages strictly matching Apartment 52 Blueprint
+    // Room center percentages matching blueprint
     const roomPositions = {
       hall: { left: 58, top: 19 },
       bathroom: { left: 84, top: 19 },
       living: { left: 30, top: 56 },
-      bedroom: { left: 76, top: 56 },
-      balcony: { left: 51, top: 89 }
+      bedroom: { left: 74, top: 56 },
+      bedroom2: { left: 74, top: 72 },
+      balcony: { left: 50, top: 89 }
     };
 
-    const pos = roomPositions[currentRoomId] || { left: 58, top: 19 };
-    // Sub-offset within the room based on physical walking
-    const finalLeft = pos.left + (cameraOffset.x / 95) * 6;
-    const finalTop = pos.top + (cameraOffset.z / 95) * 6;
+    const pos = roomPositions[currentRoomId] || { left: 50, top: 50 };
+    radarMarker.style.left = `${pos.left}%`;
+    radarMarker.style.top = `${pos.top}%`;
 
-    radarMarker.style.left = `${finalLeft}%`;
-    radarMarker.style.top = `${finalTop}%`;
-
-    // Rotate radar cone with camera horizontal angle (lon)
+    // Rotate the field-of-view radar cone
     if (radarCone) {
-      const coneAngle = (lon + 180) % 360;
-      radarCone.style.transform = `rotate(${coneAngle}deg)`;
+      radarCone.style.transform = `rotate(${lon}deg)`;
     }
   }
 
-  // Keyboard navigation listeners
+  // Keyboard Navigation Bindings
   window.addEventListener("keydown", (e) => {
-    const modal = document.getElementById("tour-360-modal");
-    if (!modal || modal.style.display === "none") return;
-
     keysDown[e.code] = true;
 
     if (e.code === "KeyW" || e.code === "ArrowUp") {
@@ -806,7 +1631,13 @@
     document.body.style.overflow = "hidden";
 
     initThreeScene();
-    switchRoom(currentRoomId || "hall");
+
+    const targetNum = parseInt(aptNumber, 10);
+    if (!isNaN(targetNum) && FLOOR_5_APARTMENTS[targetNum]) {
+      window.switchApartment(targetNum);
+    } else {
+      window.switchApartment(currentAptNum || 52);
+    }
   };
 
   window.close360Tour = function () {
@@ -818,6 +1649,63 @@
     const fpModal = document.getElementById("floorplan-modal");
     if (!fpModal || !fpModal.classList.contains("active")) {
       document.body.style.overflow = "";
+    }
+  };
+
+  // Switch between any of the 17 apartments on Floor 5
+  window.switchApartment = function (aptNum) {
+    const num = parseInt(aptNum, 10);
+    if (!FLOOR_5_APARTMENTS[num]) return;
+    currentAptNum = num;
+
+    // Update Dropdown
+    const aptSelect = document.getElementById("tour-apt-select");
+    if (aptSelect) aptSelect.value = String(num);
+
+    // Update Minimap header info
+    const aptConfig = getCurrentAptConfig();
+    const mmInfo = document.getElementById("tour-minimap-apt-info");
+    if (mmInfo) {
+      mmInfo.innerHTML = `№ ${aptConfig.number} &bull; ${aptConfig.netArea}`;
+    }
+
+    // Update Floor Blueprint active pin
+    document.querySelectorAll(".floor-apt-pin").forEach(pin => {
+      if (pin.getAttribute("data-apt") === String(num)) {
+        pin.classList.add("active");
+      } else {
+        pin.classList.remove("active");
+      }
+    });
+
+    // Rebuild room tabs
+    buildRoomTabs();
+
+    // Preload textures
+    preloadAllTextures();
+
+    // Switch to entrance room
+    switchRoom(aptConfig.initialRoom || "hall", null, true);
+  };
+
+  // Toggle Minimap display modes: 'room' or 'floor'
+  window.setMiniMapMode = function (mode) {
+    miniMapMode = mode;
+    const roomWrap = document.getElementById("tour-minimap-room-wrap");
+    const floorWrap = document.getElementById("tour-minimap-floor-wrap");
+    const tabRoom = document.getElementById("mm-tab-room");
+    const tabFloor = document.getElementById("mm-tab-floor");
+
+    if (mode === "floor") {
+      if (roomWrap) roomWrap.style.display = "none";
+      if (floorWrap) floorWrap.style.display = "block";
+      if (tabRoom) tabRoom.classList.remove("active");
+      if (tabFloor) tabFloor.classList.add("active");
+    } else {
+      if (roomWrap) roomWrap.style.display = "block";
+      if (floorWrap) floorWrap.style.display = "none";
+      if (tabRoom) tabRoom.classList.add("active");
+      if (tabFloor) tabFloor.classList.remove("active");
     }
   };
 
@@ -860,24 +1748,25 @@
   };
 
   window.onAiEngineChange = function () {
-    const engine = document.getElementById("ai-engine-select") ? document.getElementById("ai-engine-select").value : "pollinations";
+    const engine = document.getElementById("ai-engine-select").value;
     const keyGroup = document.getElementById("blockade-key-group");
     const submitBtn = document.getElementById("blockade-submit-btn");
-    if (engine === "pollinations") {
-      if (keyGroup) keyGroup.style.display = "none";
-      if (submitBtn) submitBtn.textContent = "🚀 360° Şəkli Pulsuz Generasiya Et";
+
+    if (engine === "blockade") {
+      keyGroup.style.display = "block";
+      submitBtn.textContent = "🚀 Skybox API ilə Generasiya Et";
     } else {
-      if (keyGroup) keyGroup.style.display = "flex";
-      if (submitBtn) submitBtn.textContent = "🚀 Blockade Skybox İlə Generasiya Et";
+      keyGroup.style.display = "none";
+      submitBtn.textContent = "🚀 360° Şəkli Pulsuz Generasiya Et";
     }
   };
 
   window.startAIGeneration = function () {
-    const engine = document.getElementById("ai-engine-select") ? document.getElementById("ai-engine-select").value : "pollinations";
-    if (engine === "pollinations") {
-      startPollinationsGeneration();
-    } else {
+    const engine = document.getElementById("ai-engine-select").value;
+    if (engine === "blockade") {
       startBlockadeGeneration();
+    } else {
+      startPollinationsGeneration();
     }
   };
 
@@ -890,11 +1779,7 @@
     const submitBtn = document.getElementById("blockade-submit-btn");
 
     const roomId = roomSelect.value;
-    const userPrompt = promptInput.value.trim();
-    if (!userPrompt) {
-      alert("Zəhmət olmasa təsvir (prompt) daxil edin!");
-      return;
-    }
+    const userPrompt = promptInput.value.trim() || "modern luxury apartment room, high-end furniture, bright natural daylight, elegant interior";
 
     progressBox.style.display = "flex";
     submitBtn.disabled = true;
@@ -915,8 +1800,11 @@
       progressBar.style.width = "100%";
       statusText.textContent = "✅ Uğurla tamamlandı! Otaq yenilənir...";
 
-      APT_TOUR_CONFIG.rooms[roomId].image = imageUrl;
-      delete textureCache[roomId];
+      const cfg = getCurrentAptConfig();
+      if (cfg.rooms[roomId]) {
+        cfg.rooms[roomId].image = imageUrl;
+      }
+      delete textureCache[imageUrl];
 
       setTimeout(() => {
         window.closeBlockadeModal();
@@ -999,8 +1887,11 @@
             statusText.textContent = "✅ Tamamlandı! Otaq panoraması yenilənir...";
 
             const fileUrl = req.file_url;
-            APT_TOUR_CONFIG.rooms[roomId].image = fileUrl;
-            delete textureCache[roomId];
+            const cfg = getCurrentAptConfig();
+            if (cfg.rooms[roomId]) {
+              cfg.rooms[roomId].image = fileUrl;
+            }
+            delete textureCache[fileUrl];
 
             setTimeout(() => {
               window.closeBlockadeModal();

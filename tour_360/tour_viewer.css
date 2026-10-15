@@ -90,6 +90,45 @@
   margin-top: 3px;
 }
 
+.tour-apt-select-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.tour-apt-badge {
+  background: rgba(37, 99, 235, 0.25);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.tour-apt-select {
+  background: rgba(15, 23, 42, 0.95);
+  color: #f8fafc;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  max-width: 280px;
+}
+
+.tour-apt-select:hover, .tour-apt-select:focus {
+  border-color: #3b82f6;
+  background: #1e293b;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
 .tour-header-actions {
   display: flex;
   align-items: center;
@@ -151,10 +190,10 @@
 /* 1-to-1 Real Architectural Blueprint Mini-Map */
 .tour-minimap-box {
   position: absolute;
-  top: 78px;
+  top: 92px;
   right: 20px;
-  width: 220px;
-  background: rgba(15, 23, 42, 0.92);
+  width: 250px;
+  background: rgba(15, 23, 42, 0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1.5px solid rgba(255, 255, 255, 0.18);
@@ -175,19 +214,90 @@
   font-weight: 700;
   color: #cbd5e1;
   letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.tour-minimap-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mm-tab {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mm-tab:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mm-tab.active {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
 }
 
 .tour-minimap-blueprint-wrap {
   position: relative;
   width: 100%;
-  height: 180px;
+  height: 185px;
   background: #ffffff;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Floor Blueprint Pins */
+.floor-apt-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1.5px solid #3b82f6;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  border-radius: 10px;
+  padding: 2px 4px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  line-height: 1;
+  z-index: 5;
+}
+
+.floor-apt-pin:hover {
+  background: #2563eb;
+  border-color: #93c5fd;
+  transform: translate(-50%, -50%) scale(1.25);
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.8);
+  z-index: 20;
+}
+
+.floor-apt-pin.active {
+  background: #10b981;
+  border-color: #a7f3d0;
+  box-shadow: 0 0 12px #10b981;
+  transform: translate(-50%, -50%) scale(1.2);
+  animation: pulse-pin 2s infinite;
+  z-index: 15;
+}
+
+@keyframes pulse-pin {
+  0%, 100% { box-shadow: 0 0 8px #10b981; }
+  50% { box-shadow: 0 0 16px #34d399, 0 0 24px rgba(52, 211, 153, 0.6); }
 }
 
 .tour-minimap-img {
