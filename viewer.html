@@ -379,7 +379,6 @@
   <link rel="stylesheet" href="floorplan-viewer.css?v=20261016_v26" />
   <script src="floorplans/floors_data.js?v=20261016_v26"></script>
   <script src="floorplan-viewer.js?v=20261016_v26"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js"></script>
   <link rel="stylesheet" href="tour_360/tour_viewer.css?v=20261016_v27" />
   <script src="tour_360/tour_viewer.js?v=20261016_v27"></script>
 </head>
@@ -1128,8 +1127,8 @@ scene.add(groundMesh);
 
 // 5. GLTF Loader Setup
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('./draco/');
-dracoLoader.setWorkerLimit(Math.max(4, navigator.hardwareConcurrency || 4));
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+dracoLoader.setWorkerLimit(Math.min(4, Math.max(2, (navigator.hardwareConcurrency || 4) - 1)));
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
@@ -1147,8 +1146,7 @@ function extractMatNum(matName) {
 }
 
 // Procedural World-Space Planar UV Generator for Ground & Lawns:
-// Transforms vertex positions into real-world meters on the horizontal XZ plane,
-// ensuring the grass texture scales naturally (3.5m per tile) and seamlessly across all site meshes.
+const _vPos = new THREE.Vector3();
 function applyWorldPlanarUVs(child, scaleMeters = 3.5) {
   if (!child.geometry) return;
   child.updateMatrixWorld(true);
@@ -1156,16 +1154,11 @@ function applyWorldPlanarUVs(child, scaleMeters = 3.5) {
   if (!pos) return;
   const count = pos.count;
   const uvs = new Float32Array(count * 2);
-  const v = new THREE.Vector3();
   for (let i = 0; i < count; i++) {
-    v.fromBufferAttribute(pos, i);
-    v.applyMatrix4(child.matrixWorld);
-    uvs[i * 2] = v.x / scaleMeters;
-    uvs[i * 2 + 1] = v.z / scaleMeters;
-  }
-  if (!child.geometry.userData.hasWorldUVs) {
-    child.geometry = child.geometry.clone();
-    child.geometry.userData.hasWorldUVs = true;
+    _vPos.fromBufferAttribute(pos, i);
+    _vPos.applyMatrix4(child.matrixWorld);
+    uvs[i * 2] = _vPos.x / scaleMeters;
+    uvs[i * 2 + 1] = _vPos.z / scaleMeters;
   }
   child.geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
   child.geometry.attributes.uv.needsUpdate = true;
@@ -1186,6 +1179,10 @@ function applyPlanarUVs(child, scaleX = 2.5, scaleZ = 2.5) {
   child.geometry.uvsNeedUpdate = true;
 }
 
+const _tempBBox = new THREE.Box3();
+const _tempSize = new THREE.Vector3();
+const _tempCenter = new THREE.Vector3();
+
 function assignHighFidelityMaterial(child) {
   const name = (child.name || '').toLowerCase();
   const parentName = child.parent ? (child.parent.name || '').toLowerCase() : '';
@@ -1193,9 +1190,16 @@ function assignHighFidelityMaterial(child) {
   const origMatName = (child.material && child.material.name) ? child.material.name.toLowerCase() : '';
   const matNum = extractMatNum(origMatName);
 
-  const bbox = new THREE.Box3().setFromObject(child);
-  const size = bbox.getSize(new THREE.Vector3());
-  const center = bbox.getCenter(new THREE.Vector3());
+  if (child.geometry) {
+    if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
+    _tempBBox.copy(child.geometry.boundingBox).applyMatrix4(child.matrixWorld);
+  } else {
+    _tempBBox.setFromObject(child);
+  }
+  _tempBBox.getSize(_tempSize);
+  _tempBBox.getCenter(_tempCenter);
+  const size = _tempSize;
+  const center = _tempCenter;
 
   // 1. Cars (Am176_* vehicles)
   if (fullName.includes('am176') || (matNum !== null && [12, 13, 14, 15, 54, 55, 56, 57].includes(matNum))) {
@@ -1409,6 +1413,11 @@ function assignHighFidelityMaterial(child) {
   }
 }
 
+// Purge any corrupted legacy CacheStorage entry immediately
+if ('caches' in window) {
+  caches.delete('marneuli-3d-model-cache-v1').catch(() => {});
+}
+
 const MODEL_CDN_URL = 'https://tural1227.github.io/marneuli/marneuli_draco.glb';
 const MODEL_LOCAL_URL = 'marneuli_draco.glb';
 
@@ -1419,105 +1428,82 @@ function getFastestModelUrl() {
   return MODEL_CDN_URL;
 }
 
-async function loadSceneCached(preferredUrl) {
-  const cacheName = 'marneuli-3d-model-cache-v1';
-  try {
-    if ('caches' in window) {
-      const cache = await caches.open(cacheName);
-      const cachedResponse = await cache.match(preferredUrl);
-      if (cachedResponse) {
-        console.log('⚡ 3D Model loaded instantly from local browser cache!');
-        const blob = await cachedResponse.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        loadSceneFromUrl(blobUrl, true);
-        return;
-      }
-    }
-  } catch (e) {
-    console.warn('Cache API lookup note:', e);
-  }
-
-  loadSceneFromUrl(preferredUrl, false);
-}
-
-function loadSceneFromUrl(url, isInstant) {
-  if (isInstant) {
-    const pb = document.getElementById('progress-bar');
-    const pt = document.getElementById('progress-text');
-    if (pb) pb.style.width = '100%';
-    if (pt) pt.innerHTML = '⚡ Yerli yaddaşdan açılır...';
-  }
+function loadScene(url) {
+  const targetUrl = url || getFastestModelUrl();
+  const pb = document.getElementById('progress-bar');
+  const pt = document.getElementById('progress-text');
+  const ls = document.getElementById('loading-sub');
 
   gltfLoader.load(
-    url,
+    targetUrl,
     (gltf) => {
       if (loadedModel) scene.remove(loadedModel);
       loadedModel = gltf.scene;
       window.loadedModel = loadedModel;
 
-      loadedModel.traverse(child => {
-        if (child.isMesh) {
-          meshCount++;
-          child.frustumCulled = true;
-          assignHighFidelityMaterial(child);
-          const name = (child.name || '').toLowerCase();
-          const parentName = child.parent ? (child.parent.name || '').toLowerCase() : '';
-          const fullName = name + ' ' + parentName;
-          if (fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('1746174')) {
-            buildingRaycastMeshes.push(child);
-          }
-        }
-      });
-
-      scene.add(loadedModel);
-      setView('facade');
-
-      document.getElementById('stat-meshes').textContent = meshCount.toLocaleString();
-
-      setTimeout(() => {
-        document.getElementById('loading').classList.add('hidden');
-      }, 300);
-
-      // Cache model in browser for instant 0.1s future visits
-      if (!isInstant && 'caches' in window && !url.startsWith('blob:')) {
-        fetch(url, { mode: 'cors' }).then(res => {
-          if (res.ok) {
-            caches.open('marneuli-3d-model-cache-v1').then(c => c.put(url, res));
-          }
-        }).catch(() => {});
+      if (pt) pt.innerHTML = '⚡ <b>3D Memarlıq elementləri hazırlanır...</b>';
+      if (pb) {
+        pb.style.width = '100%';
+        pb.classList.add('processing');
       }
+
+      // Defer heavy geometry & material traverse to next tick so UI renders progress
+      setTimeout(() => {
+        try {
+          loadedModel.traverse(child => {
+            if (child.isMesh) {
+              meshCount++;
+              child.frustumCulled = true;
+              assignHighFidelityMaterial(child);
+              const name = (child.name || '').toLowerCase();
+              const parentName = child.parent ? (child.parent.name || '').toLowerCase() : '';
+              const fullName = name + ' ' + parentName;
+              if (fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('1746174')) {
+                buildingRaycastMeshes.push(child);
+              }
+            }
+          });
+
+          scene.add(loadedModel);
+          setView('facade');
+
+          const statMeshes = document.getElementById('stat-meshes');
+          if (statMeshes) statMeshes.textContent = meshCount.toLocaleString();
+
+          // Warm up GPU shaders
+          renderer.render(scene, camera);
+
+          // Smoothly remove loading screen
+          requestAnimationFrame(() => {
+            const loading = document.getElementById('loading');
+            if (loading) {
+              loading.classList.add('hidden');
+              setTimeout(() => { loading.style.display = 'none'; }, 600);
+            }
+          });
+        } catch (procErr) {
+          console.error('Model setup error:', procErr);
+          const loading = document.getElementById('loading');
+          if (loading) loading.style.display = 'none';
+        }
+      }, 40);
     },
     (xhr) => {
-      if (isInstant) return;
-      const pb = document.getElementById('progress-bar');
-      const pt = document.getElementById('progress-text');
-      const ls = document.getElementById('loading-sub');
       const expectedTotal = 51309592;
       const total = (xhr.total && xhr.total > 0) ? xhr.total : expectedTotal;
-      const pct = Math.min(100, Math.round((xhr.loaded / total) * 100));
+      const pct = Math.min(99, Math.round((xhr.loaded / total) * 100));
       if (pb) pb.style.width = pct + '%';
-      if (pct >= 100) {
-        if (pb) pb.classList.add('processing');
-        if (pt) pt.innerHTML = '⚡ 48.9 MB endirildi &bull; <span style="color:#dfc882; font-weight:600;">3D Model və qrafika səhnəyə qurulur...</span>';
-        if (ls) ls.innerHTML = '🏢 2,730 memarlıq detalı, avtomobillər və yaşıllıqlar açılır. Zəhmət olmasa bir neçə saniyə gözləyin...';
-      } else {
-        if (pt) pt.innerHTML = `Model yüklənir: <strong>${pct}%</strong> (${(xhr.loaded / 1024 / 1024).toFixed(1)} MB / ${(total / 1024 / 1024).toFixed(1)} MB)`;
-      }
+      if (pt) pt.innerHTML = `Model yüklənir: <b>${pct}%</b> (${(xhr.loaded / 1024 / 1024).toFixed(1)} MB / ${(total / 1024 / 1024).toFixed(1)} MB)`;
     },
     (err) => {
       console.warn('Fast CDN load error, falling back to local model...', err);
-      if (url !== MODEL_LOCAL_URL) {
-        loadSceneFromUrl(MODEL_LOCAL_URL, false);
+      if (targetUrl !== MODEL_LOCAL_URL) {
+        loadScene(MODEL_LOCAL_URL);
       } else {
-        document.getElementById('loading-sub').textContent = 'Xəta baş verdi: ' + err.message;
+        if (ls) ls.textContent = 'Xəta baş verdi: ' + err.message;
       }
     }
   );
-}
-
-function loadScene(url) {
-  const target = url || getFastestModelUrl();
-  loadSceneCached(target);
 }
 
 // ==========================================
