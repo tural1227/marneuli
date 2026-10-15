@@ -859,12 +859,12 @@
   let textureLoader = null;
   let activeHotspots = [];
   let isTourInitialized = false;
-  let fov = 60; // 60° natural architectural FOV — completely straight vertical lines
+  let fov = 75; // 75° wide architectural FOV — eliminates circular tunnel/well effect, opens up expansive room perspective
   let isWalking = false;
   let roomHistory = [];
 
   // GPU Memory Preload Cache (keyed by image URL)
-  const CACHE_BUST = "?v=20261016_v25";
+  const CACHE_BUST = "?v=20261016_v26";
   const textureCache = {};
 
   // Walking Physics State
@@ -1192,7 +1192,7 @@
 
   function onDocumentMouseWheel(event) {
     event.preventDefault();
-    fov = Math.max(42, Math.min(70, fov + event.deltaY * 0.04));
+    fov = Math.max(45, Math.min(92, fov + event.deltaY * 0.04));
     if (camera) {
       camera.fov = fov;
       camera.updateProjectionMatrix();
@@ -1740,7 +1740,7 @@
 
   window.tourZoom = function (delta) {
     if (!camera) return;
-    fov = Math.max(42, Math.min(70, fov + delta));
+    fov = Math.max(45, Math.min(92, fov + delta));
     camera.fov = fov;
     camera.updateProjectionMatrix();
   };
