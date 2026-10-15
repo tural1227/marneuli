@@ -1588,20 +1588,12 @@
     requestAnimationFrame(stepWalk);
   }
 
-  // Walk forward button action — advances inside room OR walks into facing door
+  // Walk forward button action — advances inside room aligned with camera look direction
   function walkForward() {
     const config = getCurrentAptConfig();
     const room = config.rooms[currentRoomId];
     if (!room) return;
 
-    // Check if facing a doorway
-    let facingDoor = null;
-    let minDiff = Infinity;
-    (room.hotspots || []).forEach(h => {
-      let diff = (h.yaw - lon) % 360;
-      if (diff > 180) diff -= 360;
-      if (diff < -180) diff += 360;
-      let absDiff = Math.abs(diff);
     // Walk forward inside room aligned 1:1 with camera look direction
     playFootstepSound();
     const rad = (lon * Math.PI) / 180;
