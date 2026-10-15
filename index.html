@@ -300,12 +300,12 @@
 
 
   </style>
-  <link rel="stylesheet" href="floorplan-viewer.css?v=20261015d" />
-  <script src="floorplans/floors_data.js?v=20261015d"></script>
-  <script src="floorplan-viewer.js?v=20261015d"></script>
+  <link rel="stylesheet" href="floorplan-viewer.css?v=20261016_v26" />
+  <script src="floorplans/floors_data.js?v=20261016_v26"></script>
+  <script src="floorplan-viewer.js?v=20261016_v26"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js"></script>
-  <link rel="stylesheet" href="tour_360/tour_viewer.css?v=20261016_v25" />
-  <script src="tour_360/tour_viewer.js?v=20261016_v25"></script>
+  <link rel="stylesheet" href="tour_360/tour_viewer.css?v=20261016_v26" />
+  <script src="tour_360/tour_viewer.js?v=20261016_v26"></script>
 </head>
 <body>
 
@@ -314,6 +314,11 @@
   <p id="loading-sub">Bütün memarlıq elementləri, şəffaf pəncərələr, fasad daşları, avtomobillər və yaşıllıqlar tənzimlənir...</p>
   <div id="progress-bar-outer"><div id="progress-bar"></div></div>
   <div id="progress-text">Yüklənir...</div>
+
+  <div id="loading-quick-actions" style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; z-index: 105;">
+    <button type="button" onclick="open360Tour(52)" style="background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 9px 18px; border-radius: 24px; font-size: 0.82rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(219,39,119,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">🔮 Birbaşa 360° Mənzil Turuna Bax</button>
+    <button type="button" onclick="openFloorPlanModal()" style="background: rgba(223,200,130,0.18); color: #dfc882; border: 1px solid #dfc882; padding: 9px 18px; border-radius: 24px; font-size: 0.82rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(8px); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">🗺️ 2D Mərtəbə Planını Aç</button>
+  </div>
 </div>
 
 <div id="canvas-container"></div>
@@ -1033,7 +1038,7 @@ scene.add(groundMesh);
 
 // 5. GLTF Loader Setup
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/libs/draco/');
+dracoLoader.setDecoderPath('./draco/');
 dracoLoader.setWorkerLimit(Math.max(4, navigator.hardwareConcurrency || 4));
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
@@ -1349,18 +1354,16 @@ function loadScene(url) {
       const pb = document.getElementById('progress-bar');
       const pt = document.getElementById('progress-text');
       const ls = document.getElementById('loading-sub');
-      if (xhr.total > 0) {
-        const pct = Math.round((xhr.loaded / xhr.total) * 100);
-        pb.style.width = pct + '%';
-        if (pct >= 100) {
-          pb.classList.add('processing');
-          pt.innerHTML = '⚡ 48.9 MB endirildi &bull; <span style="color:#dfc882; font-weight:600;">3D Model səhnəyə qurulur...</span>';
-          if (ls) ls.innerHTML = '🏢 2,730 memarlıq detalı, avtomobillər və yaşıllıqlar açılır. Zəhmət olmasa bir neçə saniyə gözləyin...';
-        } else {
-          pt.textContent = pct + '% (' + (xhr.loaded / 1024 / 1024).toFixed(1) + ' MB / ' + (xhr.total / 1024 / 1024).toFixed(1) + ' MB)';
-        }
+      const expectedTotal = 51309592;
+      const total = (xhr.total && xhr.total > 0) ? xhr.total : expectedTotal;
+      const pct = Math.min(100, Math.round((xhr.loaded / total) * 100));
+      if (pb) pb.style.width = pct + '%';
+      if (pct >= 100) {
+        if (pb) pb.classList.add('processing');
+        if (pt) pt.innerHTML = '⚡ 48.9 MB endirildi &bull; <span style="color:#dfc882; font-weight:600;">3D Model və qrafika səhnəyə qurulur...</span>';
+        if (ls) ls.innerHTML = '🏢 2,730 memarlıq detalı, avtomobillər və yaşıllıqlar açılır. Zəhmət olmasa bir neçə saniyə gözləyin...';
       } else {
-        pt.textContent = (xhr.loaded / 1024 / 1024).toFixed(1) + ' MB yükləndi...';
+        if (pt) pt.innerHTML = `Model yüklənir: <strong>${pct}%</strong> (${(xhr.loaded / 1024 / 1024).toFixed(1)} MB / ${(total / 1024 / 1024).toFixed(1)} MB)`;
       }
     },
     (err) => {
