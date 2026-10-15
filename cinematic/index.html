@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>PREMIUM PARK RESIDENCE — Kinematik Dron Görünüşü</title>
+  <title>PREMIUM PARK RESIDENCE — Kinematik Dron & Detallı Fasad</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --glass-bg: rgba(10, 15, 29, 0.78);
+      --glass-bg: rgba(10, 15, 29, 0.82);
       --glass-border: rgba(255, 255, 255, 0.16);
       --glass-blur: 24px;
       --accent-cyan: #38bdf8;
       --accent-gold: #f59e0b;
       --accent-blue: #2563eb;
+      --accent-emerald: #10b981;
     }
 
     * {
@@ -58,7 +59,7 @@
       height: 100%;
       object-fit: cover;
       pointer-events: none;
-      transition: opacity 0.45s ease-in-out, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       will-change: opacity, transform;
       transform-origin: center center;
     }
@@ -73,7 +74,12 @@
       z-index: 2;
     }
 
-    /* Cinematic Vignette */
+    #videoDetailed {
+      opacity: 0;
+      z-index: 3;
+    }
+
+    /* Vignette */
     .vignette-overlay {
       position: absolute;
       inset: 0;
@@ -148,9 +154,15 @@
       background: linear-gradient(135deg, #f59e0b, #ef4444);
       color: #fff;
       letter-spacing: 0.5px;
+      transition: all 0.3s ease;
     }
 
-    /* Top Center Day / Night Switch */
+    .brand-badge.detailed-active {
+      background: linear-gradient(135deg, #10b981, #06b6d4);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+    }
+
+    /* Top Center: Day / Night Switch */
     .top-center-bar {
       position: absolute;
       top: 20px;
@@ -169,6 +181,7 @@
       padding: 4px;
       gap: 4px;
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      transition: opacity 0.3s ease;
     }
 
     .switch-btn {
@@ -205,17 +218,99 @@
       box-shadow: 0 0 18px rgba(56, 189, 248, 0.45);
     }
 
-    /* Interactive Drag Hint */
+    /* RIGHT SIDE VERTICAL ACTION CAPSULE (YUXARI / AŞAĞI DETALLAR) */
+    .vertical-explode-dock {
+      position: absolute;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 25;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      padding: 14px 10px;
+      border-radius: 36px;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .vertical-action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 64px;
+      height: 64px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .vertical-action-btn .btn-icon {
+      font-size: 22px;
+      transition: transform 0.25s ease;
+    }
+
+    .vertical-action-btn .btn-label {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .vertical-action-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: rgba(56, 189, 248, 0.5);
+      color: #fff;
+      transform: scale(1.06);
+    }
+
+    .vertical-action-btn.btn-unite.active {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.45), rgba(56, 189, 248, 0.65));
+      border-color: rgba(56, 189, 248, 0.9);
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+    }
+
+    .vertical-action-btn.btn-explode.active {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.45), rgba(6, 182, 212, 0.65));
+      border-color: rgba(16, 185, 129, 0.9);
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    }
+
+    .vertical-action-btn:active {
+      transform: scale(0.94);
+    }
+
+    .vertical-divider {
+      width: 32px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 2px;
+    }
+
+    /* Interactive Hint */
     .drag-hint-pill {
       position: absolute;
       top: 86px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 15;
-      background: rgba(15, 23, 42, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       backdrop-filter: blur(12px);
-      padding: 6px 16px;
+      padding: 6px 18px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 600;
@@ -223,14 +318,14 @@
       pointer-events: none;
       display: flex;
       align-items: center;
-      gap: 6px;
-      animation: pulse-hint 2s infinite ease-in-out;
+      gap: 8px;
+      animation: pulse-hint 2.2s infinite ease-in-out;
       transition: opacity 0.4s ease;
     }
 
     @keyframes pulse-hint {
-      0%, 100% { opacity: 0.85; transform: translateX(-50%) scale(1); }
-      50% { opacity: 0.45; transform: translateX(-50%) scale(0.98); }
+      0%, 100% { opacity: 0.9; transform: translateX(-50%) scale(1); }
+      50% { opacity: 0.5; transform: translateX(-50%) scale(0.98); }
     }
 
     /* Bottom Control Dock */
@@ -240,7 +335,7 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
-      width: min(94vw, 840px);
+      width: min(94vw, 880px);
     }
 
     .bottom-dock {
@@ -252,7 +347,7 @@
       padding: 12px 20px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.15);
     }
 
@@ -277,6 +372,37 @@
       border-color: rgba(56, 189, 248, 0.6);
       transform: scale(1.08);
       box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Explode Toggle in Dock */
+    .btn-explode-dock {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.6);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.3));
+      color: #6ee7b7;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+    }
+
+    .btn-explode-dock:hover {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.45), rgba(6, 182, 212, 0.5));
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.45);
+      color: #fff;
+    }
+
+    .btn-explode-dock.unite-mode {
+      border-color: rgba(56, 189, 248, 0.7);
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(56, 189, 248, 0.45));
+      color: #7dd3fc;
     }
 
     /* Timeline Scrubber */
@@ -369,7 +495,7 @@
       color: #fff;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .top-left-panel {
         top: 14px;
         left: 14px;
@@ -382,6 +508,19 @@
         left: auto;
         right: 14px;
         transform: none;
+      }
+      .vertical-explode-dock {
+        right: 14px;
+        padding: 10px 8px;
+        border-radius: 28px;
+      }
+      .vertical-action-btn {
+        width: 52px;
+        height: 52px;
+        border-radius: 18px;
+      }
+      .vertical-action-btn .btn-icon {
+        font-size: 18px;
       }
       .bottom-dock-wrap {
         bottom: 16px;
@@ -403,39 +542,57 @@
   <div id="viewport-container">
     <video id="videoDay" class="drone-video" src="gunduzyeni.mp4" playsinline muted loop autoplay preload="auto"></video>
     <video id="videoNight" class="drone-video" src="geceyeni.mp4" playsinline muted loop preload="auto"></video>
+    <video id="videoDetailed" class="drone-video" src="deatlied.mp4" playsinline muted preload="auto"></video>
     <div class="vignette-overlay"></div>
   </div>
 
-  <!-- Interactive Drag Scrubbing Hint -->
+  <!-- Interactive Drag / Swipe Hint -->
   <div id="dragHint" class="drag-hint-pill">
-    <span>↔️</span>
-    <span>Dronu 360° döndürmək üçün ekranı sağa/sola sürüşdürün</span>
+    <span>↕️</span>
+    <span>Aşağı düymə ilə detallara bölün, yuxarı düymə ilə birləşdirin (və ya ekranı fırladın)</span>
   </div>
 
   <!-- Top Left: Return to Main 3D System & Brand -->
   <div class="top-left-panel">
-    <button class="btn-back-main" onclick="returnToMainSystem()" title="Əsas 3D İnteraktiv Sistemə Qayıt">
+    <button class="btn-back-main" onclick="returnToMainSystem()" title="Əsas 3D İnteraktiv Sistemə Qayıt (ESC)">
       <span>⬅️</span>
       <span>3D Sistemə Qayıt</span>
     </button>
     <div class="brand-subtle">
       <span class="brand-title">PREMIUM PARK RESIDENCE</span>
-      <span class="brand-badge">4K DRON</span>
+      <span id="viewModeBadge" class="brand-badge">🎬 4K DRON</span>
     </div>
   </div>
 
   <!-- Top Center: Day / Night Switch -->
-  <div class="top-center-bar">
+  <div class="top-center-bar" id="topCenterBar">
     <div class="day-night-switch">
-      <button id="btnDay" class="switch-btn active day-active" onclick="setMode('day')" title="Gündüz Dron Baxışı">
+      <button id="btnDay" class="switch-btn active day-active" onclick="setDayNight('day')" title="Gündüz Dron Baxışı">
         <span>☀️</span>
         <span>Gündüz</span>
       </button>
-      <button id="btnNight" class="switch-btn" onclick="setMode('night')" title="Gecə Dron Baxışı & Fasad İşıqları">
+      <button id="btnNight" class="switch-btn" onclick="setDayNight('night')" title="Gecə Dron Baxışı & Fasad İşıqları">
         <span>🌙</span>
         <span>Gecə</span>
       </button>
     </div>
+  </div>
+
+  <!-- RIGHT SIDE VERTICAL ACTION CAPSULE (YUXARI / AŞAĞI) -->
+  <div class="vertical-explode-dock" title="Bina Detalları & Mərtəbə Ayrılması">
+    <!-- YUXARI DÜYMƏSİ: BİRLƏŞDİR -->
+    <button id="btnVerticalUnite" class="vertical-action-btn btn-unite active" onclick="triggerUnite()" title="Yuxarı Düyməsi: Fasadı Birləşdir (↑)">
+      <span class="btn-icon">⬆️</span>
+      <span class="btn-label">Birləşdir</span>
+    </button>
+
+    <div class="vertical-divider"></div>
+
+    <!-- AŞAĞI DÜYMƏSİ: DETALLARA BÖL -->
+    <button id="btnVerticalExplode" class="vertical-action-btn btn-explode" onclick="triggerExplode()" title="Aşağı Düyməsi: Detallara Böl (Mərtəbələr) (↓)">
+      <span class="btn-icon">⬇️</span>
+      <span class="btn-label">Detallar</span>
+    </button>
   </div>
 
   <!-- Bottom Floating Control Dock -->
@@ -446,14 +603,21 @@
         <span id="playIcon">⏸</span>
       </button>
 
+      <!-- Detallara Böl / Birləşdir Toggle Button in Dock -->
+      <button id="btnDockToggle" class="btn-explode-dock" onclick="toggleDetailedMode()" title="Detallara Böl / Birləşdir">
+        <span id="dockToggleIcon">⬇️</span>
+        <span id="dockToggleText">Detallara Böl</span>
+      </button>
+
       <!-- Scrubber -->
       <div class="scrubber-container">
         <div class="scrubber-meta">
           <span id="currentTimeText" class="current-time">00:00</span>
+          <span id="statusLabel" style="color: #94a3b8; font-size: 11px;">Bütöv Bina Baxışı</span>
           <span id="durationText">00:10</span>
         </div>
         <div class="slider-track-wrap">
-          <input type="range" id="videoScrubber" class="video-slider" min="0" max="1000" value="0" step="1" title="Dron Çəkilişini İrəli/Geri Çəkin">
+          <input type="range" id="videoScrubber" class="video-slider" min="0" max="1000" value="0" step="1" title="Zaman Xətti">
         </div>
       </div>
 
@@ -478,7 +642,9 @@
   <script>
     const videoDay = document.getElementById('videoDay');
     const videoNight = document.getElementById('videoNight');
+    const videoDetailed = document.getElementById('videoDetailed');
     const viewport = document.getElementById('viewport-container');
+
     const btnDay = document.getElementById('btnDay');
     const btnNight = document.getElementById('btnNight');
     const btnPlayPause = document.getElementById('btnPlayPause');
@@ -486,26 +652,32 @@
     const videoScrubber = document.getElementById('videoScrubber');
     const currentTimeText = document.getElementById('currentTimeText');
     const durationText = document.getElementById('durationText');
+    const statusLabel = document.getElementById('statusLabel');
     const btnSpeed = document.getElementById('btnSpeed');
     const btnFullscreen = document.getElementById('btnFullscreen');
     const fsIcon = document.getElementById('fsIcon');
     const dragHint = document.getElementById('dragHint');
+    const viewModeBadge = document.getElementById('viewModeBadge');
 
-    let currentMode = 'day'; // 'day' or 'night'
+    const btnVerticalUnite = document.getElementById('btnVerticalUnite');
+    const btnVerticalExplode = document.getElementById('btnVerticalExplode');
+    const btnDockToggle = document.getElementById('btnDockToggle');
+    const dockToggleIcon = document.getElementById('dockToggleIcon');
+    const dockToggleText = document.getElementById('dockToggleText');
+
+    let currentDayNight = 'day'; // 'day' or 'night'
+    let isDetailedMode = false;  // false = Drone Orbit (whole building), true = Detailed Exploded View (deatlied.mp4)
+    let isReversing = false;     // true when playing backwards to unite
     let isPlaying = true;
     let isUserScrubbing = false;
     let currentSpeed = 1.0;
     let currentZoom = 1.0;
 
     function getActiveVideo() {
-      return currentMode === 'day' ? videoDay : videoNight;
+      if (isDetailedMode) return videoDetailed;
+      return currentDayNight === 'day' ? videoDay : videoNight;
     }
 
-    function getInactiveVideo() {
-      return currentMode === 'day' ? videoNight : videoDay;
-    }
-
-    // Format seconds to mm:ss
     function formatTime(sec) {
       if (!sec || isNaN(sec)) return "00:00";
       const m = Math.floor(sec / 60).toString().padStart(2, '0');
@@ -513,48 +685,150 @@
       return `${m}:${s}`;
     }
 
-    // Mode Switch (Day / Night)
-    window.setMode = function(mode) {
-      if (mode === currentMode) return;
-      currentMode = mode;
+    // =========================================================================
+    // AŞAĞI DÜYMƏSİ: DETALLARA BÖLÜNSÜN (deatlied.mp4)
+    // =========================================================================
+    window.triggerExplode = function() {
+      if (isReversing) isReversing = false;
+      isDetailedMode = true;
 
-      const active = getActiveVideo();
-      const inactive = getInactiveVideo();
+      // Update UI state
+      btnVerticalExplode.classList.add('active');
+      btnVerticalUnite.classList.remove('active');
+      btnDockToggle.classList.add('unite-mode');
+      dockToggleIcon.textContent = '⬆️';
+      dockToggleText.textContent = 'Birləşdir';
+      viewModeBadge.textContent = '📐 DETALLAR & MƏRTƏBƏLƏR';
+      viewModeBadge.classList.add('detailed-active');
+      statusLabel.textContent = 'Mərtəbə və Konstruksiya Detalları';
 
-      // Synchronize playback position proportionally
-      if (inactive.duration && active.duration) {
-        const ratio = inactive.currentTime / inactive.duration;
-        active.currentTime = ratio * active.duration;
+      // Crossfade to detailed video
+      videoDetailed.style.opacity = '1';
+      videoDay.style.opacity = '0';
+      videoNight.style.opacity = '0';
+
+      // Start playing deatlied.mp4 forward
+      if (videoDetailed.currentTime >= videoDetailed.duration - 0.2) {
+        videoDetailed.currentTime = 0;
       }
+      videoDetailed.playbackRate = currentSpeed;
+      videoDetailed.play().catch(() => {});
+      isPlaying = true;
+      playIcon.textContent = '⏸';
+
+      durationText.textContent = formatTime(videoDetailed.duration || 8.0);
+    };
+
+    // =========================================================================
+    // YUXARI DÜYMƏSİ: BİRLƏŞSİN (REVERSE SMOOTHLY UNITE BACK)
+    // =========================================================================
+    window.triggerUnite = function() {
+      if (!isDetailedMode) return;
+
+      btnVerticalUnite.classList.add('active');
+      btnVerticalExplode.classList.remove('active');
+      statusLabel.textContent = 'Fasad Birləşir...';
+
+      // Smooth real-time reverse animation of deatlied.mp4 so the building snaps back together!
+      videoDetailed.pause();
+      isReversing = true;
+      let lastTime = performance.now();
+
+      function reverseStep(now) {
+        if (!isReversing) return;
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+
+        // Scrub in reverse at 1.8x speed for crisp, satisfying unification
+        videoDetailed.currentTime = Math.max(0, videoDetailed.currentTime - dt * 1.8 * currentSpeed);
+        updateProgressUI();
+
+        if (videoDetailed.currentTime <= 0.08) {
+          // Finished uniting: return seamlessly to main building orbit!
+          videoDetailed.currentTime = 0;
+          isReversing = false;
+          isDetailedMode = false;
+
+          // Crossfade back to main Day/Night video
+          videoDetailed.style.opacity = '0';
+          const mainVid = (currentDayNight === 'day' ? videoDay : videoNight);
+          mainVid.style.opacity = '1';
+          mainVid.play().catch(() => {});
+          isPlaying = true;
+          playIcon.textContent = '⏸';
+
+          // Reset UI
+          btnVerticalUnite.classList.add('active');
+          btnVerticalExplode.classList.remove('active');
+          btnDockToggle.classList.remove('unite-mode');
+          dockToggleIcon.textContent = '⬇️';
+          dockToggleText.textContent = 'Detallara Böl';
+          viewModeBadge.textContent = '🎬 4K DRON';
+          viewModeBadge.classList.remove('detailed-active');
+          statusLabel.textContent = 'Bütöv Bina Baxışı';
+          durationText.textContent = formatTime(mainVid.duration);
+          return;
+        }
+
+        requestAnimationFrame(reverseStep);
+      }
+
+      requestAnimationFrame(reverseStep);
+    };
+
+    // Toggle button in bottom dock
+    window.toggleDetailedMode = function() {
+      if (isDetailedMode) {
+        triggerUnite();
+      } else {
+        triggerExplode();
+      }
+    };
+
+    // Day / Night Switcher
+    window.setDayNight = function(mode) {
+      if (mode === currentDayNight) return;
+      currentDayNight = mode;
 
       if (mode === 'day') {
         btnDay.classList.add('active', 'day-active');
         btnNight.classList.remove('active', 'night-active');
-        videoDay.style.opacity = '1';
-        videoNight.style.opacity = '0';
+        if (!isDetailedMode) {
+          videoDay.style.opacity = '1';
+          videoNight.style.opacity = '0';
+        }
       } else {
         btnNight.classList.add('active', 'night-active');
         btnDay.classList.remove('active', 'day-active');
-        videoNight.style.opacity = '1';
-        videoDay.style.opacity = '0';
+        if (!isDetailedMode) {
+          videoNight.style.opacity = '1';
+          videoDay.style.opacity = '0';
+        }
       }
 
-      if (isPlaying) {
-        active.play().catch(() => {});
-        inactive.play().catch(() => {});
+      // Sync playback times between day and night
+      if (videoDay.duration && videoNight.duration) {
+        const ratio = videoDay.currentTime / videoDay.duration;
+        videoNight.currentTime = ratio * videoNight.duration;
+      }
+
+      if (isPlaying && !isDetailedMode) {
+        videoDay.play().catch(() => {});
+        videoNight.play().catch(() => {});
       }
     };
 
     // Play / Pause
     window.togglePlayPause = function() {
+      if (isReversing) isReversing = false;
       isPlaying = !isPlaying;
+      const v = getActiveVideo();
+
       if (isPlaying) {
-        videoDay.play().catch(() => {});
-        videoNight.play().catch(() => {});
+        v.play().catch(() => {});
         playIcon.textContent = '⏸';
       } else {
-        videoDay.pause();
-        videoNight.pause();
+        v.pause();
         playIcon.textContent = '▶';
       }
     };
@@ -573,17 +847,27 @@
 
     videoDay.addEventListener('timeupdate', updateProgressUI);
     videoNight.addEventListener('timeupdate', updateProgressUI);
+    videoDetailed.addEventListener('timeupdate', updateProgressUI);
 
     videoDay.addEventListener('loadedmetadata', () => {
-      if (currentMode === 'day') durationText.textContent = formatTime(videoDay.duration);
+      if (!isDetailedMode && currentDayNight === 'day') durationText.textContent = formatTime(videoDay.duration);
     });
-    videoNight.addEventListener('loadedmetadata', () => {
-      if (currentMode === 'night') durationText.textContent = formatTime(videoNight.duration);
+    videoDetailed.addEventListener('loadedmetadata', () => {
+      if (isDetailedMode) durationText.textContent = formatTime(videoDetailed.duration);
+    });
+
+    // When detailed video reaches end, pause at full exploded view so user can admire
+    videoDetailed.addEventListener('ended', () => {
+      if (isDetailedMode && !isReversing) {
+        videoDetailed.pause();
+        isPlaying = false;
+        playIcon.textContent = '▶';
+      }
     });
 
     // Scrubber interaction
-    videoScrubber.addEventListener('mousedown', () => { isUserScrubbing = true; });
-    videoScrubber.addEventListener('touchstart', () => { isUserScrubbing = true; }, { passive: true });
+    videoScrubber.addEventListener('mousedown', () => { isUserScrubbing = true; if (isReversing) isReversing = false; });
+    videoScrubber.addEventListener('touchstart', () => { isUserScrubbing = true; if (isReversing) isReversing = false; }, { passive: true });
     window.addEventListener('mouseup', () => { isUserScrubbing = false; });
     window.addEventListener('touchend', () => { isUserScrubbing = false; });
 
@@ -594,10 +878,6 @@
         v.currentTime = ratio * v.duration;
         currentTimeText.textContent = formatTime(v.currentTime);
       }
-      const other = getInactiveVideo();
-      if (other.duration) {
-        other.currentTime = ratio * other.duration;
-      }
     });
 
     // Speed Cycling
@@ -607,6 +887,7 @@
       currentSpeed = speeds[(idx + 1) % speeds.length];
       videoDay.playbackRate = currentSpeed;
       videoNight.playbackRate = currentSpeed;
+      videoDetailed.playbackRate = currentSpeed;
       btnSpeed.textContent = `${currentSpeed}x`;
     };
 
@@ -615,6 +896,7 @@
       currentZoom = Math.min(Math.max(currentZoom + delta, 1.0), 2.2);
       videoDay.style.transform = `scale(${currentZoom.toFixed(2)})`;
       videoNight.style.transform = `scale(${currentZoom.toFixed(2)})`;
+      videoDetailed.style.transform = `scale(${currentZoom.toFixed(2)})`;
     };
 
     // Fullscreen
@@ -633,14 +915,15 @@
 
     viewport.addEventListener('dblclick', toggleFullscreen);
 
-    // Drag-to-scrub on viewport (Interactive Orbit feeling)
+    // Interactive Drag Scrubbing (Horizontal) & Vertical Swipe (Down = Explode, Up = Unite)
     let isDragging = false;
-    let startX = 0;
+    let startX = 0, startY = 0;
     let startTime = 0;
 
     function onPointerDown(e) {
       isDragging = true;
       startX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX) || 0;
+      startY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0].clientY) || 0;
       const v = getActiveVideo();
       startTime = v.currentTime || 0;
 
@@ -653,21 +936,37 @@
     function onPointerMove(e) {
       if (!isDragging) return;
       const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX) || 0;
+      const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0].clientY) || 0;
       const deltaX = clientX - startX;
+      const deltaY = clientY - startY;
+
       const v = getActiveVideo();
       if (!v || !v.duration) return;
 
-      // 400px swipe scrubs full video duration
-      const deltaSec = (deltaX / 400) * v.duration;
-      let newTime = (startTime + deltaSec) % v.duration;
-      if (newTime < 0) newTime += v.duration;
-
-      v.currentTime = newTime;
-      const other = getInactiveVideo();
-      if (other.duration) other.currentTime = (newTime / v.duration) * other.duration;
+      // Horizontal swipe scrubs timeline
+      if (Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+        if (isReversing) isReversing = false;
+        const deltaSec = (deltaX / 400) * v.duration;
+        let newTime = (startTime + deltaSec) % v.duration;
+        if (newTime < 0) newTime += v.duration;
+        v.currentTime = newTime;
+      }
     }
 
-    function onPointerUp() {
+    function onPointerUp(e) {
+      if (isDragging) {
+        const clientY = e.clientY !== undefined ? e.clientY : (e.changedTouches && e.changedTouches[0].clientY) || startY;
+        const deltaY = clientY - startY;
+
+        // Significant vertical swipe gesture:
+        // Swiping DOWN (deltaY > 70px) -> Detallara Böl
+        // Swiping UP (deltaY < -70px) -> Birləşdir
+        if (deltaY > 70 && !isDetailedMode) {
+          triggerExplode();
+        } else if (deltaY < -70 && isDetailedMode) {
+          triggerUnite();
+        }
+      }
       isDragging = false;
     }
 
@@ -679,7 +978,7 @@
     window.addEventListener('touchmove', onPointerMove, { passive: true });
     window.addEventListener('touchend', onPointerUp);
 
-    // Wheel zoom
+    // Mouse wheel zoom
     viewport.addEventListener('wheel', (e) => {
       e.preventDefault();
       adjustZoom(e.deltaY * -0.001);
@@ -695,14 +994,22 @@
         e.preventDefault();
         togglePlayPause();
       }
+      if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        triggerExplode();
+      }
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        e.preventDefault();
+        triggerUnite();
+      }
       if (e.key === 'f' || e.key === 'F') {
         toggleFullscreen();
       }
       if (e.key === 'd' || e.key === 'D') {
-        setMode('day');
+        setDayNight('day');
       }
       if (e.key === 'n' || e.key === 'N') {
-        setMode('night');
+        setDayNight('night');
       }
       if (e.key === 'ArrowLeft') {
         const v = getActiveVideo();
@@ -730,7 +1037,6 @@
     // Auto start playback on load
     window.addEventListener('DOMContentLoaded', () => {
       videoDay.play().catch(() => {
-        // Autoplay policy fallback: muted video always allowed
         videoDay.muted = true;
         videoDay.play().catch(() => {});
       });
