@@ -24,3 +24,18 @@ test_viewer.py
 __pycache__/
 
 .env
+
+# Temporary scratch & debug images
+crop_*
+bath_*
+bathroom.jpg_*
+balcony.jpg_*
+history_*
+panoramas_*
+real_pano_*
+clean_hall_*
+ph_*
+test_*
+pdf_renders/
+baslat.bat
+serve.py
