@@ -56,12 +56,15 @@
 
     #views-bar {
       position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 6px; z-index: 10;
-      background: rgba(18, 20, 26, 0.85); backdrop-filter: blur(12px);
-      padding: 6px 10px; border-radius: 30px;
-      border: 1px solid rgba(223,200,130,0.3);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      display: flex; align-items: center; gap: 8px; z-index: 20;
+      background: rgba(18, 20, 26, 0.90); backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 6px 12px; border-radius: 30px;
+      border: 1px solid rgba(223,200,130,0.35);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.65);
+      max-width: 90vw; overflow-x: auto; scrollbar-width: none; white-space: nowrap;
     }
+    #views-bar::-webkit-scrollbar { display: none; }
     .view-btn {
       background: transparent; border: none;
       color: #ccc; padding: 7px 14px; border-radius: 20px;
@@ -94,20 +97,13 @@
       100% { box-shadow: 0 0 22px rgba(56, 189, 248, 0.85); }
     }
 
-    #btn-panel {
-      position: fixed; top: 20px; right: 24px;
-      display: flex; flex-direction: column; gap: 8px; z-index: 10;
+    .dock-mode-btn.active {
+      background: linear-gradient(135deg, #dfc882, #e5b356) !important;
+      color: #12141a !important;
+      font-weight: 700 !important;
+      border-color: #dfc882 !important;
+      box-shadow: 0 0 14px rgba(223, 200, 130, 0.45) !important;
     }
-    .btn {
-      background: rgba(18, 20, 26, 0.85); backdrop-filter: blur(12px);
-      border: 1px solid rgba(223,200,130,0.3);
-      color: #dfc882; padding: 9px 16px; border-radius: 8px;
-      cursor: pointer; font-size: 0.78rem; letter-spacing: 1px;
-      transition: all 0.2s ease; text-transform: uppercase; font-weight: 500;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-    }
-    .btn:hover { background: rgba(223,200,130,0.25); border-color: #dfc882; transform: translateY(-1px); color: #fff; }
-    .btn.active { background: #dfc882; color: #12141a; font-weight: 600; border-color: #dfc882; }
 
     #controls-help {
       position: fixed; bottom: 85px; left: 24px;
@@ -116,8 +112,12 @@
       border-radius: 10px; padding: 10px 16px;
       color: #d0d4dc; font-size: 0.74rem; line-height: 1.7;
       z-index: 10; box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      transition: opacity 0.25s ease;
     }
     #controls-help span { color: #dfc882; font-weight: 600; }
+    #floor-card.visible ~ #controls-help {
+      opacity: 0; pointer-events: none;
+    }
 
     /* Bottom Navigation & Camera Control Toolbar */
     #bottom-controls-dock {
@@ -188,7 +188,7 @@
 
     /* Floor Selector Panel (Right Side) */
     #floor-panel {
-      position: fixed; top: 82px; right: 24px;
+      position: fixed; top: 20px; right: 24px;
       display: flex; flex-direction: column;
       background: rgba(18, 20, 26, 0.90); backdrop-filter: blur(14px);
       border: 1px solid rgba(223,200,130,0.3);
@@ -405,24 +405,10 @@
 
 <div id="views-bar">
   <button class="view-btn active" data-view="facade" onclick="setView('facade')">🏢 Fasad (Əsas Görünüş)</button>
-  <button class="view-btn" data-view="courtyard" onclick="setView('courtyard')">🌳 Həyət &amp; Park</button>
   <button class="view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı</button>
-  <button class="view-btn" data-view="street" onclick="setView('street')">🚗 Giriş &amp; Küçə</button>
   <button class="view-btn btn-cinematic-glow" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic Görünüş</button>
-  <button class="view-btn btn-360-spin" id="btn-spin-360" onclick="toggle360CinematicOrbit()" title="Binanı 360° Fırlat">🔄 360° Fırlat</button>
+  <button class="view-btn" style="color: #dfc882; font-weight: 700; border: 1px solid rgba(223,200,130,0.4);" onclick="openFloorPlanModal()" title="2D Mərtəbə Planı və Mənzil Eskizləri">🗺️ 2D Mərtəbə Planı</button>
   <button class="view-btn" style="background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; font-weight: 700; border: none; box-shadow: 0 0 16px rgba(219, 39, 119, 0.6); animation: pulse-btn-glow 2s infinite alternate;" onclick="open360Tour(52)">🔮 Mənzilin İçi (360° Tur)</button>
-</div>
-
-<div id="btn-panel">
-  <button class="btn btn-cinematic" id="btn-cinematic" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">🎬 Cinematic Görünüş</button>
-  <button class="btn btn-360-spin" id="btn-360-toggle" onclick="toggle360CinematicOrbit()">🔄 360° Fırlat</button>
-  <button class="btn active" id="btn-orbit" onclick="setMode('orbit')">🔄 Orbit Kamera</button>
-  <button class="btn" id="btn-walk"  onclick="setMode('walk')">🚶 Gəzinti (WASD)</button>
-  <button class="btn" id="btn-floorplan" onclick="openFloorPlanModal()">🗺️ 2D Mərtəbə Planı</button>
-  <button class="btn" id="btn-tour" style="color: #c084fc; border-color: rgba(192, 132, 252, 0.4);" onclick="open360Tour(52)">🔮 360° Mənzil Turu</button>
-  <button class="btn" onclick="resetCamera()">🏠 Sıfırla</button>
-  <button class="btn" onclick="toggleWireframe()">〰️ Wireframe</button>
-  <button class="btn" onclick="takeScreenshot()">📸 Şəkil Çək</button>
 </div>
 
 <!-- Vertical Floor Selector Panel (Right Side) -->
@@ -504,44 +490,37 @@
 
   <div class="dock-divider"></div>
 
-  <!-- 2b. 360 Orbit -->
+  <!-- 3. Kamera Rejimləri (Orbit & Gəzinti) -->
   <div class="dock-group">
-    <button class="dock-btn btn-360-spin" id="btn-dock-spin" onclick="toggle360CinematicOrbit()" title="360° Dairəvi Baxış">
+    <button class="dock-btn dock-mode-btn active" id="btn-dock-orbit" onclick="setMode('orbit')" title="Orbit Kamera İdarəetməsi">
+      🔄 Orbit
+    </button>
+    <button class="dock-btn dock-mode-btn" id="btn-dock-walk" onclick="setMode('walk')" title="Sərbəst Gəzinti (WASD və ya Ox düymələri)">
+      🚶 Gəzinti
+    </button>
+  </div>
+
+  <div class="dock-divider"></div>
+
+  <!-- 4. Fırlanma və Avto-Dönüş -->
+  <div class="dock-group">
+    <button class="dock-btn btn-360-spin" id="btn-dock-spin" onclick="toggle360CinematicOrbit()" title="360° Dairəvi Kinematik Baxış">
       🔄 360° Fırlat
     </button>
-  </div>
-
-  <div class="dock-divider"></div>
-
-  <!-- 3. Auto Rotation -->
-  <div class="dock-group">
     <button class="dock-btn" id="btn-autorotate" onclick="toggleAutoRotate()" title="Binanı Avtomatik Fırlat">
-      🔄 Avto-Dönüş
+      ▶️ Avto-Dönüş
     </button>
   </div>
 
   <div class="dock-divider"></div>
 
-  <!-- 4. Quick Views / Perspectives (Baxışlar) -->
+  <!-- 5. Əlavə Alətlər -->
   <div class="dock-group">
-    <button class="dock-btn view-btn active" data-view="facade" onclick="setView('facade')">🏢 Fasad</button>
-    <button class="dock-btn view-btn" data-view="courtyard" onclick="setView('courtyard')">🌳 Həyət</button>
-    <button class="dock-btn view-btn" data-view="birds" onclick="setView('birds')">🦅 Quşbaxışı</button>
-    <button class="dock-btn view-btn" data-view="street" onclick="setView('street')">🚗 Küçə</button>
-  </div>
-
-  <div class="dock-divider"></div>
-
-  <!-- 5. Floor Plan, 360 Apartment Tour & Cinematic View -->
-  <div class="dock-group">
-    <button class="dock-btn btn-cinematic" onclick="openCinematicView()" title="Kinematik Dron &amp; Gecə/Gündüz 360 Dönüş">
-      🎬 Cinematic Görünüş
+    <button class="dock-btn" onclick="takeScreenshot()" title="Ekran Şəkli Çək">
+      📸 Şəkil
     </button>
-    <button class="dock-btn" style="color: #dfc882; font-weight: 700;" onclick="openFloorPlanModal()" title="2D Mərtəbə Planı və Mənzil Eskizləri">
-      🗺️ 2D Plan
-    </button>
-    <button class="dock-btn" style="color: #fff; background: linear-gradient(135deg, #7c3aed, #db2777); font-weight: 700; border: none; box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);" onclick="open360Tour(52)" title="5-ci Mərtəbə, 52-ci Mənzil 360° Virtual Tur">
-      🔮 Mənzilin İçi (360°)
+    <button class="dock-btn" onclick="toggleWireframe()" title="Şəbəkə Görünüşü (Wireframe)">
+      〰️ Wireframe
     </button>
     <button class="dock-btn" onclick="resetCamera()" title="Kameranı Əsas Görünüşə Qaytar">
       🏠 Sıfırla
@@ -1846,8 +1825,9 @@ window.fitCameraToModel = (model) => {
 
 window.setMode = (mode) => {
   currentMode = mode;
-  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`btn-${mode}`).classList.add('active');
+  document.querySelectorAll('.dock-mode-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById(`btn-dock-${mode}`);
+  if (btn) btn.classList.add('active');
   if (mode === 'walk') {
     controls.enabled = false;
     document.getElementById('controls-help').innerHTML =
