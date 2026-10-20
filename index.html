@@ -415,6 +415,7 @@
   <button class="view-btn active" data-view="facade" onclick="setView('facade')" title="Fasad (Əsas Görünüş)" data-tooltip="Fasad (Əsas Görünüş)">🏢</button>
   <button class="view-btn" data-view="birds" onclick="setView('birds')" title="Quşbaxışı Görünüş" data-tooltip="Quşbaxışı Görünüş">🦅</button>
   <button class="view-btn btn-cinematic-glow" onclick="openCinematicView()" title="Cinematic Görünüş (Dron &amp; 360°)" data-tooltip="Cinematic Görünüş">🎬</button>
+  <button class="view-btn" onclick="open360Tour(52)" title="Mənzil 52 - 360° Virtual Tur və Gəzinti" data-tooltip="Mənzilin İçi (360° Tur)" style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.85), rgba(168, 85, 247, 0.85)); border-color: rgba(168, 85, 247, 0.9);">🔮</button>
 </div>
 
 <!-- Vertical Floor Selector Panel (Right Side) -->
@@ -502,6 +503,9 @@
     </button>
     <button class="dock-btn dock-btn-icon" id="btn-autorotate" onclick="toggleAutoRotate()" title="Binanı Avtomatik Fırlat" data-tooltip="Avto-Dönüş">
       ▶️
+    </button>
+    <button class="dock-btn dock-btn-icon" onclick="open360Tour(52)" title="Mənzilin İçi (360° Virtual Tur)" data-tooltip="Mənzilin İçi (360° Tur)" style="background: rgba(124, 58, 237, 0.35); border-color: rgba(168, 85, 247, 0.7); color: #fff;">
+      🔮
     </button>
   </div>
 
@@ -1104,7 +1108,7 @@ scene.add(groundMesh);
 
 // 5. GLTF Loader Setup
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+dracoLoader.setDecoderPath('draco/');
 dracoLoader.setWorkerLimit(Math.max(2, Math.min(4, (navigator.hardwareConcurrency || 4))));
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
@@ -1400,14 +1404,11 @@ if ('caches' in window) {
   caches.delete('marneuli-3d-model-cache-v1').catch(() => {});
 }
 
-const MODEL_CDN_URL = 'https://tural1227.github.io/marneuli/marneuli_draco.glb';
+const MODEL_CDN_URL = 'marneuli_draco.glb';
 const MODEL_LOCAL_URL = 'marneuli_draco.glb';
 
 function getFastestModelUrl() {
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.includes('digiwyze.ae')) {
-    return MODEL_LOCAL_URL;
-  }
-  return MODEL_CDN_URL;
+  return 'marneuli_draco.glb';
 }
 
 function loadScene(url) {
@@ -1433,11 +1434,11 @@ function loadScene(url) {
     }
   };
 
-  // Safety fallback: only dismiss after 120s if no completion occurred
+  // Safety fallback: if load takes more than 10 seconds, smoothly dismiss loading screen
   const loadSafetyTimer = setTimeout(() => {
-    console.warn('Safety fallback triggered after 120s: fading out loading screen.');
+    console.warn('Safety fallback triggered after 10s: fading out loading screen.');
     dismissLoading();
-  }, 120000);
+  }, 10000);
 
   gltfLoader.load(
     targetUrl,
@@ -1456,7 +1457,6 @@ function loadScene(url) {
       // Defer heavy geometry & material traverse to next tick so UI renders progress
       setTimeout(() => {
         try {
-          const _bbox = new THREE.Box3();
           const _bcenter = new THREE.Vector3();
 
           // Building 2 (other building without dome) is located at z < -3.0 and x > -5 with y > 0.4
@@ -1467,10 +1467,15 @@ function loadScene(url) {
             if (name.includes('rectangle3195') || name.includes('object1746173871') || name.includes('plane003') || name.includes('road') || name.includes('asphalt')) {
               return false;
             }
-            child.geometry.computeBoundingBox();
-            _bbox.setFromObject(child);
-            _bcenter.set(0, 0, 0);
-            _bbox.getCenter(_bcenter);
+            if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
+            const bbox = child.geometry.boundingBox;
+            if (!bbox) return false;
+            _bcenter.set(
+              (bbox.min.x + bbox.max.x) * 0.5,
+              (bbox.min.y + bbox.max.y) * 0.5,
+              (bbox.min.z + bbox.max.z) * 0.5
+            );
+            _bcenter.applyMatrix4(child.matrixWorld);
             return (_bcenter.z < -3.0 && _bcenter.x > -5 && _bcenter.y > 0.4);
           };
 
