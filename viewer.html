@@ -1474,13 +1474,10 @@ function loadScene(url) {
             return (_bcenter.z < -3.0 && _bcenter.x > -5 && _bcenter.y > 0.4);
           };
 
-          const toRemove = [];
-
           loadedModel.traverse(child => {
             if (child.isMesh) {
               if (isBuilding2Mesh(child)) {
                 child.visible = false;
-                toRemove.push(child);
                 return;
               }
 
@@ -1494,12 +1491,6 @@ function loadScene(url) {
                 buildingRaycastMeshes.push(child);
               }
             }
-          });
-
-          // Detach removed building 2 meshes
-          toRemove.forEach(m => {
-            if (m.parent) m.parent.remove(m);
-            if (m.geometry) m.geometry.dispose();
           });
 
           scene.add(loadedModel);
