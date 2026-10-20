@@ -622,10 +622,9 @@ const scene  = new THREE.Scene();
 window.scene = scene;
 window.renderer = renderer;
 
-// Camera setup: calibrated for real 60-meter building scale matching reference render c7672f9e.jpg
-// Camera setup: calibrated for real 60-meter building scale matching reference render a5d249b0.jpg
+// Camera setup: calibrated for Building 1 (Marneuli Residence with dome & rotunda)
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 3000);
-camera.position.set(32, 65, -90);
+camera.position.set(45, 32, -45);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 window.camera = camera;
@@ -638,7 +637,7 @@ controls.panSpeed           = 0.70; // Smooth pan
 controls.screenSpacePanning = true;
 controls.minDistance        = 8;
 controls.maxDistance        = 280;
-controls.target.set(22, 10, -5);
+controls.target.set(-11, 18, 15);
 controls.maxPolarAngle      = Math.PI / 2 - 0.03; // Never dip below ground plane
 controls.minPolarAngle      = 0.12; // Never flip over zenith
 
@@ -1103,7 +1102,7 @@ const groundMat = new THREE.MeshStandardMaterial({
 });
 const groundMesh = new THREE.Mesh(groundGeo, groundMat);
 groundMesh.rotation.x = -Math.PI / 2;
-groundMesh.position.set(22, -0.06, -5);
+groundMesh.position.set(-10, -0.06, 15);
 scene.add(groundMesh);
 
 // 5. GLTF Loader Setup
@@ -1457,8 +1456,61 @@ function loadScene(url) {
       // Defer heavy geometry & material traverse to next tick so UI renders progress
       setTimeout(() => {
         try {
+          loadedModel.updateMatrixWorld(true);
+
+          const siteKeywords = [
+            'plane003', 'road', 'asphalt', 'curb', 'pave', 'walk', 'rectangle5', 'rectangle6',
+            'rectangle319', '174617387', 'bush', 'am176', 'archmodel', 'light', 'stolb',
+            'wooden', 'bench', 'table', 'chess', 'pawn', 'bishop', 'knight', 'rook', 'queen',
+            'king', 'candle', 'pillow', 'bottle', 'glass', 'tennis', 'dizipro', 'car',
+            'speed bump', 'arrow', 'richter', 'green_44', 'barrier', 'countertop_010',
+            'courtyard_collection', 'cylinder240', 'line038', 'line039', 'line040',
+            'line041', 'line042', 'line043', 'circle382', 'circle383', 'circle384',
+            'circle385', 'box005', 'board', 'cap_010', 'handle_010', 'handle_loop',
+            'handle_ring', 'wine008', 'wine_label', 'rivet_019', 'thread_010'
+          ];
+
+          const isSiteInfrastructure = (name) => {
+            const n = (name || '').toLowerCase();
+            for (let i = 0; i < siteKeywords.length; i++) {
+              if (n.includes(siteKeywords[i])) return true;
+            }
+            return false;
+          };
+
+          const _tempBBox = new THREE.Box3();
+          const _tempCenter = new THREE.Vector3();
+
+          const isBuilding2Mesh = (child) => {
+            if (!child.isMesh) return false;
+            const name = child.name || '';
+            // Foundation and plinth of Building 2 must be eliminated
+            if (name === 'ცოკოლი001' || name.includes('ცოკოლი001')) return true;
+            // Site environment and infrastructure is preserved
+            if (isSiteInfrastructure(name)) return false;
+            // Compute world center
+            if (child.geometry) {
+              if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
+              _tempBBox.copy(child.geometry.boundingBox).applyMatrix4(child.matrixWorld);
+              _tempBBox.getCenter(_tempCenter);
+            } else {
+              _tempCenter.setFromMatrixPosition(child.matrixWorld);
+            }
+            // Any structure in the Building 2 sector (Z < -0.8) belongs to Building 2
+            return _tempCenter.z < -0.8;
+          };
+
+          const toDetach = [];
+
           loadedModel.traverse(child => {
             if (child.isMesh) {
+              if (isBuilding2Mesh(child)) {
+                child.visible = false;
+                child.layers.disableAll();
+                toDetach.push(child);
+                return;
+              }
+
               meshCount++;
               child.frustumCulled = true;
               assignHighFidelityMaterial(child);
@@ -1471,12 +1523,17 @@ function loadScene(url) {
             }
           });
 
+          // Safely detach eliminated Building 2 meshes from scene graph
+          toDetach.forEach(m => {
+            if (m.parent) m.parent.remove(m);
+          });
+
           scene.add(loadedModel);
           if (typeof window.setView === 'function') {
             window.setView('facade');
           } else {
-            camera.position.set(32, 65, -90);
-            controls.target.set(22, 10, -5);
+            camera.position.set(45, 32, -45);
+            controls.target.set(-11, 18, 15);
             controls.update();
           }
 
@@ -1728,9 +1785,9 @@ window.addEventListener('click', (e) => {
 
 let cinematicOrbitActive = false;
 let cinematicOrbitAngle = 0;
-const CINEMATIC_DISTANCE = 98;
-const CINEMATIC_HEIGHT = 48;
-const CINEMATIC_CENTER = new THREE.Vector3(22, 10, -5);
+const CINEMATIC_DISTANCE = 85;
+const CINEMATIC_HEIGHT = 38;
+const CINEMATIC_CENTER = new THREE.Vector3(-11, 18, 15);
 
 window.toggle360CinematicOrbit = () => {
   cinematicOrbitActive = !cinematicOrbitActive;
@@ -1753,7 +1810,7 @@ window.toggle360CinematicOrbit = () => {
   }
 };
 
-// Preset Architectural Views (Hero Perspectives calibrated to reference a5d249b0.jpg)
+// Preset Architectural Views (Hero Perspectives calibrated to Building 1 with classical dome & rotunda)
 window.setView = (view) => {
   document.querySelectorAll('.view-btn').forEach(b => {
     if (b.getAttribute('data-view') === view) b.classList.add('active');
@@ -1761,21 +1818,21 @@ window.setView = (view) => {
   });
 
   if (view === 'facade') {
-    // Exact elevated diagonal perspective matching reference render a5d249b0.jpg
-    camera.position.set(32, 65, -90);
-    controls.target.set(22, 10, -5);
+    // Grand perspective focusing on classical dome & curved glass facade
+    camera.position.set(45, 32, -45);
+    controls.target.set(-11, 18, 15);
   } else if (view === 'courtyard') {
-    // Inside the landscaped courtyard garden with trees, chess & table tennis
-    camera.position.set(55, 14, -25);
-    controls.target.set(72, 2, -12);
+    // Inside the landscaped courtyard garden with trees & fountain
+    camera.position.set(32, 22, 55);
+    controls.target.set(-11, 16, 22);
   } else if (view === 'birds') {
-    // High bird's eye aerial master plan
-    camera.position.set(35, 115, -115);
-    controls.target.set(20, 10, 0);
+    // High bird's eye aerial master plan showing dome & terraces
+    camera.position.set(65, 85, -60);
+    controls.target.set(-11, 18, 15);
   } else if (view === 'street') {
-    // Street perspective looking along the central avenue with cars
-    camera.position.set(16, 5.0, -32);
-    controls.target.set(10, 3.5, 12);
+    // Street perspective looking at the main entrance & rotunda
+    camera.position.set(30, 6.0, -20);
+    controls.target.set(-11, 10, 15);
   }
   controls.update();
 };
