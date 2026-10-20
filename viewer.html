@@ -625,7 +625,7 @@ window.renderer = renderer;
 // Camera setup: calibrated for real 60-meter building scale matching reference render c7672f9e.jpg
 // Camera setup: calibrated for real 60-meter building scale matching reference render a5d249b0.jpg
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 3000);
-camera.position.set(48, 32, -45);
+camera.position.set(32, 65, -90);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 window.camera = camera;
@@ -638,7 +638,7 @@ controls.panSpeed           = 0.70; // Smooth pan
 controls.screenSpacePanning = true;
 controls.minDistance        = 8;
 controls.maxDistance        = 280;
-controls.target.set(-10, 18, 15);
+controls.target.set(22, 10, -5);
 controls.maxPolarAngle      = Math.PI / 2 - 0.03; // Never dip below ground plane
 controls.minPolarAngle      = 0.12; // Never flip over zenith
 
@@ -1457,35 +1457,8 @@ function loadScene(url) {
       // Defer heavy geometry & material traverse to next tick so UI renders progress
       setTimeout(() => {
         try {
-          const _bcenter = new THREE.Vector3();
-
-          // Building 2 (other building without dome) is located at z < -3.0 and x > -5 with y > 0.4
-          // Keep site ground/road/plane meshes
-          const isBuilding2Mesh = (child) => {
-            if (!child.isMesh || !child.geometry) return false;
-            const name = (child.name || '').toLowerCase();
-            if (name.includes('rectangle3195') || name.includes('object1746173871') || name.includes('plane003') || name.includes('road') || name.includes('asphalt')) {
-              return false;
-            }
-            if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
-            const bbox = child.geometry.boundingBox;
-            if (!bbox) return false;
-            _bcenter.set(
-              (bbox.min.x + bbox.max.x) * 0.5,
-              (bbox.min.y + bbox.max.y) * 0.5,
-              (bbox.min.z + bbox.max.z) * 0.5
-            );
-            _bcenter.applyMatrix4(child.matrixWorld);
-            return (_bcenter.z < -3.0 && _bcenter.x > -5 && _bcenter.y > 0.4);
-          };
-
           loadedModel.traverse(child => {
             if (child.isMesh) {
-              if (isBuilding2Mesh(child)) {
-                child.visible = false;
-                return;
-              }
-
               meshCount++;
               child.frustumCulled = true;
               assignHighFidelityMaterial(child);
@@ -1502,8 +1475,8 @@ function loadScene(url) {
           if (typeof window.setView === 'function') {
             window.setView('facade');
           } else {
-            camera.position.set(48, 32, -45);
-            controls.target.set(-10, 18, 15);
+            camera.position.set(32, 65, -90);
+            controls.target.set(22, 10, -5);
             controls.update();
           }
 
@@ -1755,9 +1728,9 @@ window.addEventListener('click', (e) => {
 
 let cinematicOrbitActive = false;
 let cinematicOrbitAngle = 0;
-const CINEMATIC_DISTANCE = 85;
-const CINEMATIC_HEIGHT = 38;
-const CINEMATIC_CENTER = new THREE.Vector3(-10, 18, 15);
+const CINEMATIC_DISTANCE = 98;
+const CINEMATIC_HEIGHT = 48;
+const CINEMATIC_CENTER = new THREE.Vector3(22, 10, -5);
 
 window.toggle360CinematicOrbit = () => {
   cinematicOrbitActive = !cinematicOrbitActive;
@@ -1780,7 +1753,7 @@ window.toggle360CinematicOrbit = () => {
   }
 };
 
-// Preset Architectural Views (Hero Perspectives for the building with classical dome & glass rotunda)
+// Preset Architectural Views (Hero Perspectives calibrated to reference a5d249b0.jpg)
 window.setView = (view) => {
   document.querySelectorAll('.view-btn').forEach(b => {
     if (b.getAttribute('data-view') === view) b.classList.add('active');
@@ -1788,21 +1761,21 @@ window.setView = (view) => {
   });
 
   if (view === 'facade') {
-    // Grand perspective focusing on classical dome & curved glass facade
-    camera.position.set(48, 32, -45);
-    controls.target.set(-10, 18, 15);
+    // Exact elevated diagonal perspective matching reference render a5d249b0.jpg
+    camera.position.set(32, 65, -90);
+    controls.target.set(22, 10, -5);
   } else if (view === 'courtyard') {
-    // Inside the landscaped courtyard garden with trees & fountain
-    camera.position.set(30, 20, 55);
-    controls.target.set(-10, 15, 25);
+    // Inside the landscaped courtyard garden with trees, chess & table tennis
+    camera.position.set(55, 14, -25);
+    controls.target.set(72, 2, -12);
   } else if (view === 'birds') {
-    // High bird's eye aerial master plan showing dome & terraces
-    camera.position.set(65, 85, -65);
-    controls.target.set(-10, 15, 18);
+    // High bird's eye aerial master plan
+    camera.position.set(35, 115, -115);
+    controls.target.set(20, 10, 0);
   } else if (view === 'street') {
-    // Street perspective looking at the main entrance & rotunda
-    camera.position.set(35, 6, -20);
-    controls.target.set(-10, 10, 15);
+    // Street perspective looking along the central avenue with cars
+    camera.position.set(16, 5.0, -32);
+    controls.target.set(10, 3.5, 12);
   }
   controls.update();
 };
