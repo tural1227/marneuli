@@ -108,12 +108,20 @@
 
     #controls-help {
       position: fixed; bottom: 85px; left: 24px;
-      background: rgba(18, 20, 26, 0.85); backdrop-filter: blur(12px);
-      border: 1px solid rgba(223,200,130,0.25);
-      border-radius: 10px; padding: 10px 16px;
-      color: #d0d4dc; font-size: 0.74rem; line-height: 1.7;
-      z-index: 10; box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-      transition: opacity 0.25s ease;
+      background: rgba(18, 20, 26, 0.92); backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(223,200,130,0.35);
+      border-radius: 12px; padding: 12px 18px;
+      color: #d0d4dc; font-size: 0.76rem; line-height: 1.8;
+      z-index: 20; box-shadow: 0 10px 35px rgba(0,0,0,0.7);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      opacity: 1; transform: translateY(0);
+      pointer-events: auto;
+    }
+    #controls-help.hidden-help {
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
     }
     #controls-help span { color: #dfc882; font-weight: 600; }
     #floor-card.visible ~ #controls-help {
@@ -202,12 +210,39 @@
     #floor-panel {
       position: fixed; top: 20px; right: 24px;
       display: flex; flex-direction: column;
+      background: rgba(18, 20, 26, 0.94); backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(223,200,130,0.35);
+      border-radius: 12px; padding: 12px 10px;
+      z-index: 25; box-shadow: 0 10px 35px rgba(0,0,0,0.7);
+      width: 185px; max-height: calc(100vh - 180px);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      transform: translateX(calc(100% + 40px));
+      opacity: 0;
+      pointer-events: none;
+    }
+    #floor-panel.open {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #floor-panel-tab {
+      position: fixed; top: 24px; right: 0;
+      display: flex; align-items: center; gap: 6px;
       background: rgba(18, 20, 26, 0.90); backdrop-filter: blur(14px);
-      border: 1px solid rgba(223,200,130,0.3);
-      border-radius: 12px; padding: 10px 8px;
-      z-index: 15; box-shadow: 0 10px 35px rgba(0,0,0,0.6);
-      width: 175px; max-height: calc(100vh - 180px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(223,200,130,0.35); border-right: none;
+      border-radius: 8px 0 0 8px; padding: 9px 12px;
+      color: #dfc882; font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; z-index: 14; box-shadow: -4px 4px 16px rgba(0,0,0,0.4);
       transition: all 0.25s ease;
+    }
+    #floor-panel-tab:hover {
+      background: rgba(30, 35, 48, 0.95);
+      box-shadow: -4px 4px 20px rgba(223,200,130,0.3);
+    }
+    #floor-panel.open ~ #floor-panel-tab {
+      opacity: 0; pointer-events: none;
     }
     #floor-panel-title {
       font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px;
@@ -422,10 +457,18 @@
 <div id="floor-panel">
   <div id="floor-panel-title">
     <span>🏢 Mərtəbələr</span>
-    <button class="btn-reset-floor" onclick="selectFloor(null)">Hamısı</button>
+    <div style="display:flex; align-items:center; gap:6px;">
+      <button class="btn-reset-floor" onclick="selectFloor(null)">Hamısı</button>
+      <button onclick="toggleFloorPanel(false)" style="background:none; border:none; color:#dfc882; cursor:pointer; font-size:1.1rem; line-height:1; padding:0 2px;" title="Paneli Bağla">✕</button>
+    </div>
   </div>
   <div id="floor-list"></div>
 </div>
+
+<!-- Floating Floor Panel Toggle Tab -->
+<button id="floor-panel-tab" onclick="toggleFloorPanel()" title="Mərtəbələr Paneli">
+  <span>🏢</span><span>Mərtəbələr</span>
+</button>
 
 <!-- Floating 3D Hover Tooltip -->
 <div id="floor-tooltip">
@@ -451,6 +494,10 @@
 </div>
 
 <div id="controls-help">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; border-bottom:1px solid rgba(223,200,130,0.25); padding-bottom:5px;">
+    <span style="color:#dfc882; font-weight:700; font-size:0.78rem;">ℹ️ İdarəetmə Bələdçisi</span>
+    <button onclick="toggleControlsHelp(false)" style="background:none; border:none; color:#dfc882; font-size:0.95rem; cursor:pointer; padding:0 4px;" title="Bağla">✕</button>
+  </div>
   <span>Sol klik + Sürüşdür</span> — Kameranı fırlat<br>
   <span>Sağ klik + Sürüşdür</span> — Səhnəni sürüşdür (Pan)<br>
   <span>Mərtəbənin üzərinə gəl</span> — Mərtəbəni seç &amp; işıqlandır<br>
@@ -511,8 +558,14 @@
 
   <div class="dock-divider"></div>
 
-  <!-- 4. Əlavə Alətlər -->
+  <!-- 4. Panellər və Əlavə Alətlər -->
   <div class="dock-group">
+    <button class="dock-btn dock-btn-icon" id="btn-dock-floors" onclick="toggleFloorPanel()" title="Mərtəbələr Paneli (Aç/Bağla)" data-tooltip="Mərtəbələr (Aç/Bağla)">
+      🏢
+    </button>
+    <button class="dock-btn dock-btn-icon" id="btn-dock-help" onclick="toggleControlsHelp()" title="İdarəetmə Bələdçisi (Kömək)" data-tooltip="Kömək / İdarəetmə">
+      ℹ️
+    </button>
     <button class="dock-btn dock-btn-icon" onclick="takeScreenshot()" title="Ekran Şəkli Çək" data-tooltip="Ekran Şəkli Çək">
       📸
     </button>
@@ -1466,11 +1519,11 @@ function loadScene(url) {
             const name = child.name || '';
             const lowerName = name.toLowerCase();
 
-            // 1. Both secondary foundation blocks must be eliminated
-            if (name.includes('ცოკოლი001') || name.includes('ცოკოლი002')) return true;
+            // 1. Both secondary foundation blocks and footprint polygon slabs of deleted building must be eliminated
+            if (name.includes('ცოკოლი001') || name.includes('ცოკოლი002') || lowerName.includes('line2000007836')) return true;
 
-            // 2. Always preserve the main ground perimeter disc
-            if (lowerName.includes('plane003')) return false;
+            // 2. Always preserve the main ground perimeter disc and front road
+            if (lowerName.includes('plane003') || name.includes('3197') || name.includes('3198')) return false;
 
             // Compute world center
             if (child.geometry) {
@@ -1481,11 +1534,11 @@ function loadScene(url) {
               _tempCenter.setFromMatrixPosition(child.matrixWorld);
             }
 
-            // 3. Any element in the secondary building & secondary park zone (Z < -0.8) is eliminated
-            if (_tempCenter.z < -0.8) return true;
+            // 3. All secondary building parts, floating railings, courtyard, and deleted building ground footprint (Z < 6.5) are eliminated
+            if (_tempCenter.z < 6.5) return true;
 
-            // 4. Any floating wing structure, pilasters, balconies, windows, and green lawn to the right of the road (X > 12.2 && Z < 18.0) are eliminated
-            if (_tempCenter.x > 12.2 && _tempCenter.z < 18.0) return true;
+            // 4. Any floating connector wing structure, pilasters, balconies, and right lawn (X > 12.0 && Z < 22.0) are eliminated
+            if (_tempCenter.x > 12.0 && _tempCenter.z < 22.0) return true;
 
             return false;
           };
@@ -1653,6 +1706,35 @@ window.unhoverFloor = (id) => {
 
 let targetLookAtY = null;
 
+let helpTimer = setTimeout(() => {
+  const el = document.getElementById('controls-help');
+  if (el) el.classList.add('hidden-help');
+}, 6000);
+
+window.toggleControlsHelp = (force) => {
+  const el = document.getElementById('controls-help');
+  if (!el) return;
+  if (helpTimer) {
+    clearTimeout(helpTimer);
+    helpTimer = null;
+  }
+  if (force !== undefined) {
+    el.classList.toggle('hidden-help', !force);
+  } else {
+    el.classList.toggle('hidden-help');
+  }
+};
+
+window.toggleFloorPanel = (force) => {
+  const panel = document.getElementById('floor-panel');
+  if (!panel) return;
+  if (force !== undefined) {
+    panel.classList.toggle('open', force);
+  } else {
+    panel.classList.toggle('open');
+  }
+};
+
 window.selectFloor = (id) => {
   window.currentSelectedFloorId = id;
   document.querySelectorAll('.floor-item').forEach(el => {
@@ -1669,6 +1751,9 @@ window.selectFloor = (id) => {
     targetLookAtY = 10;
     return;
   }
+
+  // Automatically reveal floor selector panel when a floor is chosen
+  window.toggleFloorPanel(true);
 
   const floor = FLOORS.find(f => f.id === id);
   if (!floor) return;
@@ -1718,7 +1803,7 @@ window.addEventListener('pointermove', (e) => {
     return;
   }
 
-  if (e.target.closest('#floor-panel, #btn-panel, #views-bar, #ui, #floor-card, #controls-help')) {
+  if (e.target.closest('#floor-panel, #floor-panel-tab, #btn-panel, #views-bar, #ui, #floor-card, #controls-help, #bottom-controls-dock, #cinematic-modal, #pano-modal, #floor-plan-modal')) {
     floorTooltip.classList.remove('visible');
     return;
   }
@@ -1760,7 +1845,7 @@ window.addEventListener('pointermove', (e) => {
 
 window.addEventListener('click', (e) => {
   if (didDrag) return; // User was rotating/panning the camera, NEVER trigger accidental floor select!
-  if (e.target.closest('#floor-panel, #btn-panel, #views-bar, #ui, #floor-card, #controls-help')) return;
+  if (e.target.closest('#floor-panel, #floor-panel-tab, #btn-panel, #views-bar, #ui, #floor-card, #controls-help, #bottom-controls-dock, #cinematic-modal, #pano-modal, #floor-plan-modal')) return;
   if (currentHoveredFloorId) {
     selectFloor(currentHoveredFloorId);
     if (typeof openFloorPlanModal === 'function') {
@@ -1927,19 +2012,33 @@ window.setMode = (mode) => {
   document.querySelectorAll('.dock-mode-btn').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById(`btn-dock-${mode}`);
   if (btn) btn.classList.add('active');
+  const ch = document.getElementById('controls-help');
   if (mode === 'walk') {
     controls.enabled = false;
-    document.getElementById('controls-help').innerHTML =
-      '<span>W / S</span> — İrəli / Geri &nbsp;|&nbsp; <span>A / D</span> — Sol / Sağ<br>' +
-      '<span>ESC</span> — Orbitə qayıt';
+    if (ch) {
+      ch.classList.remove('hidden-help');
+      ch.innerHTML =
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; border-bottom:1px solid rgba(223,200,130,0.25); padding-bottom:5px;">' +
+        '<span style="color:#dfc882; font-weight:700; font-size:0.78rem;">ℹ️ Gəzinti Rejimi (Walk)</span>' +
+        '<button onclick="toggleControlsHelp(false)" style="background:none; border:none; color:#dfc882; font-size:0.95rem; cursor:pointer; padding:0 4px;" title="Bağla">✕</button>' +
+        '</div>' +
+        '<span>W / S</span> — İrəli / Geri &nbsp;|&nbsp; <span>A / D</span> — Sol / Sağ<br>' +
+        '<span>ESC</span> — Orbitə qayıt';
+    }
   } else {
     controls.enabled = true;
-    document.getElementById('controls-help').innerHTML =
-      '<span>Sol klik + Sürüşdür</span> — Kameranı fırlat<br>' +
-      '<span>Sağ klik + Sürüşdür</span> — Səhnəni sürüşdür (Pan)<br>' +
-      '<span>Mərtəbənin üzərinə gəl</span> — Mərtəbəni seç &amp; işıqlandır<br>' +
-      '<span>Təkər (Scroll)</span> — Zoom yaxınlaş / uzaqlaş<br>' +
-      '<span>M / P</span> — 2D Eskiz Planı &nbsp;|&nbsp; <span>F</span> — Tam ekran';
+    if (ch) {
+      ch.innerHTML =
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; border-bottom:1px solid rgba(223,200,130,0.25); padding-bottom:5px;">' +
+        '<span style="color:#dfc882; font-weight:700; font-size:0.78rem;">ℹ️ İdarəetmə Bələdçisi</span>' +
+        '<button onclick="toggleControlsHelp(false)" style="background:none; border:none; color:#dfc882; font-size:0.95rem; cursor:pointer; padding:0 4px;" title="Bağla">✕</button>' +
+        '</div>' +
+        '<span>Sol klik + Sürüşdür</span> — Kameranı fırlat<br>' +
+        '<span>Sağ klik + Sürüşdür</span> — Səhnəni sürüşdür (Pan)<br>' +
+        '<span>Mərtəbənin üzərinə gəl</span> — Mərtəbəni seç &amp; işıqlandır<br>' +
+        '<span>Təkər (Scroll)</span> — Zoom yaxınlaş / uzaqlaş<br>' +
+        '<span>M / P</span> — 2D Eskiz Planı &nbsp;|&nbsp; <span>F</span> — Tam ekran';
+    }
   }
 };
 
