@@ -415,7 +415,6 @@
   <button class="view-btn active" data-view="facade" onclick="setView('facade')" title="Fasad (Əsas Görünüş)" data-tooltip="Fasad (Əsas Görünüş)">🏢</button>
   <button class="view-btn" data-view="birds" onclick="setView('birds')" title="Quşbaxışı Görünüş" data-tooltip="Quşbaxışı Görünüş">🦅</button>
   <button class="view-btn btn-cinematic-glow" onclick="openCinematicView()" title="Cinematic Görünüş (Dron &amp; 360°)" data-tooltip="Cinematic Görünüş">🎬</button>
-  <button class="view-btn" onclick="open360Tour(52)" title="Mənzil 52 - 360° Virtual Tur və Gəzinti" data-tooltip="Mənzilin İçi (360° Tur)" style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.85), rgba(168, 85, 247, 0.85)); border-color: rgba(168, 85, 247, 0.9);">🔮</button>
 </div>
 
 <!-- Vertical Floor Selector Panel (Right Side) -->
@@ -448,7 +447,6 @@
   <div class="card-row"><span>Tavan hündürlüyü:</span><span>3.30 metr</span></div>
   <div class="card-row"><span>Eyvan:</span><span>Fransız eyvanları &amp; Teras</span></div>
   <button class="card-action-btn" onclick="openFloorPlanModal(window.currentSelectedFloorId)">📐 Bu Mərtəbənin Eskiz Planını Aç</button>
-  <button class="card-action-btn" style="background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; margin-top: 6px;" onclick="open360Tour(52)">🔮 Mənzil 52-yə Daxil Ol (360° Mənzilin İçi)</button>
 </div>
 
 <div id="controls-help">
@@ -504,9 +502,6 @@
     </button>
     <button class="dock-btn dock-btn-icon" id="btn-autorotate" onclick="toggleAutoRotate()" title="Binanı Avtomatik Fırlat" data-tooltip="Avto-Dönüş">
       ▶️
-    </button>
-    <button class="dock-btn dock-btn-icon" onclick="open360Tour(52)" title="Mənzilin İçi (360° Virtual Tur)" data-tooltip="Mənzilin İçi (360° Tur)" style="background: rgba(124, 58, 237, 0.35); border-color: rgba(168, 85, 247, 0.7); color: #fff;">
-      🔮
     </button>
   </div>
 
@@ -620,11 +615,13 @@ renderer.outputColorSpace  = THREE.SRGBColorSpace;
 container.appendChild(renderer.domElement);
 
 const scene  = new THREE.Scene();
+window.scene = scene;
+window.renderer = renderer;
 
 // Camera setup: calibrated for real 60-meter building scale matching reference render c7672f9e.jpg
 // Camera setup: calibrated for real 60-meter building scale matching reference render a5d249b0.jpg
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 3000);
-camera.position.set(32, 65, -90);
+camera.position.set(48, 32, -45);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 window.camera = camera;
@@ -637,7 +634,7 @@ controls.panSpeed           = 0.70; // Smooth pan
 controls.screenSpacePanning = true;
 controls.minDistance        = 8;
 controls.maxDistance        = 280;
-controls.target.set(22, 10, -5);
+controls.target.set(-10, 18, 15);
 controls.maxPolarAngle      = Math.PI / 2 - 0.03; // Never dip below ground plane
 controls.minPolarAngle      = 0.12; // Never flip over zenith
 
@@ -1108,7 +1105,7 @@ scene.add(groundMesh);
 // 5. GLTF Loader Setup
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
-dracoLoader.setWorkerLimit(Math.max(4, navigator.hardwareConcurrency || 4));
+dracoLoader.setWorkerLimit(2);
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
@@ -1117,6 +1114,9 @@ let wireframeOn = false;
 let currentMode = 'orbit';
 let meshCount   = 0;
 let carCounter  = 0;
+
+const buildingRaycastMeshes = [];
+window.buildingRaycastMeshes = buildingRaycastMeshes;
 
 function extractMatNum(matName) {
   if (!matName) return null;
@@ -1414,6 +1414,23 @@ function loadScene(url) {
   const pt = document.getElementById('progress-text');
   const ls = document.getElementById('loading-sub');
 
+  let safetyDismissed = false;
+  const dismissLoading = () => {
+    if (safetyDismissed) return;
+    safetyDismissed = true;
+    const loading = document.getElementById('loading');
+    if (loading) {
+      loading.classList.add('hidden');
+      setTimeout(() => { loading.style.display = 'none'; }, 600);
+    }
+  };
+
+  // Safety fallback: if decompression takes too long or encounters an edge case, dismiss loading screen
+  const loadSafetyTimer = setTimeout(() => {
+    console.warn('Safety fallback triggered: fading out loading screen.');
+    dismissLoading();
+  }, 18000);
+
   gltfLoader.load(
     targetUrl,
     (gltf) => {
@@ -1430,8 +1447,34 @@ function loadScene(url) {
       // Defer heavy geometry & material traverse to next tick so UI renders progress
       setTimeout(() => {
         try {
+          const _bbox = new THREE.Box3();
+          const _bcenter = new THREE.Vector3();
+
+          // Building 2 (other building without dome) is located at z < -3.0 and x > -5 with y > 0.4
+          // Keep site ground/road/plane meshes
+          const isBuilding2Mesh = (child) => {
+            if (!child.isMesh || !child.geometry) return false;
+            const name = (child.name || '').toLowerCase();
+            if (name.includes('rectangle3195') || name.includes('object1746173871') || name.includes('plane003') || name.includes('road') || name.includes('asphalt')) {
+              return false;
+            }
+            child.geometry.computeBoundingBox();
+            _bbox.setFromObject(child);
+            _bcenter.set(0, 0, 0);
+            _bbox.getCenter(_bcenter);
+            return (_bcenter.z < -3.0 && _bcenter.x > -5 && _bcenter.y > 0.4);
+          };
+
+          const toRemove = [];
+
           loadedModel.traverse(child => {
             if (child.isMesh) {
+              if (isBuilding2Mesh(child)) {
+                child.visible = false;
+                toRemove.push(child);
+                return;
+              }
+
               meshCount++;
               child.frustumCulled = true;
               assignHighFidelityMaterial(child);
@@ -1444,8 +1487,20 @@ function loadScene(url) {
             }
           });
 
+          // Detach removed building 2 meshes
+          toRemove.forEach(m => {
+            if (m.parent) m.parent.remove(m);
+            if (m.geometry) m.geometry.dispose();
+          });
+
           scene.add(loadedModel);
-          setView('facade');
+          if (typeof window.setView === 'function') {
+            window.setView('facade');
+          } else {
+            camera.position.set(48, 32, -45);
+            controls.target.set(-10, 18, 15);
+            controls.update();
+          }
 
           const statMeshes = document.getElementById('stat-meshes');
           if (statMeshes) statMeshes.textContent = meshCount.toLocaleString();
@@ -1453,18 +1508,15 @@ function loadScene(url) {
           // Warm up GPU shaders
           renderer.render(scene, camera);
 
-          // Smoothly remove loading screen
+          // Clear safety timer and smoothly remove loading screen
+          clearTimeout(loadSafetyTimer);
           requestAnimationFrame(() => {
-            const loading = document.getElementById('loading');
-            if (loading) {
-              loading.classList.add('hidden');
-              setTimeout(() => { loading.style.display = 'none'; }, 600);
-            }
+            dismissLoading();
           });
         } catch (procErr) {
           console.error('Model setup error:', procErr);
-          const loading = document.getElementById('loading');
-          if (loading) loading.style.display = 'none';
+          clearTimeout(loadSafetyTimer);
+          dismissLoading();
         }
       }, 40);
     },
@@ -1479,7 +1531,7 @@ function loadScene(url) {
           pb.classList.add('processing');
         }
         if (pt) pt.innerHTML = '⚡ <b>48.9 MB endirildi &bull; 3D Memarlıq elementləri açılır və səhnəyə qurulur...</b>';
-        if (ls) ls.innerHTML = '🏢 2,730 memarlıq detalı, pəncərələr və landşaft hazırlanır. Zəhmət olmasa bir neçə saniyə gözləyin...';
+        if (ls) ls.innerHTML = '🏢 1,111 memarlıq detalı, pəncərələr və landşaft hazırlanır. Zəhmət olmasa bir neçə saniyə gözləyin...';
       } else {
         const pct = Math.min(96, Math.max(1, Math.round((loaded / expectedTotal) * 100)));
         if (pb) pb.style.width = pct + '%';
@@ -1491,6 +1543,8 @@ function loadScene(url) {
       if (targetUrl !== MODEL_LOCAL_URL) {
         loadScene(MODEL_LOCAL_URL);
       } else {
+        clearTimeout(loadSafetyTimer);
+        dismissLoading();
         if (ls) ls.textContent = 'Xəta baş verdi: ' + err.message;
       }
     }
@@ -1516,7 +1570,6 @@ const FLOORS = [
   { id: 1,  num: "1",  name: "1-ci Mərtəbə",  badge: "Ticarət", type: "Kommersiya & Qəbul Sahəsi", apts: "Mağazalar, Kafe və Xidmətlər", area: "120 – 600 m²", yMin: 0.0,  yMax: 4.0,  targetY: 2.0 }
 ];
 
-const buildingRaycastMeshes = [];
 let currentHoveredFloorId = null;
 window.currentSelectedFloorId = null;
 
@@ -1672,10 +1725,11 @@ window.addEventListener('click', (e) => {
   if (e.target.closest('#floor-panel, #btn-panel, #views-bar, #ui, #floor-card, #controls-help')) return;
   if (currentHoveredFloorId) {
     selectFloor(currentHoveredFloorId);
+    if (typeof openFloorPlanModal === 'function') {
+      openFloorPlanModal(currentHoveredFloorId);
+    }
   }
 });
-
-
 
 // ==========================================
 // 🔄 360° KİNEMATİK DAİRƏVİ FIRLANMA
@@ -1683,9 +1737,9 @@ window.addEventListener('click', (e) => {
 
 let cinematicOrbitActive = false;
 let cinematicOrbitAngle = 0;
-const CINEMATIC_DISTANCE = 98;
-const CINEMATIC_HEIGHT = 48;
-const CINEMATIC_CENTER = new THREE.Vector3(22, 10, -5);
+const CINEMATIC_DISTANCE = 85;
+const CINEMATIC_HEIGHT = 38;
+const CINEMATIC_CENTER = new THREE.Vector3(-10, 18, 15);
 
 window.toggle360CinematicOrbit = () => {
   cinematicOrbitActive = !cinematicOrbitActive;
@@ -1708,7 +1762,7 @@ window.toggle360CinematicOrbit = () => {
   }
 };
 
-// Preset Architectural Views (Hero Perspectives calibrated to reference a5d249b0.jpg)
+// Preset Architectural Views (Hero Perspectives for the building with classical dome & glass rotunda)
 window.setView = (view) => {
   document.querySelectorAll('.view-btn').forEach(b => {
     if (b.getAttribute('data-view') === view) b.classList.add('active');
@@ -1716,21 +1770,21 @@ window.setView = (view) => {
   });
 
   if (view === 'facade') {
-    // Exact elevated diagonal perspective matching reference render a5d249b0.jpg
-    camera.position.set(32, 65, -90);
-    controls.target.set(22, 10, -5);
+    // Grand perspective focusing on classical dome & curved glass facade
+    camera.position.set(48, 32, -45);
+    controls.target.set(-10, 18, 15);
   } else if (view === 'courtyard') {
-    // Inside the landscaped courtyard garden with trees, chess & table tennis
-    camera.position.set(55, 14, -25);
-    controls.target.set(72, 2, -12);
+    // Inside the landscaped courtyard garden with trees & fountain
+    camera.position.set(30, 20, 55);
+    controls.target.set(-10, 15, 25);
   } else if (view === 'birds') {
-    // High bird's eye aerial master plan
-    camera.position.set(35, 115, -115);
-    controls.target.set(20, 10, 0);
+    // High bird's eye aerial master plan showing dome & terraces
+    camera.position.set(65, 85, -65);
+    controls.target.set(-10, 15, 18);
   } else if (view === 'street') {
-    // Street perspective looking along the central avenue with cars
-    camera.position.set(16, 5.0, -32);
-    controls.target.set(10, 3.5, 12);
+    // Street perspective looking at the main entrance & rotunda
+    camera.position.set(35, 6, -20);
+    controls.target.set(-10, 10, 15);
   }
   controls.update();
 };
