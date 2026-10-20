@@ -1458,36 +1458,20 @@ function loadScene(url) {
         try {
           loadedModel.updateMatrixWorld(true);
 
-          const siteKeywords = [
-            'plane003', 'road', 'asphalt', 'curb', 'pave', 'walk', 'rectangle5', 'rectangle6',
-            'rectangle319', '174617387', 'bush', 'am176', 'archmodel', 'light', 'stolb',
-            'wooden', 'bench', 'table', 'chess', 'pawn', 'bishop', 'knight', 'rook', 'queen',
-            'king', 'candle', 'pillow', 'bottle', 'glass', 'tennis', 'dizipro', 'car',
-            'speed bump', 'arrow', 'richter', 'green_44', 'barrier', 'countertop_010',
-            'courtyard_collection', 'cylinder240', 'line038', 'line039', 'line040',
-            'line041', 'line042', 'line043', 'circle382', 'circle383', 'circle384',
-            'circle385', 'box005', 'board', 'cap_010', 'handle_010', 'handle_loop',
-            'handle_ring', 'wine008', 'wine_label', 'rivet_019', 'thread_010'
-          ];
-
-          const isSiteInfrastructure = (name) => {
-            const n = (name || '').toLowerCase();
-            for (let i = 0; i < siteKeywords.length; i++) {
-              if (n.includes(siteKeywords[i])) return true;
-            }
-            return false;
-          };
-
           const _tempBBox = new THREE.Box3();
           const _tempCenter = new THREE.Vector3();
 
-          const isBuilding2Mesh = (child) => {
+          const isUnwantedMesh = (child) => {
             if (!child.isMesh) return false;
             const name = child.name || '';
-            // Foundation and plinth of Building 2 must be eliminated
-            if (name === 'ცოკოლი001' || name.includes('ცოკოლი001')) return true;
-            // Site environment and infrastructure is preserved
-            if (isSiteInfrastructure(name)) return false;
+            const lowerName = name.toLowerCase();
+
+            // 1. Both secondary foundation blocks must be eliminated
+            if (name.includes('ცოკოლი001') || name.includes('ცოკოლი002')) return true;
+
+            // 2. Always preserve the main ground perimeter disc
+            if (lowerName.includes('plane003')) return false;
+
             // Compute world center
             if (child.geometry) {
               if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
@@ -1496,15 +1480,21 @@ function loadScene(url) {
             } else {
               _tempCenter.setFromMatrixPosition(child.matrixWorld);
             }
-            // Any structure in the Building 2 sector (Z < -0.8) belongs to Building 2
-            return _tempCenter.z < -0.8;
+
+            // 3. Any element in the secondary building & secondary park zone (Z < -0.8) is eliminated
+            if (_tempCenter.z < -0.8) return true;
+
+            // 4. Any floating wing structure, pilasters, balconies, windows, and green lawn to the right of the road (X > 12.2 && Z < 18.0) are eliminated
+            if (_tempCenter.x > 12.2 && _tempCenter.z < 18.0) return true;
+
+            return false;
           };
 
           const toDetach = [];
 
           loadedModel.traverse(child => {
             if (child.isMesh) {
-              if (isBuilding2Mesh(child)) {
+              if (isUnwantedMesh(child)) {
                 child.visible = false;
                 child.layers.disableAll();
                 toDetach.push(child);
