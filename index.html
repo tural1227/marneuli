@@ -1105,9 +1105,11 @@ scene.add(groundMesh);
 // 5. GLTF Loader Setup
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
-dracoLoader.setWorkerLimit(2);
+dracoLoader.setWorkerLimit(Math.max(2, Math.min(4, (navigator.hardwareConcurrency || 4))));
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
+window.dracoLoader = dracoLoader;
+window.gltfLoader = gltfLoader;
 
 let loadedModel = null;
 let wireframeOn = false;
@@ -1402,7 +1404,7 @@ const MODEL_CDN_URL = 'https://tural1227.github.io/marneuli/marneuli_draco.glb';
 const MODEL_LOCAL_URL = 'marneuli_draco.glb';
 
 function getFastestModelUrl() {
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.includes('digiwyze.ae')) {
     return MODEL_LOCAL_URL;
   }
   return MODEL_CDN_URL;
@@ -1410,12 +1412,18 @@ function getFastestModelUrl() {
 
 function loadScene(url) {
   const targetUrl = url || getFastestModelUrl();
+  console.log('>>> loadScene called with targetUrl:', targetUrl);
   const pb = document.getElementById('progress-bar');
   const pt = document.getElementById('progress-text');
   const ls = document.getElementById('loading-sub');
 
   let safetyDismissed = false;
+  let decompInterval = null;
   const dismissLoading = () => {
+    if (decompInterval) {
+      clearInterval(decompInterval);
+      decompInterval = null;
+    }
     if (safetyDismissed) return;
     safetyDismissed = true;
     const loading = document.getElementById('loading');
@@ -1425,15 +1433,16 @@ function loadScene(url) {
     }
   };
 
-  // Safety fallback: if decompression takes too long or encounters an edge case, dismiss loading screen
+  // Safety fallback: only dismiss after 120s if no completion occurred
   const loadSafetyTimer = setTimeout(() => {
-    console.warn('Safety fallback triggered: fading out loading screen.');
+    console.warn('Safety fallback triggered after 120s: fading out loading screen.');
     dismissLoading();
-  }, 18000);
+  }, 120000);
 
   gltfLoader.load(
     targetUrl,
     (gltf) => {
+      console.log('>>> gltfLoader SUCCESS! gltf scene meshes:', gltf.scene ? gltf.scene.children.length : 0);
       if (loadedModel) scene.remove(loadedModel);
       loadedModel = gltf.scene;
       window.loadedModel = loadedModel;
@@ -1530,7 +1539,20 @@ function loadScene(url) {
           pb.style.width = '100%';
           pb.classList.add('processing');
         }
-        if (pt) pt.innerHTML = '⚡ <b>48.9 MB endirildi &bull; 3D Memarlıq elementləri açılır və səhnəyə qurulur...</b>';
+        if (!decompInterval) {
+          let decompSec = 0;
+          const phases = [
+            '⚡ <b>48.9 MB endirildi &bull; 3D Memarlıq elementləri açılır...</b>',
+            '🏢 <b>Künc qübbə və şüşə fasad həndəsəsi qurulur...</b>',
+            '✨ <b>Fasad materialları və işıqlandırma köklənir...</b>',
+            '🚀 <b>Səhnə vizuallaşdırılır, bir neçə saniyəyə hazırdır...</b>'
+          ];
+          decompInterval = setInterval(() => {
+            decompSec++;
+            const phaseIdx = Math.min(phases.length - 1, Math.floor(decompSec / 4));
+            if (pt) pt.innerHTML = phases[phaseIdx];
+          }, 1000);
+        }
         if (ls) ls.innerHTML = '🏢 1,111 memarlıq detalı, pəncərələr və landşaft hazırlanır. Zəhmət olmasa bir neçə saniyə gözləyin...';
       } else {
         const pct = Math.min(96, Math.max(1, Math.round((loaded / expectedTotal) * 100)));
