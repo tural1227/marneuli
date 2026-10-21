@@ -1160,7 +1160,7 @@ scene.add(groundMesh);
 
 // 5. GLTF Loader Setup
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('draco/');
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
 dracoLoader.setWorkerLimit(Math.max(2, Math.min(4, (navigator.hardwareConcurrency || 4))));
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
@@ -1451,27 +1451,18 @@ function assignHighFidelityMaterial(child) {
   }
 }
 
-// Purge any corrupted legacy CacheStorage entry immediately
-if ('caches' in window) {
-  caches.delete('marneuli-3d-model-cache-v1').catch(() => {});
-}
+const MODEL_CACHE_NAME = 'marneuli-3d-cache-v3';
+const MODEL_FILE_URL = 'marneuli_draco.glb';
+const MODEL_TOTAL_BYTES = 51309592;
 
-const MODEL_CDN_URL = 'marneuli_draco.glb';
-const MODEL_LOCAL_URL = 'marneuli_draco.glb';
-
-function getFastestModelUrl() {
-  return 'marneuli_draco.glb';
-}
-
-function loadScene(url) {
-  const targetUrl = url || getFastestModelUrl();
-  console.log('>>> loadScene called with targetUrl:', targetUrl);
+async function loadScene() {
   const pb = document.getElementById('progress-bar');
   const pt = document.getElementById('progress-text');
   const ls = document.getElementById('loading-sub');
 
   let safetyDismissed = false;
   let decompInterval = null;
+
   const dismissLoading = () => {
     if (decompInterval) {
       clearInterval(decompInterval);
@@ -1486,160 +1477,232 @@ function loadScene(url) {
     }
   };
 
-  // Safety fallback: if load takes more than 10 seconds, smoothly dismiss loading screen
+  // Robust safety timer (120 seconds fallback so slow mobile networks don't time out)
   const loadSafetyTimer = setTimeout(() => {
-    console.warn('Safety fallback triggered after 10s: fading out loading screen.');
-    dismissLoading();
-  }, 10000);
-
-  gltfLoader.load(
-    targetUrl,
-    (gltf) => {
-      console.log('>>> gltfLoader SUCCESS! gltf scene meshes:', gltf.scene ? gltf.scene.children.length : 0);
-      if (loadedModel) scene.remove(loadedModel);
-      loadedModel = gltf.scene;
-      window.loadedModel = loadedModel;
-
-      if (pt) pt.innerHTML = '⚡ <b>3D Memarlıq elementləri hazırlanır...</b>';
-      if (pb) {
-        pb.style.width = '100%';
-        pb.classList.add('processing');
-      }
-
-      // Defer heavy geometry & material traverse to next tick so UI renders progress
-      setTimeout(() => {
-        try {
-          loadedModel.updateMatrixWorld(true);
-
-          const _tempBBox = new THREE.Box3();
-          const _tempCenter = new THREE.Vector3();
-
-          const isUnwantedMesh = (child) => {
-            if (!child.isMesh) return false;
-            const name = child.name || '';
-            const lowerName = name.toLowerCase();
-
-            // 1. Both secondary foundation blocks and footprint polygon slabs of deleted building must be eliminated
-            if (name.includes('ცოკოლი001') || name.includes('ცოკოლი002') || lowerName.includes('line2000007836')) return true;
-
-            // 2. Always preserve the main ground perimeter disc and front road
-            if (lowerName.includes('plane003') || name.includes('3197') || name.includes('3198')) return false;
-
-            // Compute world center
-            if (child.geometry) {
-              if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
-              _tempBBox.copy(child.geometry.boundingBox).applyMatrix4(child.matrixWorld);
-              _tempBBox.getCenter(_tempCenter);
-            } else {
-              _tempCenter.setFromMatrixPosition(child.matrixWorld);
-            }
-
-            // 3. All secondary building parts, floating railings, courtyard, and deleted building ground footprint (Z < 6.5) are eliminated
-            if (_tempCenter.z < 6.5) return true;
-
-            // 4. Any floating connector wing structure, pilasters, balconies, and right lawn (X > 12.0 && Z < 22.0) are eliminated
-            if (_tempCenter.x > 12.0 && _tempCenter.z < 22.0) return true;
-
-            return false;
-          };
-
-          const toDetach = [];
-
-          loadedModel.traverse(child => {
-            if (child.isMesh) {
-              if (isUnwantedMesh(child)) {
-                child.visible = false;
-                child.layers.disableAll();
-                toDetach.push(child);
-                return;
-              }
-
-              meshCount++;
-              child.frustumCulled = true;
-              assignHighFidelityMaterial(child);
-              const name = (child.name || '').toLowerCase();
-              const parentName = child.parent ? (child.parent.name || '').toLowerCase() : '';
-              const fullName = name + ' ' + parentName;
-              if (fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('1746174')) {
-                buildingRaycastMeshes.push(child);
-              }
-            }
-          });
-
-          // Safely detach eliminated Building 2 meshes from scene graph
-          toDetach.forEach(m => {
-            if (m.parent) m.parent.remove(m);
-          });
-
-          scene.add(loadedModel);
-          if (typeof window.setView === 'function') {
-            window.setView('facade');
-          } else {
-            camera.position.set(45, 32, -45);
-            controls.target.set(-11, 18, 15);
-            controls.update();
-          }
-
-          const statMeshes = document.getElementById('stat-meshes');
-          if (statMeshes) statMeshes.textContent = meshCount.toLocaleString();
-
-          // Warm up GPU shaders
-          renderer.render(scene, camera);
-
-          // Clear safety timer and smoothly remove loading screen
-          clearTimeout(loadSafetyTimer);
-          requestAnimationFrame(() => {
-            dismissLoading();
-          });
-        } catch (procErr) {
-          console.error('Model setup error:', procErr);
-          clearTimeout(loadSafetyTimer);
-          dismissLoading();
-        }
-      }, 40);
-    },
-    (xhr) => {
-      const loaded = xhr.loaded || 0;
-      const expectedTotal = 51309592;
-      const loadedMB = (loaded / (1024 * 1024)).toFixed(1);
-
-      if (loaded >= 48000000 || (xhr.total > 0 && loaded >= xhr.total)) {
-        if (pb) {
-          pb.style.width = '100%';
-          pb.classList.add('processing');
-        }
-        if (!decompInterval) {
-          let decompSec = 0;
-          const phases = [
-            '⚡ <b>48.9 MB endirildi &bull; 3D Memarlıq elementləri açılır...</b>',
-            '🏢 <b>Künc qübbə və şüşə fasad həndəsəsi qurulur...</b>',
-            '✨ <b>Fasad materialları və işıqlandırma köklənir...</b>',
-            '🚀 <b>Səhnə vizuallaşdırılır, bir neçə saniyəyə hazırdır...</b>'
-          ];
-          decompInterval = setInterval(() => {
-            decompSec++;
-            const phaseIdx = Math.min(phases.length - 1, Math.floor(decompSec / 4));
-            if (pt) pt.innerHTML = phases[phaseIdx];
-          }, 1000);
-        }
-        if (ls) ls.innerHTML = '🏢 1,111 memarlıq detalı, pəncərələr və landşaft hazırlanır. Zəhmət olmasa bir neçə saniyə gözləyin...';
-      } else {
-        const pct = Math.min(96, Math.max(1, Math.round((loaded / expectedTotal) * 100)));
-        if (pb) pb.style.width = pct + '%';
-        if (pt) pt.innerHTML = `Model yüklənir: <b>${pct}%</b> (${loadedMB} MB / 48.9 MB)`;
-      }
-    },
-    (err) => {
-      console.warn('Fast CDN load error, falling back to local model...', err);
-      if (targetUrl !== MODEL_LOCAL_URL) {
-        loadScene(MODEL_LOCAL_URL);
-      } else {
-        clearTimeout(loadSafetyTimer);
-        dismissLoading();
-        if (ls) ls.textContent = 'Xəta baş verdi: ' + err.message;
-      }
+    console.warn('Load timeout (120s) reached.');
+    if (!loadedModel) {
+      if (pt) pt.innerHTML = '⚠️ <b>Model yüklənməsi gecikir</b>';
+      if (ls) ls.innerHTML = 'İnternet bağlantınızı yoxlayın və ya səhifəni yeniləyin:<br><button onclick="location.reload()" style="margin-top:12px;padding:8px 20px;border-radius:8px;background:#e6b343;color:#0b1320;font-weight:700;border:none;cursor:pointer;">Yenidən yüklə</button>';
+    } else {
+      dismissLoading();
     }
-  );
+  }, 120000);
+
+  const startDecompressAnimation = () => {
+    if (pb) {
+      pb.style.width = '100%';
+      pb.classList.add('processing');
+    }
+    if (!decompInterval) {
+      let decompSec = 0;
+      const phases = [
+        '⚡ <b>51.3 MB endirildi &bull; 3D Memarlıq elementləri açılır...</b>',
+        '🏢 <b>Künc qübbə və şüşə fasad həndəsəsi qurulur...</b>',
+        '✨ <b>Fasad materialları və işıqlandırma köklənir...</b>',
+        '🚀 <b>Səhnə vizuallaşdırılır, bir neçə saniyəyə hazırdır...</b>'
+      ];
+      if (pt) pt.innerHTML = phases[0];
+      decompInterval = setInterval(() => {
+        decompSec++;
+        const phaseIdx = Math.min(phases.length - 1, Math.floor(decompSec / 3));
+        if (pt) pt.innerHTML = phases[phaseIdx];
+      }, 1000);
+    }
+    if (ls) ls.innerHTML = '🏢 1,111 memarlıq detalı, pəncərələr və landşaft hazırlanır. Zəhmət olmasa bir neçə saniyə gözləyin...';
+  };
+
+  const parseGltfModel = (sourceUrl, isBlob) => {
+    startDecompressAnimation();
+    console.log('>>> gltfLoader.load starting with:', isBlob ? 'Blob URL' : sourceUrl);
+
+    gltfLoader.load(
+      sourceUrl,
+      (gltf) => {
+        console.log('>>> gltfLoader SUCCESS! Scene meshes:', gltf.scene ? gltf.scene.children.length : 0);
+        if (isBlob) {
+          try { URL.revokeObjectURL(sourceUrl); } catch (e) {}
+        }
+        if (decompInterval) {
+          clearInterval(decompInterval);
+          decompInterval = null;
+        }
+
+        if (loadedModel) scene.remove(loadedModel);
+        loadedModel = gltf.scene;
+        window.loadedModel = loadedModel;
+
+        if (pt) pt.innerHTML = '⚡ <b>3D Memarlıq elementləri hazırlanır...</b>';
+
+        setTimeout(() => {
+          try {
+            loadedModel.updateMatrixWorld(true);
+
+            const _tempBBox = new THREE.Box3();
+            const _tempCenter = new THREE.Vector3();
+
+            const isUnwantedMesh = (child) => {
+              if (!child.isMesh) return false;
+              const name = child.name || '';
+              const lowerName = name.toLowerCase();
+
+              // 1. Both secondary foundation blocks and footprint polygon slabs of deleted building must be eliminated
+              if (name.includes('ცოკოლი001') || name.includes('ცოკოლი002') || lowerName.includes('line2000007836')) return true;
+
+              // 2. Always preserve the main ground perimeter disc and front road
+              if (lowerName.includes('plane003') || name.includes('3197') || name.includes('3198')) return false;
+
+              // Compute world center
+              if (child.geometry) {
+                if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
+                _tempBBox.copy(child.geometry.boundingBox).applyMatrix4(child.matrixWorld);
+                _tempBBox.getCenter(_tempCenter);
+              } else {
+                _tempCenter.setFromMatrixPosition(child.matrixWorld);
+              }
+
+              // 3. All secondary building parts, floating railings, courtyard, and deleted building ground footprint (Z < 6.5) are eliminated
+              if (_tempCenter.z < 6.5) return true;
+
+              // 4. Any floating connector wing structure, pilasters, balconies, and right lawn (X > 12.0 && Z < 22.0) are eliminated
+              if (_tempCenter.x > 12.0 && _tempCenter.z < 22.0) return true;
+
+              return false;
+            };
+
+            const toDetach = [];
+
+            loadedModel.traverse(child => {
+              if (child.isMesh) {
+                if (isUnwantedMesh(child)) {
+                  child.visible = false;
+                  child.layers.disableAll();
+                  toDetach.push(child);
+                  return;
+                }
+
+                meshCount++;
+                child.frustumCulled = true;
+                assignHighFidelityMaterial(child);
+                const name = (child.name || '').toLowerCase();
+                const parentName = child.parent ? (child.parent.name || '').toLowerCase() : '';
+                const fullName = name + ' ' + parentName;
+                if (fullName.includes('art_') || fullName.includes('generic') || fullName.includes('box1578971958') || fullName.includes('1746174')) {
+                  buildingRaycastMeshes.push(child);
+                }
+              }
+            });
+
+            toDetach.forEach(m => {
+              if (m.parent) m.parent.remove(m);
+            });
+
+            scene.add(loadedModel);
+            if (typeof window.setView === 'function') {
+              window.setView('facade');
+            } else {
+              camera.position.set(45, 32, -45);
+              controls.target.set(-11, 18, 15);
+              controls.update();
+            }
+
+            const statMeshes = document.getElementById('stat-meshes');
+            if (statMeshes) statMeshes.textContent = meshCount.toLocaleString();
+
+            renderer.render(scene, camera);
+            clearTimeout(loadSafetyTimer);
+            requestAnimationFrame(() => {
+              dismissLoading();
+            });
+          } catch (procErr) {
+            console.error('Model setup error:', procErr);
+            clearTimeout(loadSafetyTimer);
+            dismissLoading();
+          }
+        }, 40);
+      },
+      (xhr) => {
+        const loaded = xhr.loaded || 0;
+        const total = (xhr.total && xhr.total > 0) ? xhr.total : MODEL_TOTAL_BYTES;
+        const pct = Math.min(99, Math.max(1, Math.round((loaded / total) * 100)));
+        const loadedMB = (loaded / (1024 * 1024)).toFixed(1);
+        const totalMB = (total / (1024 * 1024)).toFixed(1);
+        if (loaded < total) {
+          if (pb) pb.style.width = pct + '%';
+          if (pt) pt.innerHTML = `Model yüklənir: <b>${pct}%</b> (${loadedMB} MB / ${totalMB} MB)`;
+        }
+      },
+      (err) => {
+        console.error('gltfLoader error:', err);
+        clearTimeout(loadSafetyTimer);
+        if (decompInterval) clearInterval(decompInterval);
+        if (pt) pt.innerHTML = '⚠️ <b>Model yüklənməsində xəta baş verdi</b>';
+        if (ls) ls.innerHTML = 'Səhifəni yenidən yükləməyi cəhd edin:<br><button onclick="location.reload()" style="margin-top:12px;padding:8px 20px;border-radius:8px;background:#e6b343;color:#0b1320;font-weight:700;border:none;cursor:pointer;">Yenidən yüklə</button>';
+      }
+    );
+  };
+
+  // Step 1: Check CacheStorage for instant load
+  if ('caches' in window) {
+    try {
+      const cache = await caches.open(MODEL_CACHE_NAME);
+      const match = await cache.match(MODEL_FILE_URL);
+      if (match) {
+        console.log('[CacheStorage] Instant load from persistent cache!');
+        if (pt) pt.innerHTML = '⚡ <b>Model keşdən oxunur...</b>';
+        if (pb) { pb.style.width = '100%'; pb.classList.add('processing'); }
+        const blob = await match.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        parseGltfModel(blobUrl, true);
+        return;
+      }
+    } catch (cErr) {
+      console.warn('[CacheStorage] Cache lookup failed, continuing with network fetch:', cErr);
+    }
+  }
+
+  // Step 2: Download with XMLHttpRequest for accurate progress and CacheStorage saving
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', MODEL_FILE_URL, true);
+  xhr.responseType = 'blob';
+
+  xhr.onprogress = (e) => {
+    const loaded = e.loaded || 0;
+    const total = (e.total && e.total > 0) ? e.total : MODEL_TOTAL_BYTES;
+    const pct = Math.min(99, Math.max(1, Math.round((loaded / total) * 100)));
+    const loadedMB = (loaded / (1024 * 1024)).toFixed(1);
+    const totalMB = (total / (1024 * 1024)).toFixed(1);
+    if (pb) pb.style.width = pct + '%';
+    if (pt) pt.innerHTML = `Model yüklənir: <b>${pct}%</b> (${loadedMB} MB / ${totalMB} MB)`;
+  };
+
+  xhr.onload = async () => {
+    if (xhr.status >= 200 && xhr.status < 300 && xhr.response) {
+      const blob = xhr.response;
+      if ('caches' in window) {
+        try {
+          const cache = await caches.open(MODEL_CACHE_NAME);
+          await cache.put(MODEL_FILE_URL, new Response(blob.slice(0), {
+            headers: { 'Content-Type': 'model/gltf-binary' }
+          }));
+          console.log('[CacheStorage] Model successfully cached for instant future visits!');
+        } catch (saveErr) {
+          console.warn('[CacheStorage] Cache write warning:', saveErr);
+        }
+      }
+      const blobUrl = URL.createObjectURL(blob);
+      parseGltfModel(blobUrl, true);
+    } else {
+      console.warn('XHR non-200, falling back to direct gltfLoader load');
+      parseGltfModel(MODEL_FILE_URL, false);
+    }
+  };
+
+  xhr.onerror = () => {
+    console.warn('XHR network error, falling back to direct gltfLoader load');
+    parseGltfModel(MODEL_FILE_URL, false);
+  };
+
+  xhr.send();
 }
 
 // ==========================================
