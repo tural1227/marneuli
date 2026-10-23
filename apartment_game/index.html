@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Marneuli Residence — Fotorealistik İnteryer & GTA V Mexanikası</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: #080a0f; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #fff; user-select: none;
+    }
+    #canvas-container {
+      width: 100%; height: 100%; position: absolute; inset: 0;
+      cursor: crosshair;
+    }
+
+    /* Start / PointerLock Splash Overlay */
+    #start-overlay {
+      position: fixed; inset: 0;
+      background: rgba(8, 10, 16, 0.72); backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 100; cursor: pointer; transition: opacity 0.25s ease;
+    }
+    .overlay-card {
+      background: rgba(14, 18, 28, 0.96); border: 1px solid rgba(223, 200, 130, 0.6);
+      border-radius: 20px; padding: 36px 48px; text-align: center;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.85), 0 0 40px rgba(223, 200, 130, 0.3);
+      max-width: 540px;
+    }
+    .overlay-card h1 {
+      color: #dfc882; font-size: 1.75rem; letter-spacing: 2px; margin-bottom: 8px; font-weight: 800;
+    }
+    .overlay-card p {
+      color: #a4abb8; font-size: 0.92rem; margin-bottom: 22px; line-height: 1.5;
+    }
+    .keys-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 26px; text-align: left;
+    }
+    .key-item {
+      background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px;
+      font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 8px;
+    }
+    .kbd {
+      background: #dfc882; color: #12141a; font-weight: 800; padding: 3px 8px;
+      border-radius: 5px; font-size: 0.75rem; font-family: monospace;
+    }
+    .btn-play {
+      background: linear-gradient(135deg, #dfc882, #e5b356);
+      color: #12141a; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px;
+      padding: 14px 38px; border-radius: 12px; border: none; cursor: pointer;
+      box-shadow: 0 8px 25px rgba(223, 200, 130, 0.45); transition: transform 0.15s ease;
+    }
+    .btn-play:hover { transform: scale(1.04); }
+
+    /* Crosshair */
+    #crosshair {
+      position: fixed; top: 50%; left: 50%;
+      width: 6px; height: 6px; transform: translate(-50%, -50%);
+      pointer-events: none; z-index: 50; display: none;
+    }
+    #crosshair::before, #crosshair::after {
+      content: ''; position: absolute; background: rgba(223, 200, 130, 0.95);
+      box-shadow: 0 0 3px rgba(0,0,0,0.8);
+    }
+    #crosshair::before { top: 2px; left: -7px; width: 20px; height: 2px; }
+    #crosshair::after  { top: -7px; left: 2px; width: 2px; height: 20px; }
+
+    /* Door Interaction Prompt */
+    #door-prompt {
+      position: fixed; top: 56%; left: 50%; transform: translateX(-50%);
+      background: rgba(14, 18, 28, 0.95); backdrop-filter: blur(12px);
+      border: 1px solid #dfc882; box-shadow: 0 0 25px rgba(223, 200, 130, 0.5);
+      padding: 12px 28px; border-radius: 12px;
+      font-size: 1rem; color: #dfc882; font-weight: 700;
+      z-index: 60; pointer-events: auto; cursor: pointer; display: none; letter-spacing: 1px;
+    }
+    #door-prompt:hover { background: rgba(223, 200, 130, 0.25); color: #fff; }
+
+    /* Floating Door Action Button */
+    #btn-open-door-floating {
+      position: fixed; bottom: 24px; right: 24px;
+      background: linear-gradient(135deg, #dfc882, #e5b356);
+      color: #12141a; font-weight: 800; font-size: 1rem;
+      padding: 16px 28px; border-radius: 14px; border: none;
+      box-shadow: 0 6px 25px rgba(223, 200, 130, 0.5);
+      cursor: pointer; z-index: 65; display: none;
+    }
+    #btn-open-door-floating:active { transform: scale(0.95); }
+
+    /* Top HUD */
+    #hud-top {
+      position: fixed; top: 16px; left: 20px; right: 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 40; pointer-events: none;
+    }
+    .brand-title {
+      background: rgba(14, 17, 24, 0.94); backdrop-filter: blur(12px);
+      padding: 10px 20px; border-radius: 12px;
+      border: 1px solid rgba(223, 200, 130, 0.45);
+      pointer-events: auto; box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+    }
+    .brand-title h2 { font-size: 1.05rem; color: #dfc882; font-weight: 700; letter-spacing: 1.5px; }
+    .brand-title span { font-size: 0.75rem; color: #a4abb8; display: block; margin-top: 2px; }
+
+    .teleport-bar {
+      display: flex; gap: 8px; pointer-events: auto;
+      background: rgba(14, 17, 24, 0.94); backdrop-filter: blur(12px);
+      padding: 6px 12px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+    }
+    .tp-btn {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+      color: #e0e4ec; font-size: 0.8rem; font-weight: 600;
+      padding: 7px 14px; border-radius: 8px; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tp-btn:hover {
+      background: rgba(223, 200, 130, 0.25);
+      border-color: #dfc882; color: #dfc882; transform: translateY(-1px);
+    }
+    .tp-btn.active {
+      background: #dfc882; color: #12141a; border-color: #dfc882;
+    }
+
+    /* Bottom HUD */
+    #hud-bottom {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(14, 17, 24, 0.95); backdrop-filter: blur(14px);
+      border: 1px solid rgba(223, 200, 130, 0.45);
+      padding: 10px 24px; border-radius: 14px;
+      z-index: 40; pointer-events: auto;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.7);
+    }
+    .hud-chip {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; color: #a4abb8; font-family: monospace;
+    }
+    .hud-chip b { color: #dfc882; font-weight: 700; }
+    .dock-btn {
+      background: linear-gradient(135deg, rgba(223, 200, 130, 0.18), rgba(223, 200, 130, 0.35));
+      border: 1px solid rgba(223, 200, 130, 0.55);
+      color: #dfc882; font-weight: 700; font-size: 0.8rem;
+      padding: 8px 16px; border-radius: 8px; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .dock-btn:hover {
+      background: linear-gradient(135deg, #dfc882, #e5b356);
+      color: #12141a; transform: translateY(-1px);
+    }
+
+    /* Loader */
+    #loader {
+      position: fixed; inset: 0; background: #080a0f;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 200; transition: opacity 0.3s ease;
+    }
+    .spinner {
+      width: 50px; height: 50px; border: 3px solid rgba(223, 200, 130, 0.2);
+      border-top-color: #dfc882; border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loader p { color: #dfc882; font-size: 1rem; font-family: monospace; letter-spacing: 1px; }
+  </style>
+
+  <script>
+    window.addEventListener('error', (e) => {
+      console.error("[CRITICAL RENDERER ERROR]", e.message, e.filename, e.lineno);
+    });
+    window.addEventListener('unhandledrejection', (e) => {
+      console.error("[CRITICAL PROMISE REJECTION]", e.reason);
+    });
+  </script>
+
+  <!-- 100% OFFLINE LOCAL IMPORTMAP (Zero CDN delays or network errors) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./libs/three.module.js",
+      "three/addons/": "./libs/",
+      "three/addons/loaders/GLTFLoader.js": "./libs/GLTFLoader.js",
+      "three/addons/loaders/RGBELoader.js": "./libs/RGBELoader.js"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <p id="loader-text">FOTOREALİSTİK İNTERYER VƏ PBR MATERİALLAR YÜKLƏNİR...</p>
+  </div>
+
+  <!-- Start & PointerLock Screen -->
+  <div id="start-overlay">
+    <div class="overlay-card">
+      <h1>MARNEULI RESIDENCE</h1>
+      <p>Fotorealistik Memarlıq İnteryeri & GTA V Personaj Mexanikası</p>
+      
+      <div class="keys-grid">
+        <div class="key-item"><span class="kbd">W, A, S, D</span> Gəzmək (Bədən və üz dönür)</div>
+        <div class="key-item"><span class="kbd">Siçan</span> 360° Sərbəst Baxış</div>
+        <div class="key-item"><span class="kbd">E / Klik</span> Qapını Aç / Bağla</div>
+        <div class="key-item"><span class="kbd">C</span> Kamera (3-cü / 1-ci Şəxs)</div>
+        <div class="key-item"><span class="kbd">Shift</span> Qaçmaq</div>
+        <div class="key-item"><span class="kbd">F</span> Fənər</div>
+      </div>
+      
+      <button class="btn-play" id="btn-start-game">OYUNA BAŞLA (KLİKLƏ)</button>
+    </div>
+  </div>
+
+  <div id="canvas-container"></div>
+  <div id="crosshair"></div>
+  <div id="door-prompt">[E] QAPINI AÇ</div>
+  <button id="btn-open-door-floating">🚪 QAPINI AÇ (E)</button>
+
+  <!-- Top Navigation & Room Jump Bar -->
+  <div id="hud-top">
+    <div class="brand-title">
+      <h2>MARNEULI RESIDENCE</h2>
+      <span id="pos-info">Fotorealistik PBR & GTA V Mexanikası | 60 FPS</span>
+    </div>
+
+    <div class="teleport-bar">
+      <button class="tp-btn active" data-tp="living">Qonaq Otağı</button>
+      <button class="tp-btn" data-tp="kitchen">Mətbəx</button>
+      <button class="tp-btn" data-tp="dining">Yemək Masası</button>
+      <button class="tp-btn" data-tp="bedroom">Yataq Otağı</button>
+      <button class="tp-btn" data-tp="bathroom">Vanna Otağı</button>
+    </div>
+  </div>
+
+  <!-- Bottom Dock -->
+  <div id="hud-bottom">
+    <div class="hud-chip">FPS: <b id="fps-counter">60</b></div>
+    <div class="hud-chip">Baxış: <b id="cam-mode-text">3-cü Şəxs (Arxa)</b></div>
+    <button class="dock-btn" id="btn-toggle-cam">Kamera Dəyiş (C)</button>
+    <button class="dock-btn" id="btn-lock-pointer">FPS Kursoru (Kilid)</button>
+    <button class="dock-btn" id="btn-toggle-light">Fənər (F)</button>
+  </div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+
+console.log("[Renderer] Script initialized successfully! Three revision:", THREE.REVISION);
+
+// --- Renderer, Scene, Camera Setup ---
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0c0f16);
+
+const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.05, 100);
+
+// Hardware-optimized WebGL Renderer: 60 FPS on Intel UHD 620
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  powerPreference: "high-performance",
+  precision: "mediump"
+});
+renderer.setPixelRatio(1.0);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.30;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.shadowMap.autoUpdate = false;
+renderer.shadowMap.needsUpdate = true;
+container.appendChild(renderer.domElement);
+
+// --- Real Photographic PBR Textures ---
+const texLoader = new THREE.TextureLoader();
+
+function loadPBRTexture(filename, repeatX = 1, repeatY = 1) {
+  const tex = texLoader.load(filename);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(repeatX, repeatY);
+  return tex;
+}
+
+const texFloorDiff   = loadPBRTexture('floor_diff.jpg', 4, 4);
+const texFloorRough  = loadPBRTexture('floor_rough.jpg', 4, 4);
+const texFloorNorm   = loadPBRTexture('floor_norm.jpg', 4, 4);
+
+const texWallDiff    = loadPBRTexture('wall_diff.jpg', 3, 3);
+const texWallRough   = loadPBRTexture('wall_rough.jpg', 3, 3);
+const texWallNorm    = loadPBRTexture('wall_norm.jpg', 3, 3);
+
+const texMarbleDiff  = loadPBRTexture('marble_diff.jpg', 2, 2);
+const texMarbleRough = loadPBRTexture('marble_rough.jpg', 2, 2);
+const texMarbleNorm  = loadPBRTexture('marble_norm.jpg', 2, 2);
+
+const texSofaDiff    = loadPBRTexture('sofa_fabric_diff.jpg', 5, 5);
+const texSofaRough   = loadPBRTexture('sofa_fabric_rough.jpg', 5, 5);
+const texSofaNorm    = loadPBRTexture('sofa_fabric_norm.jpg', 5, 5);
+
+const texWoodDiff    = loadPBRTexture('wood_grain_diff.jpg', 2, 2);
+const texWoodRough   = loadPBRTexture('wood_grain_rough.jpg', 2, 2);
+const texWoodNorm    = loadPBRTexture('wood_grain_norm.jpg', 2, 2);
+
+const texTilesDiff   = loadPBRTexture('tiles_diff.jpg', 3, 3);
+const texTilesRough  = loadPBRTexture('tiles_rough.jpg', 3, 3);
+const texTilesNorm   = loadPBRTexture('tiles_norm.jpg', 3, 3);
+
+const texRugLiving   = texLoader.load('rug_living.jpg');
+const texArtTrip1    = texLoader.load('art_triptych_1.jpg');
+const texArtTrip2    = texLoader.load('art_triptych_2.jpg');
+const texArtTrip3    = texLoader.load('art_triptych_3.jpg');
+const texArtBedroom  = texLoader.load('art_bedroom.jpg');
+const texShadowAO    = texLoader.load('contact_shadow.png');
+
+// HDRI Environment Map
+const rgbeLoader = new RGBELoader();
+rgbeLoader.load('indoor_env.hdr', (texture) => {
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = texture;
+  renderer.shadowMap.needsUpdate = true;
+});
+
+// Soft ambient daylight bounce
+const hemiLight = new THREE.HemisphereLight(0xfffaee, 0x1e2430, 1.45);
+scene.add(hemiLight);
+
+// Direct Sun Light (Natural soft sunlight streaming through the windows)
+const sunLight = new THREE.DirectionalLight(0xfffaee, 2.6);
+sunLight.position.set(5.5, 7.5, 7.5);
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.width = 1024;
+sunLight.shadow.mapSize.height = 1024;
+sunLight.shadow.camera.near = 0.5;
+sunLight.shadow.camera.far = 28;
+sunLight.shadow.camera.left = -9;
+sunLight.shadow.camera.right = 9;
+sunLight.shadow.camera.top = 9;
+sunLight.shadow.camera.bottom = -9;
+sunLight.shadow.bias = -0.0006;
+scene.add(sunLight);
+
+// Soft Fill Light
+const fillLight = new THREE.DirectionalLight(0xb5ceff, 0.85);
+fillLight.position.set(-6, 5, -5);
+scene.add(fillLight);
+
+// Warm Ceiling Spotlights (Diffuse/Specular only - Zero frame overhead)
+function createRoomLight(x, y, z, color, intensity, distance) {
+  const light = new THREE.PointLight(color, intensity, distance, 1.4);
+  light.position.set(x, y, z);
+  scene.add(light);
+  return light;
+}
+
+createRoomLight(3.6, 2.5, 6.2, 0xffe2b8, 15, 11); // Living room
+createRoomLight(6.5, 2.5, 2.8, 0xfff0dd, 16, 10); // Kitchen
+createRoomLight(4.3, 2.5, 3.8, 0xffddaa, 12, 8);  // Dining
+createRoomLight(7.8, 2.5, 8.5, 0xffd29a, 14, 10); // Bedroom
+createRoomLight(9.8, 2.5, 5.8, 0xf0f6ff, 12, 8);  // Bathroom
+
+// Flashlight
+const flashlight = new THREE.SpotLight(0xffffff, 0, 15, Math.PI / 6, 0.35, 1.2);
+camera.add(flashlight);
+flashlight.target = new THREE.Object3D();
+flashlight.target.position.set(0, 0, -5);
+camera.add(flashlight.target);
+scene.add(camera);
+
+let isFlashlightOn = false;
+function toggleFlashlight() {
+  isFlashlightOn = !isFlashlightOn;
+  flashlight.intensity = isFlashlightOn ? 22 : 0;
+}
+
+// --- Bulletproof Architectural Doors System ---
+const doors = [];
+let activeNearbyDoor = null;
+const doorPrompt = document.getElementById('door-prompt');
+const btnOpenDoorFloating = document.getElementById('btn-open-door-floating');
+
+function createStandaloneDoor(name, hingeX, hingeZ, width, axis, swingDir) {
+  const doorGroup = new THREE.Group();
+  doorGroup.name = name;
+  doorGroup.position.set(hingeX, 0, hingeZ);
+
+  const hinge = new THREE.Group();
+  hinge.name = name + "_Hinge";
+  doorGroup.add(hinge);
+
+  const frameMat = new THREE.MeshStandardMaterial({ color: 0xf5f3f0, roughness: 0.45 });
+  const leafMat  = new THREE.MeshStandardMaterial({
+    color: 0x5a4132,
+    map: texWoodDiff,
+    roughnessMap: texWoodRough,
+    normalMap: texWoodNorm,
+    roughness: 0.38
+  });
+  const handleMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.18 });
+
+  const h = 2.10;
+  const t = 0.045;
+  const postThick = 0.06;
+
+  let leafMesh, handleMesh;
+
+  if (axis === 'X') {
+    leafMesh = new THREE.Mesh(new THREE.BoxGeometry(width, h, t), leafMat);
+    leafMesh.position.set(width * 0.5, h * 0.5, 0);
+    leafMesh.castShadow = true;
+    hinge.add(leafMesh);
+
+    handleMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.14, 12), handleMat);
+    handleMesh.rotation.x = Math.PI * 0.5;
+    handleMesh.position.set(width - 0.08, 1.0, 0);
+    hinge.add(handleMesh);
+
+    const fl = new THREE.Mesh(new THREE.BoxGeometry(postThick, h, t + 0.03), frameMat);
+    fl.position.set(-postThick * 0.5, h * 0.5, 0);
+    doorGroup.add(fl);
+
+    const fr = new THREE.Mesh(new THREE.BoxGeometry(postThick, h, t + 0.03), frameMat);
+    fr.position.set(width + postThick * 0.5, h * 0.5, 0);
+    doorGroup.add(fr);
+
+    const ft = new THREE.Mesh(new THREE.BoxGeometry(width + postThick * 2, postThick, t + 0.03), frameMat);
+    ft.position.set(width * 0.5, h + postThick * 0.5, 0);
+    doorGroup.add(ft);
+  } else {
+    leafMesh = new THREE.Mesh(new THREE.BoxGeometry(t, h, width), leafMat);
+    leafMesh.position.set(0, h * 0.5, width * 0.5);
+    leafMesh.castShadow = true;
+    hinge.add(leafMesh);
+
+    handleMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.14, 12), handleMat);
+    handleMesh.rotation.z = Math.PI * 0.5;
+    handleMesh.position.set(0, 1.0, width - 0.08);
+    hinge.add(handleMesh);
+
+    const fl = new THREE.Mesh(new THREE.BoxGeometry(t + 0.03, h, postThick), frameMat);
+    fl.position.set(0, h * 0.5, -postThick * 0.5);
+    doorGroup.add(fl);
+
+    const fr = new THREE.Mesh(new THREE.BoxGeometry(t + 0.03, h, postThick), frameMat);
+    fr.position.set(0, h * 0.5, width + postThick * 0.5);
+    doorGroup.add(fr);
+
+    const ft = new THREE.Mesh(new THREE.BoxGeometry(t + 0.03, postThick, width + postThick * 2), frameMat);
+    ft.position.set(0, h + postThick * 0.5, width * 0.5);
+    doorGroup.add(ft);
+  }
+
+  scene.add(doorGroup);
+
+  const doorObj = {
+    name: name,
+    group: doorGroup,
+    hingeNode: hinge,
+    worldPos: new THREE.Vector3(hingeX + (axis === 'X' ? width * 0.5 : 0), 1.0, hingeZ + (axis === 'Z' ? width * 0.5 : 0)),
+    isOpen: false,
+    currentAngle: 0,
+    targetAngle: 0,
+    swingDir: swingDir,
+    toggle: function() {
+      this.isOpen = !this.isOpen;
+      this.targetAngle = this.isOpen ? (Math.PI * 0.52 * this.swingDir) : 0;
+      renderer.shadowMap.needsUpdate = true;
+    }
+  };
+
+  doors.push(doorObj);
+  return doorObj;
+}
+
+// 4 Architectural Doors
+createStandaloneDoor("Dəhliz Qapısı", 3.44, 9.00, 0.84, 'X', 1.0);
+createStandaloneDoor("Yataq Otağı Qapısı", 6.60, 6.50, 0.88, 'X', 1.0);
+createStandaloneDoor("Mətbəx Qapısı", 8.20, 3.35, 0.80, 'X', 1.0);
+createStandaloneDoor("Vanna Otağı Qapısı", 8.95, 4.20, 0.75, 'Z', -1.0);
+
+// --- CONTACT SHADOW / AO GENERATOR (Anchors furniture realistically to the floor) ---
+const aoMat = new THREE.MeshBasicMaterial({
+  map: texShadowAO,
+  transparent: true,
+  opacity: 0.75,
+  depthWrite: false
+});
+
+function addContactShadow(x, z, sx, sz, opacity = 0.75) {
+  const geom = new THREE.PlaneGeometry(sx, sz);
+  const mat = aoMat.clone();
+  mat.opacity = opacity;
+  const mesh = new THREE.Mesh(geom, mat);
+  mesh.rotation.x = -Math.PI * 0.5;
+  mesh.position.set(x, 0.005, z);
+  scene.add(mesh);
+  return mesh;
+}
+
+// Contact shadows under key furniture
+addContactShadow(2.8, 6.8, 2.5, 1.4, 0.85); // Sofa
+addContactShadow(2.8, 5.7, 1.2, 1.2, 0.70); // Coffee Table
+addContactShadow(1.4, 5.8, 1.0, 1.0, 0.70); // Armchair
+addContactShadow(2.8, 4.2, 2.0, 0.8, 0.80); // TV Unit
+addContactShadow(7.8, 8.8, 2.2, 2.4, 0.88); // Bed
+addContactShadow(4.35, 3.69, 1.8, 1.4, 0.80); // Dining Table
+
+// --- ARCHITECTURAL ROOM DECORATIONS (High-End Reference-Quality Elements) ---
+
+// 1. LIVING ROOM: Feature Sage-Blue Accent Wall (Matches user reference photo)
+const accentWallGeom = new THREE.PlaneGeometry(4.2, 2.9);
+const accentWallMat = new THREE.MeshStandardMaterial({
+  color: 0x507782, // Elegant muted teal/sage-blue
+  roughness: 0.88
+});
+const accentWall = new THREE.Mesh(accentWallGeom, accentWallMat);
+accentWall.position.set(2.8, 1.45, 8.12);
+accentWall.rotation.y = Math.PI;
+scene.add(accentWall);
+
+// 2. LIVING ROOM: Triptych 3-Piece Framed Wall Artwork (Matching Reference Photo)
+function createFramedPainting(x, y, z, rotY, w, h, tex) {
+  const g = new THREE.Group();
+  const canvasMat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.45 });
+  const canvasMesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), canvasMat);
+  canvasMesh.position.z = 0.01;
+  g.add(canvasMesh);
+
+  // Outer Wood/Gold Frame
+  const frameMat = new THREE.MeshStandardMaterial({ color: 0x2e251c, roughness: 0.5 });
+  const frameThick = 0.035;
+  const fTop = new THREE.Mesh(new THREE.BoxGeometry(w + frameThick * 2, frameThick, 0.03), frameMat);
+  fTop.position.set(0, h * 0.5 + frameThick * 0.5, 0); g.add(fTop);
+  const fBot = new THREE.Mesh(new THREE.BoxGeometry(w + frameThick * 2, frameThick, 0.03), frameMat);
+  fBot.position.set(0, -h * 0.5 - frameThick * 0.5, 0); g.add(fBot);
+  const fLeft = new THREE.Mesh(new THREE.BoxGeometry(frameThick, h, 0.03), frameMat);
+  fLeft.position.set(-w * 0.5 - frameThick * 0.5, 0, 0); g.add(fLeft);
+  const fRight = new THREE.Mesh(new THREE.BoxGeometry(frameThick, h, 0.03), frameMat);
+  fRight.position.set(w * 0.5 + frameThick * 0.5, 0, 0); g.add(fRight);
+
+  g.position.set(x, y, z);
+  g.rotation.y = rotY;
+  scene.add(g);
+  return g;
+}
+
+createFramedPainting(2.05, 1.85, 8.08, Math.PI, 0.55, 0.72, texArtTrip1);
+createFramedPainting(2.80, 1.85, 8.08, Math.PI, 0.55, 0.72, texArtTrip2);
+createFramedPainting(3.55, 1.85, 8.08, Math.PI, 0.55, 0.72, texArtTrip3);
+
+// 3. LIVING ROOM: High-Resolution Geometric Area Rug (Matching photo)
+const livingRugGeom = new THREE.PlaneGeometry(3.4, 2.6);
+const livingRugMat = new THREE.MeshStandardMaterial({ map: texRugLiving, roughness: 0.95 });
+const livingRug = new THREE.Mesh(livingRugGeom, livingRugMat);
+livingRug.rotation.x = -Math.PI * 0.5;
+livingRug.position.set(2.8, 0.008, 6.2);
+livingRug.receiveShadow = true;
+scene.add(livingRug);
+
+// 4. LIVING ROOM: Sofa Throw Pillows (Vibrant Mustard Yellow + Charcoal Grey from photo)
+const yellowPillowMat = new THREE.MeshStandardMaterial({ color: 0xdfa32b, roughness: 0.85 });
+const greyPillowMat   = new THREE.MeshStandardMaterial({ color: 0x585a62, roughness: 0.85 });
+
+function createThrowPillow(x, y, z, rotY, mat) {
+  const p = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.32, 0.12), mat);
+  p.position.set(x, y, z);
+  p.rotation.y = rotY;
+  p.rotation.x = -0.15;
+  scene.add(p);
+}
+// Arrange pillows along the back of the sofa
+createThrowPillow(1.85, 0.55, 6.95, -0.1, yellowPillowMat);
+createThrowPillow(2.25, 0.55, 6.95, 0.05, greyPillowMat);
+createThrowPillow(2.80, 0.55, 6.95, -0.05, greyPillowMat);
+createThrowPillow(3.35, 0.55, 6.95, 0.1, yellowPillowMat);
+
+// 5. LIVING ROOM: Yellow Accent Beanbag / Pouf (Matching left corner in photo)
+const poufGeom = new THREE.CylinderGeometry(0.38, 0.45, 0.42, 16);
+const pouf = new THREE.Mesh(poufGeom, yellowPillowMat);
+pouf.position.set(1.2, 0.21, 6.6);
+pouf.castShadow = true;
+scene.add(pouf);
+
+// 6. LIVING ROOM: Coffee Table Accessories (Glass vase with yellow flowers, white sphere, books)
+// Clear Glass Vase
+const vaseGeom = new THREE.CylinderGeometry(0.06, 0.08, 0.22, 12);
+const vaseMat = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.4, roughness: 0.1 });
+const vase = new THREE.Mesh(vaseGeom, vaseMat);
+vase.position.set(2.7, 0.46, 5.65);
+scene.add(vase);
+
+// Yellow Flowers inside vase
+for (let f = 0; f < 5; f++) {
+  const flower = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 8), yellowPillowMat);
+  const ang = f * 1.25;
+  flower.position.set(2.7 + Math.cos(ang) * 0.04, 0.58 + (f % 2) * 0.03, 5.65 + Math.sin(ang) * 0.04);
+  scene.add(flower);
+}
+
+// Decorative White Sphere
+const sphereMat = new THREE.MeshStandardMaterial({ color: 0xf5f3ee, roughness: 0.2 });
+const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 16), sphereMat);
+sphere.position.set(2.88, 0.40, 5.72);
+scene.add(sphere);
+
+// Coffee Table Hardcover Books
+const bookMat = new THREE.MeshStandardMaterial({ color: 0x23272e, roughness: 0.6 });
+const book = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.03, 0.18), bookMat);
+book.position.set(2.82, 0.38, 5.58);
+book.rotation.y = 0.2;
+scene.add(book);
+
+// 7. LIVING ROOM: Sheer Floor-to-Ceiling Balcony Curtains
+const curtainMat = new THREE.MeshStandardMaterial({ color: 0xfaf8f4, transparent: true, opacity: 0.65, roughness: 0.9 });
+const curtainL = new THREE.Mesh(new THREE.PlaneGeometry(0.55, 2.7), curtainMat);
+curtainL.position.set(0.65, 1.35, 4.95);
+curtainL.rotation.y = Math.PI * 0.5;
+scene.add(curtainL);
+
+const curtainR = new THREE.Mesh(new THREE.PlaneGeometry(0.55, 2.7), curtainMat);
+curtainR.position.set(0.65, 1.35, 7.45);
+curtainR.rotation.y = Math.PI * 0.5;
+scene.add(curtainR);
+
+// 8. LIVING ROOM: Potted Indoor Ficus/Monstera Houseplant
+const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.14, 0.40, 16), new THREE.MeshStandardMaterial({ color: 0xf2eee8, roughness: 0.3 }));
+pot.position.set(0.85, 0.20, 7.6);
+scene.add(pot);
+
+const plantLeavesMat = new THREE.MeshStandardMaterial({ color: 0x2e5c38, roughness: 0.6 });
+for (let l = 0; l < 7; l++) {
+  const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), plantLeavesMat);
+  leaf.scale.set(1.5, 0.2, 0.8);
+  const ang = (l / 7) * Math.PI * 2;
+  leaf.position.set(0.85 + Math.cos(ang) * 0.16, 0.44 + (l % 3) * 0.06, 7.6 + Math.sin(ang) * 0.16);
+  leaf.rotation.y = ang;
+  leaf.rotation.z = 0.3;
+  scene.add(leaf);
+}
+
+// 9. DINING ROOM: Suspended 3-Globe Linear Brass Chandelier
+const chanBar = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.03, 0.05), new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.92, roughness: 0.18 }));
+chanBar.position.set(4.35, 2.10, 3.69);
+scene.add(chanBar);
+for (let i = -1; i <= 1; i++) {
+  const globe = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 16), new THREE.MeshStandardMaterial({ color: 0xfffaea, roughness: 0.2 }));
+  globe.position.set(4.35 + i * 0.48, 1.92, 3.69);
+  scene.add(globe);
+}
+
+// Fruit Bowl on Dining Table
+const bowlMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
+const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.08, 0.07, 16), bowlMat);
+bowl.position.set(4.35, 0.80, 3.69);
+scene.add(bowl);
+for (let a = 0; a < 4; a++) {
+  const apple = new THREE.Mesh(new THREE.SphereGeometry(0.032, 10, 10), new THREE.MeshStandardMaterial({ color: 0xa8c238, roughness: 0.4 }));
+  apple.position.set(4.35 + (a % 2) * 0.04 - 0.02, 0.85, 3.69 + (a > 1 ? 0.03 : -0.03));
+  scene.add(apple);
+}
+
+// 10. BEDROOM: Bedside Nightstand Lamps & Runner Rugs
+function createBedLamp(x, z) {
+  const g = new THREE.Group();
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 0.22, 12), new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.85, roughness: 0.2 }));
+  base.position.y = 0.65; g.add(base);
+  const shade = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.14, 0.18, 16), new THREE.MeshStandardMaterial({ color: 0xf5eedf, roughness: 0.8 }));
+  shade.position.y = 0.82; g.add(shade);
+  g.position.set(x, 0, z);
+  scene.add(g);
+}
+createBedLamp(6.6, 9.6);
+createBedLamp(8.4, 9.6);
+
+// Bedside Runner Rugs
+const bedRug1 = new THREE.Mesh(new THREE.PlaneGeometry(0.85, 2.1), new THREE.MeshStandardMaterial({ color: 0xdfd8cc, roughness: 0.9 }));
+bedRug1.rotation.x = -Math.PI * 0.5; bedRug1.position.set(6.4, 0.008, 8.8);
+scene.add(bedRug1);
+const bedRug2 = new THREE.Mesh(new THREE.PlaneGeometry(0.85, 2.1), new THREE.MeshStandardMaterial({ color: 0xdfd8cc, roughness: 0.9 }));
+bedRug2.rotation.x = -Math.PI * 0.5; bedRug2.position.set(8.6, 0.008, 8.8);
+scene.add(bedRug2);
+
+// Bedroom Wall Artwork Above Bed
+createFramedPainting(7.5, 1.80, 9.95, 0, 1.4, 0.65, texArtBedroom);
+
+// 11. BATHROOM: Illuminated Large Vanity LED Mirror & Towel Rack
+const mirrorGeom = new THREE.PlaneGeometry(0.95, 0.85);
+const mirrorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 1.0, roughness: 0.02 });
+const mirrorMesh = new THREE.Mesh(mirrorGeom, mirrorMat);
+mirrorMesh.position.set(10.35, 1.70, 5.15);
+mirrorMesh.rotation.y = -Math.PI * 0.5;
+scene.add(mirrorMesh);
+
+// Chrome Towel Warmer with Spa Towels
+const towelRack = new THREE.Group();
+const rackMat = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, metalness: 0.95, roughness: 0.1 });
+const towelMat = new THREE.MeshStandardMaterial({ color: 0xfdfbf7, roughness: 0.95 });
+for (let bar = 0; bar < 4; bar++) {
+  const b = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.55), rackMat);
+  b.rotation.z = Math.PI * 0.5;
+  b.position.set(0, bar * 0.18, 0);
+  towelRack.add(b);
+}
+const foldedTowel = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.22, 0.06), towelMat);
+foldedTowel.position.set(0, 0.28, 0.02);
+towelRack.add(foldedTowel);
+towelRack.position.set(9.05, 1.25, 6.2);
+towelRack.rotation.y = Math.PI * 0.5;
+scene.add(towelRack);
+
+const gltfLoader = new GLTFLoader();
+gltfLoader.load(
+  'apartment_super_realistic.glb',
+  (gltf) => {
+    const model = gltf.scene;
+
+    model.traverse((child) => {
+      // HIDE duplicate static doors from the GLB so only the clean interactive doors exist!
+      if (child.name && child.name.toLowerCase().startsWith('door_')) {
+        child.visible = false;
+        return;
+      }
+
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+
+        const n = (child.name || '').toLowerCase();
+        const mn = (child.material && child.material.name ? child.material.name : '').toLowerCase();
+
+        // 1. Wide-Plank Oak Parquet Floor
+        if (n.includes('oak') || n.includes('floor') || mn.includes('oak')) {
+          child.material.map = texFloorDiff;
+          child.material.roughnessMap = texFloorRough;
+          child.material.normalMap = texFloorNorm;
+          child.material.roughness = 0.35;
+        }
+        // 2. Crisp White Plaster Walls
+        else if (n.includes('plaster') || mn.includes('plaster')) {
+          child.material.map = texWallDiff;
+          child.material.roughnessMap = texWallRough;
+          child.material.normalMap = texWallNorm;
+          child.material.roughness = 0.85;
+        }
+        // 3. Calacatta White Marble (Kitchen Countertop & Bathroom Vanity)
+        else if (n.includes('quartz') || n.includes('countertop') || mn.includes('quartz')) {
+          child.material.map = texMarbleDiff;
+          child.material.roughnessMap = texMarbleRough;
+          child.material.normalMap = texMarbleNorm;
+          child.material.roughness = 0.12;
+        }
+        // 4. Sectional Sofa Fine Fabric Upholstery
+        else if (n.includes('sofa') && n.includes('upholstery')) {
+          child.material.map = texSofaDiff;
+          child.material.roughnessMap = texSofaRough;
+          child.material.normalMap = texSofaNorm;
+          child.material.roughness = 0.85;
+        }
+        // 5. Wood Grain (Tables, Chairs, Cabinets, Nightstands, Wardrobe)
+        else if (mn.includes('wood') || mn.includes('ash')) {
+          child.material.map = texWoodDiff;
+          child.material.roughnessMap = texWoodRough;
+          child.material.normalMap = texWoodNorm;
+          child.material.roughness = 0.40;
+        }
+        // 6. Bathroom Ceramic Porcelain Tiles
+        else if (mn.includes('tile') || mn.includes('paving')) {
+          child.material.map = texTilesDiff;
+          child.material.roughnessMap = texTilesRough;
+          child.material.normalMap = texTilesNorm;
+          child.material.roughness = 0.20;
+        }
+        // 7. Chrome Fixtures
+        else if (mn.includes('chrome')) {
+          child.material.color.set(0xfafafa);
+          child.material.metalness = 1.0;
+          child.material.roughness = 0.04;
+        }
+        // 8. Brushed Steel Appliances
+        else if (mn.includes('steel') || mn.includes('56595e') || mn.includes('metal')) {
+          child.material.metalness = 0.92;
+          child.material.roughness = 0.22;
+        }
+        // 9. Transparent Glass
+        else if (mn.includes('glass') && !mn.includes('black')) {
+          child.material.transparent = true;
+          child.material.opacity = 0.25;
+          child.material.roughness = 0.02;
+        }
+      }
+    });
+
+    scene.add(model);
+    renderer.shadowMap.needsUpdate = true;
+    console.log("Model successfully loaded with reference aesthetic!");
+
+    const loaderElem = document.getElementById('loader');
+    loaderElem.style.opacity = '0';
+    setTimeout(() => { loaderElem.style.display = 'none'; }, 300);
+  },
+  undefined,
+  (err) => {
+    console.error("Model load error:", err);
+    document.getElementById('loader-text').textContent = "Model yüklənir...";
+  }
+);
+
+// Door Proximity Detection & Reliable Toggle
+function updateNearbyDoor(playerPos) {
+  let closestDoor = null;
+  let minDistance = 2.6;
+
+  for (const door of doors) {
+    const dist = playerPos.distanceTo(door.worldPos);
+    if (dist < minDistance) {
+      closestDoor = door;
+      minDistance = dist;
+    }
+  }
+
+  activeNearbyDoor = closestDoor;
+  if (activeNearbyDoor) {
+    const actionText = activeNearbyDoor.isOpen ? "BAĞLA" : "AÇ";
+    doorPrompt.textContent = `[E / Klik] ${activeNearbyDoor.name} - ${actionText}`;
+    doorPrompt.style.display = 'block';
+
+    btnOpenDoorFloating.textContent = `🚪 ${activeNearbyDoor.name} - ${actionText} (E)`;
+    btnOpenDoorFloating.style.display = 'block';
+  } else {
+    doorPrompt.style.display = 'none';
+    btnOpenDoorFloating.style.display = 'none';
+  }
+}
+
+function triggerDoorToggle() {
+  if (activeNearbyDoor) {
+    activeNearbyDoor.toggle();
+    updateNearbyDoor(playerGroup.position);
+  }
+}
+
+doorPrompt.addEventListener('click', (e) => {
+  e.stopPropagation();
+  triggerDoorToggle();
+});
+
+btnOpenDoorFloating.addEventListener('click', (e) => {
+  e.stopPropagation();
+  triggerDoorToggle();
+});
+
+// --- 3D Character Avatar With Distinct Front Face & Body ---
+const playerGroup = new THREE.Group();
+playerGroup.name = "PlayerCharacter";
+
+// Character Mesh Subgroup: Turns to face wherever you walk!
+const characterMesh = new THREE.Group();
+playerGroup.add(characterMesh);
+
+const skinMat   = new THREE.MeshStandardMaterial({ color: 0xd6a374, roughness: 0.6 });
+const shirtMat  = new THREE.MeshStandardMaterial({ color: 0x1d3557, roughness: 0.5 });
+const pantsMat  = new THREE.MeshStandardMaterial({ color: 0x242424, roughness: 0.7 });
+const hairMat   = new THREE.MeshStandardMaterial({ color: 0x221811, roughness: 0.9 });
+const visorMat  = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.8, roughness: 0.1 });
+const collarMat = new THREE.MeshStandardMaterial({ color: 0xe0e4ec, roughness: 0.6 });
+
+// Torso (Jacket)
+const torso = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.55, 0.22), shirtMat);
+torso.position.y = 1.15;
+torso.castShadow = true;
+characterMesh.add(torso);
+
+// Front Collar / Zipper (Clearly distinguishes front from back)
+const zipper = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.48, 0.02), collarMat);
+zipper.position.set(0, 1.18, -0.115);
+characterMesh.add(zipper);
+
+// Head
+const head = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.22, 0.20), skinMat);
+head.position.y = 1.62;
+head.castShadow = true;
+characterMesh.add(head);
+
+// Sunglasses / Visor on Front Face (-Z)
+const visor = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.05, 0.04), visorMat);
+visor.position.set(0, 1.63, -0.11);
+characterMesh.add(visor);
+
+// Hair on Top & Back of Head (+Z)
+const hair = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.08, 0.22), hairMat);
+hair.position.set(0, 1.74, 0.02);
+characterMesh.add(hair);
+
+// Legs & Shoes
+const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.80, 0.14), pantsMat);
+leftLeg.position.set(-0.09, 0.45, 0);
+leftLeg.castShadow = true;
+characterMesh.add(leftLeg);
+
+const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.80, 0.14), pantsMat);
+rightLeg.position.set(0.09, 0.45, 0);
+rightLeg.castShadow = true;
+characterMesh.add(rightLeg);
+
+// Arms
+const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.50, 0.10), shirtMat);
+leftArm.position.set(-0.24, 1.15, 0);
+leftArm.castShadow = true;
+characterMesh.add(leftArm);
+
+const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.50, 0.10), shirtMat);
+rightArm.position.set(0.24, 1.15, 0);
+rightArm.castShadow = true;
+characterMesh.add(rightArm);
+
+scene.add(playerGroup);
+
+// Spawn inside Living Room
+const EYE_HEIGHT = 1.65;
+playerGroup.position.set(3.6, 0, 5.8);
+
+// --- Camera & Direct Responsive Orbit Controls ---
+let cameraYaw = 0.5;
+let cameraPitch = 0.05;
+let targetCharacterYaw = 0.5;
+let currentCharacterYaw = 0.5;
+let cameraMode = 'third';
+
+function setCameraMode(mode) {
+  cameraMode = mode;
+  const isFirst = (mode === 'first');
+  characterMesh.visible = !isFirst;
+
+  document.getElementById('cam-mode-text').textContent = isFirst ? "1-ci Şəxs (Göz)" : "3-cü Şəxs (Arxa)";
+  document.getElementById('pos-info').textContent = isFirst 
+    ? "Baxış: 1-ci Şəxs (İnsanın Gözündən) | 60 FPS" 
+    : "Baxış: 3-cü Şəxs (Hərəkət Etdiyi Tərəfə Dönür) | 60 FPS";
+}
+
+setCameraMode('third');
+
+// --- Pointer Lock & Controls ---
+let isPointerLocked = false;
+const crosshair = document.getElementById('crosshair');
+const startOverlay = document.getElementById('start-overlay');
+const btnStartGame = document.getElementById('btn-start-game');
+const btnLockPointer = document.getElementById('btn-lock-pointer');
+
+function requestGameLock() {
+  document.body.requestPointerLock();
+}
+
+btnStartGame.addEventListener('click', () => { requestGameLock(); });
+container.addEventListener('click', () => {
+  if (!isPointerLocked) requestGameLock();
+  else triggerDoorToggle();
+});
+
+btnLockPointer.addEventListener('click', () => {
+  if (!isPointerLocked) requestGameLock();
+  else document.exitPointerLock();
+});
+
+document.addEventListener('pointerlockchange', () => {
+  isPointerLocked = (document.pointerLockElement === document.body);
+  if (isPointerLocked) {
+    startOverlay.style.opacity = '0';
+    setTimeout(() => { startOverlay.style.display = 'none'; }, 200);
+    crosshair.style.display = 'block';
+    btnLockPointer.textContent = "Kursoru Azad Et (Esc)";
+  } else {
+    crosshair.style.display = 'none';
+    btnLockPointer.textContent = "FPS Kursoru (Kilid)";
+  }
+});
+
+// ZERO-LAG Direct Mouse Look
+window.addEventListener('mousemove', (e) => {
+  if (isPointerLocked) {
+    const sens = 0.0024;
+    cameraYaw -= e.movementX * sens;
+    cameraPitch -= e.movementY * sens;
+    
+    // Strict pitch clamp: [-75°, +75°]
+    const maxPitch = 1.30;
+    cameraPitch = Math.max(-maxPitch, Math.min(maxPitch, cameraPitch));
+  }
+});
+
+// --- Keyboard Input ---
+const keys = { w: false, a: false, s: false, d: false, shift: false };
+window.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  if (k === 'w' || e.key === 'ArrowUp')    keys.w = true;
+  if (k === 'a' || e.key === 'ArrowLeft')  keys.a = true;
+  if (k === 's' || e.key === 'ArrowDown')  keys.s = true;
+  if (k === 'd' || e.key === 'ArrowRight') keys.d = true;
+  if (e.key === 'Shift') keys.shift = true;
+
+  if (k === 'c' || k === 'v') {
+    setCameraMode(cameraMode === 'first' ? 'third' : 'first');
+  }
+  if (k === 'f') {
+    toggleFlashlight();
+  }
+  if (k === 'e' || k === ' ') {
+    triggerDoorToggle();
+  }
+});
+
+window.addEventListener('keyup', (e) => {
+  const k = e.key.toLowerCase();
+  if (k === 'w' || e.key === 'ArrowUp')    keys.w = false;
+  if (k === 'a' || e.key === 'ArrowLeft')  keys.a = false;
+  if (k === 's' || e.key === 'ArrowDown')  keys.s = false;
+  if (k === 'd' || e.key === 'ArrowRight') keys.d = false;
+  if (e.key === 'Shift') keys.shift = false;
+});
+
+// HUD Buttons
+document.getElementById('btn-toggle-cam').addEventListener('click', () => {
+  setCameraMode(cameraMode === 'first' ? 'third' : 'first');
+});
+document.getElementById('btn-toggle-light').addEventListener('click', () => {
+  toggleFlashlight();
+});
+
+// Teleport Locations
+const teleports = {
+  living:   { x: 3.6, z: 5.8, yaw: 0.5 },
+  kitchen:  { x: 6.2, z: 3.2, yaw: -1.2 },
+  dining:   { x: 4.3, z: 4.5, yaw: 0.1 },
+  bedroom:  { x: 7.5, z: 7.8, yaw: 2.4 },
+  bathroom: { x: 9.5, z: 5.5, yaw: 1.8 }
+};
+
+document.querySelectorAll('.tp-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tp-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const tpKey = btn.getAttribute('data-tp');
+    if (teleports[tpKey]) {
+      const tp = teleports[tpKey];
+      playerGroup.position.x = tp.x;
+      playerGroup.position.z = tp.z;
+      playerGroup.position.y = 0;
+      cameraYaw = tp.yaw;
+      targetCharacterYaw = tp.yaw;
+      currentCharacterYaw = tp.yaw;
+      cameraPitch = 0.05;
+      renderer.shadowMap.needsUpdate = true;
+    }
+  });
+});
+
+// Collision: Closed door blocks passage, open door allows walking through!
+function isValidPosition(x, z) {
+  for (const door of doors) {
+    if (!door.isOpen) {
+      const dist = Math.hypot(door.worldPos.x - x, door.worldPos.z - z);
+      if (dist < 0.38) {
+        return false;
+      }
+    }
+  }
+  return (x >= -0.8 && x <= 10.8 && z >= -0.5 && z <= 11.8);
+}
+
+// Shortest angle difference helper
+function diffAngle(from, to) {
+  let diff = (to - from) % (Math.PI * 2);
+  if (diff < -Math.PI) diff += Math.PI * 2;
+  if (diff > Math.PI) diff -= Math.PI * 2;
+  return diff;
+}
+
+// --- Movement & Animation Loop ---
+let prevTime = performance.now();
+let frameCount = 0;
+let lastFpsUpdate = performance.now();
+let walkCycle = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  const time = performance.now();
+  const delta = Math.min((time - prevTime) / 1000, 0.08);
+  prevTime = time;
+
+  // FPS Counter
+  frameCount++;
+  if (time - lastFpsUpdate >= 1000) {
+    document.getElementById('fps-counter').textContent = frameCount;
+    frameCount = 0;
+    lastFpsUpdate = time;
+  }
+
+  // --- FLAWLESS GTA V 3RD PERSON CHARACTER TURNING & MOVEMENT ---
+  // Camera-relative forward and right vectors on the ground plane
+  const camForward = new THREE.Vector3(-Math.sin(cameraYaw), 0, -Math.cos(cameraYaw)).normalize();
+  const camRight   = new THREE.Vector3(Math.cos(cameraYaw), 0, -Math.sin(cameraYaw)).normalize();
+
+  // WASD Input Accumulation
+  const moveDir = new THREE.Vector3();
+  if (keys.w) moveDir.add(camForward);
+  if (keys.s) moveDir.sub(camForward);
+  if (keys.d) moveDir.add(camRight);
+  if (keys.a) moveDir.sub(camRight);
+
+  const isMoving = (moveDir.lengthSq() > 0.001);
+
+  if (isMoving) {
+    moveDir.normalize();
+
+    // TARGET CHARACTER YAW: Exactly faces the direction of travel!
+    // Front of avatar is -Z. When moving along moveDir, theta = atan2(-moveDir.x, -moveDir.z)
+    targetCharacterYaw = Math.atan2(-moveDir.x, -moveDir.z);
+
+    const speed = keys.shift ? 3.4 : 1.85;
+    const worldMoveX = moveDir.x * speed * delta;
+    const worldMoveZ = moveDir.z * speed * delta;
+
+    const nextX = playerGroup.position.x + worldMoveX;
+    const nextZ = playerGroup.position.z + worldMoveZ;
+
+    if (isValidPosition(nextX, playerGroup.position.z)) {
+      playerGroup.position.x = nextX;
+    }
+    if (isValidPosition(playerGroup.position.x, nextZ)) {
+      playerGroup.position.z = nextZ;
+    }
+
+    // Walking Limb Animation
+    const bobFreq = keys.shift ? 13 : 8.5;
+    walkCycle += delta * bobFreq;
+    leftLeg.rotation.x = Math.sin(walkCycle) * 0.55;
+    rightLeg.rotation.x = -Math.sin(walkCycle) * 0.55;
+    leftArm.rotation.x = -Math.sin(walkCycle) * 0.45;
+    rightArm.rotation.x = Math.sin(walkCycle) * 0.45;
+  } else {
+    leftLeg.rotation.x = 0;
+    rightLeg.rotation.x = 0;
+    leftArm.rotation.x = 0;
+    rightArm.rotation.x = 0;
+  }
+
+  // Character body turns smoothly towards target walk direction (GTA V smooth turning)
+  if (cameraMode === 'third') {
+    const angleDiff = diffAngle(currentCharacterYaw, targetCharacterYaw);
+    currentCharacterYaw += angleDiff * Math.min(delta * 16.0, 1.0);
+    characterMesh.rotation.y = currentCharacterYaw;
+  } else {
+    // In 1st person, face camera direction
+    currentCharacterYaw = cameraYaw;
+    characterMesh.rotation.y = cameraYaw;
+  }
+
+  // Animate Doors
+  for (const door of doors) {
+    if (Math.abs(door.currentAngle - door.targetAngle) > 0.001) {
+      door.currentAngle = THREE.MathUtils.lerp(door.currentAngle, door.targetAngle, delta * 5.5);
+      door.hingeNode.rotation.y = door.currentAngle;
+    }
+  }
+
+  // Update Door UI
+  updateNearbyDoor(playerGroup.position);
+
+  // Camera Positioning (Zero Lag Orbit)
+  const p = playerGroup.position;
+  const headBob = isMoving ? Math.sin(walkCycle * 2) * 0.016 : 0;
+
+  if (cameraMode === 'first') {
+    camera.position.set(p.x, p.y + EYE_HEIGHT + headBob, p.z);
+    camera.rotation.order = 'YXZ';
+    camera.rotation.y = cameraYaw;
+    camera.rotation.x = cameraPitch;
+    camera.rotation.z = 0;
+  } else {
+    // 3rd Person Orbit Camera
+    const dist = 1.70;
+    const cosP = Math.cos(cameraPitch);
+    const sinP = Math.sin(cameraPitch);
+
+    camera.position.set(
+      p.x + Math.sin(cameraYaw) * dist * cosP,
+      p.y + EYE_HEIGHT + 0.15 - sinP * dist * 0.85,
+      p.z + Math.cos(cameraYaw) * dist * cosP
+    );
+    camera.lookAt(p.x, p.y + EYE_HEIGHT * 0.85, p.z);
+  }
+
+  renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.needsUpdate = true;
+});
+
+animate();
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+[gd_scene format=3 uid="uid://c6f3m2q9a8x5y"]
+
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_Bar"]
+bg_color = Color(0.07, 0.08, 0.11, 0.88)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_Btn"]
+bg_color = Color(0.15, 0.17, 0.23, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.87, 0.78, 0.51, 0.4)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="Crosshair" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dot" type="ColorRect" parent="Crosshair"]
+custom_minimum_size = Vector2(4, 4)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.87451, 0.784314, 0.509804, 0.85)
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 16.0
+offset_right = -20.0
+offset_bottom = 60.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="Panel" type="PanelContainer" parent="TopBar"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_Bar")
+
+[node name="Margin" type="MarginContainer" parent="TopBar/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 8
+
+[node name="InfoBox" type="HBoxContainer" parent="TopBar/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="TopBar/Panel/Margin/InfoBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.87451, 0.784314, 0.509804, 1)
+text = "MARNEULI RESIDENCE 3D"
+
+[node name="FPSLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+text = "FPS: 60"
+
+[node name="ModeLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+text = "Baxış: 1-ci Şəxs"
+
+[node name="Rooms" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_constants/separation = 8
+
+[node name="BtnLiving" type="Button" parent="TopBar/Rooms"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_Btn")
+text = " 1: Qonaq "
+
+[node name="BtnKitchen" type="Button" parent="TopBar/Rooms"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_Btn")
+text = " 2: Mətbəx "
+
+[node name="BtnDining" type="Button" parent="TopBar/Rooms"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_Btn")
+text = " 3: Yemək "
+
+[node name="BtnBedroom" type="Button" parent="TopBar/Rooms"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_Btn")
+text = " 4: Yataq "
+
+[node name="BtnBathroom" type="Button" parent="TopBar/Rooms"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_Btn")
+text = " 5: Vanna "
+
+[node name="BottomBar" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -54.0
+offset_right = -20.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Help" type="Label" parent="BottomBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.72, 0.78, 1)
+theme_override_font_sizes/font_size = 13
+text = "İdarəetmə: W A S D / Oxlar: Gəz | Siçan: Ətrafa bax | Shift: Qaç | Space: Tullan | C: Kamera | F: Fənər | Esc: Kursor"
+
+[node name="BtnCam" type="Button" parent="BottomBar"]
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_Btn")
+text = " Kamera Dəyiş (C) "

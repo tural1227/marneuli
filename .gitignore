@@ -39,3 +39,8 @@ test_*
 pdf_renders/
 baslat.bat
 serve.py
+
+Marneuli_Game_Standalone/
+RENDER_FARM_UPLOAD/
+*.blend1
+*.mp4

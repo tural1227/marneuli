@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://d1k3m8p9q7x4y"]
+
+[ext_resource type="Script" path="res://scripts/door.gd" id="1_door_script"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_WoodDoor"]
+albedo_color = Color(0.38, 0.28, 0.2, 1)
+roughness = 0.4
+metallic = 0.05
+
+[sub_resource type="StandardMaterial3D" id="Mat_BrassHandle"]
+albedo_color = Color(0.88, 0.75, 0.45, 1)
+metallic = 0.95
+roughness = 0.15
+
+[sub_resource type="BoxMesh" id="Mesh_DoorPanel"]
+material = SubResource("Mat_WoodDoor")
+size = Vector3(0.86, 2.05, 0.045)
+
+[sub_resource type="CylinderMesh" id="Mesh_Handle"]
+material = SubResource("Mat_BrassHandle")
+top_radius = 0.015
+bottom_radius = 0.015
+height = 0.14
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Door"]
+size = Vector3(0.86, 2.05, 0.05)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_Interact"]
+size = Vector3(1.8, 2.2, 1.8)
+
+[node name="InteractiveDoor" type="Node3D"]
+script = ExtResource("1_door_script")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+[node name="DoorPanel" type="StaticBody3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.43, 1.025, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Pivot/DoorPanel"]
+mesh = SubResource("Mesh_DoorPanel")
+
+[node name="HandleFront" type="MeshInstance3D" parent="Pivot/DoorPanel"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.35, 0, 0.04)
+mesh = SubResource("Mesh_Handle")
+
+[node name="HandleBack" type="MeshInstance3D" parent="Pivot/DoorPanel"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.35, 0, -0.04)
+mesh = SubResource("Mesh_Handle")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/DoorPanel"]
+shape = SubResource("BoxShape3D_Door")
+
+[node name="InteractArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.43, 1.0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractArea"]
+shape = SubResource("BoxShape3D_Interact")
+
+[node name="PromptLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.43, 2.2, 0)
+billboard = 1
+text = "[E] Qapını Aç"
+font_size = 28
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
